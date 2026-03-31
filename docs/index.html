@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SellLive Admin</title>
+<style>
+  :root {
+    --bg:#080808;--bg2:#111;--bg3:#1a1a1a;--bg4:#222;
+    --border:#2a2a2a;--border2:#333;
+    --orange:#FF5722;--orange2:#E64A19;--orange-dim:rgba(255,87,34,0.12);
+    --green:#4CAF50;--green-dim:rgba(76,175,80,0.12);
+    --red:#F44336;--red-dim:rgba(244,67,54,0.12);
+    --blue:#2196F3;--blue-dim:rgba(33,150,243,0.12);
+    --amber:#FF9800;--amber-dim:rgba(255,152,0,0.12);
+    --text:#fff;--text2:#aaa;--text3:#555;--radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;font-size:13px}
+  .sidebar{width:210px;min-height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+  .sidebar-logo{padding:18px 16px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+  .logo-icon{width:30px;height:30px;background:var(--orange);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:white;flex-shrink:0}
+  .logo-text{font-size:15px;font-weight:800;letter-spacing:-.5px}
+  .logo-text span{color:var(--orange)}
+  .logo-badge{margin-left:auto;background:var(--orange-dim);color:var(--orange);font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px}
+  .nav{flex:1;padding:10px 8px}
+  .nav-section{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:.1em;padding:8px 8px 5px;text-transform:uppercase}
+  .nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--text2);font-size:12px;border:none;background:none;width:100%;text-align:left;margin-bottom:1px;transition:all .12s}
+  .nav-item:hover{background:var(--bg3);color:var(--text)}
+  .nav-item.active{background:var(--orange-dim);color:var(--orange);font-weight:600}
+  .nav-badge{margin-left:auto;background:var(--red);color:white;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+  .sidebar-footer{padding:12px 14px;border-top:1px solid var(--border);font-size:10px;color:var(--text3);line-height:1.6}
+  .main{margin-left:210px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+  .topbar{height:50px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;position:sticky;top:0;z-index:50}
+  .topbar-title{font-size:14px;font-weight:700;flex:1}
+  .api-status{display:flex;align-items:center;gap:5px;font-size:11px}
+  .sdot{width:6px;height:6px;border-radius:50%;background:var(--text3);transition:background .3s}
+  .sdot.on{background:var(--green)}
+  .sdot.err{background:var(--red);animation:blink 1s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  .live-badge{display:flex;align-items:center;gap:5px;background:var(--red-dim);border:1px solid rgba(244,67,54,.3);border-radius:20px;padding:3px 9px;font-size:10px;color:var(--red);font-weight:700}
+  .ldot{width:5px;height:5px;background:var(--red);border-radius:50%;animation:blink 1.2s infinite}
+  .btn{padding:6px 12px;border-radius:7px;font-size:11px;font-weight:600;border:none;cursor:pointer;transition:all .12s}
+  .btn-primary{background:var(--orange);color:white}
+  .btn-ghost{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+  .btn-sm{padding:3px 9px;font-size:10px}
+  .btn-ok{background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,80,.3)}
+  .btn-no{background:var(--red-dim);color:var(--red);border:1px solid rgba(244,67,54,.3)}
+  .content{padding:20px;flex:1}
+  .page{display:none}
+  .page.active{display:block}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .sc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;position:relative;overflow:hidden}
+  .sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .sc.or::before{background:var(--orange)}.sc.gn::before{background:var(--green)}.sc.bl::before{background:var(--blue)}.sc.am::before{background:var(--amber)}
+  .sl{font-size:10px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.07em;font-weight:600}
+  .sv{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:3px}
+  .sm{font-size:10px;color:var(--text3)}
+  .sm.up{color:var(--green)}
+  .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
+  .ch{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+  .ct{font-size:12px;font-weight:700;flex:1}
+  .cb{padding:14px 16px}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .g3{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+  table{width:100%;border-collapse:collapse;font-size:11px}
+  th{text-align:left;padding:7px 12px;color:var(--text3);font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--border)}
+  td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:var(--bg3)}
+  .tn{color:var(--text);font-weight:600}
+  .tm{font-family:monospace;font-size:10px}
+  .badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.05em}
+  .badge.live{background:var(--red-dim);color:var(--red)}
+  .badge.paid{background:var(--green-dim);color:var(--green)}
+  .badge.pending,.badge.payment_initiated{background:var(--amber-dim);color:var(--amber)}
+  .badge.delivered{background:var(--blue-dim);color:var(--blue)}
+  .badge.processing{background:var(--orange-dim);color:var(--orange)}
+  .badge.verified{background:var(--green-dim);color:var(--green)}
+  .badge.unverified{background:var(--amber-dim);color:var(--amber)}
+  .badge.cancelled,.badge.refunded{background:var(--red-dim);color:var(--red)}
+  .av{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0}
+  .avr{display:flex;align-items:center;gap:7px}
+  .load{text-align:center;padding:32px;color:var(--text3)}
+  .sp{display:inline-block;width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .empty{text-align:center;padding:32px;color:var(--text3)}
+  .go{color:var(--green);font-weight:700}
+  .ao{color:var(--orange);font-weight:700}
+  .ab{color:var(--blue);font-weight:700}
+  .stars{color:#FFC107}
+  ::-webkit-scrollbar{width:4px}
+  ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">SL</div>
+    <div class="logo-text"><span>Sell</span>Live</div>
+    <div class="logo-badge">ADMIN</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Main</div>
+    <button class="nav-item active" onclick="nav('dashboard',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</button>
+    <button class="nav-item" onclick="nav('streams',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>Live Streams<span class="nav-badge" id="nb-live" style="display:none">0</span></button>
+    <button class="nav-item" onclick="nav('orders',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>Orders</button>
+    <div class="nav-section" style="margin-top:6px">People</div>
+    <button class="nav-item" onclick="nav('sellers',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Sellers<span class="nav-badge" id="nb-pending" style="display:none">0</span></button>
+    <button class="nav-item" onclick="nav('buyers',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Buyers</button>
+    <div class="nav-section" style="margin-top:6px">Finance</div>
+    <button class="nav-item" onclick="nav('commissions',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Commissions</button>
+  </nav>
+  <div class="sidebar-footer">
+    <strong id="conn-status">Connecting...</strong><br>
+    <span id="last-refresh">—</span>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard</div>
+    <div class="api-status"><div class="sdot" id="sdot"></div><span id="stxt" style="color:var(--text3)">...</span></div>
+    <div class="live-badge"><div class="ldot"></div><span id="live-lbl">0 LIVE</span></div>
+    <button class="btn btn-ghost btn-sm" onclick="refresh()">↻ Refresh</button>
+  </header>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="sc or"><div class="sl">Total Revenue</div><div class="sv ao" id="s-rev">...</div><div class="sm">Platform gross</div></div>
+        <div class="sc gn"><div class="sl">Total Orders</div><div class="sv go" id="s-ord">...</div><div class="sm up" id="s-tod">Today: ...</div></div>
+        <div class="sc bl"><div class="sl">Sellers / Buyers</div><div class="sv ab" id="s-sel">...</div><div class="sm" id="s-buy">Buyers: ...</div></div>
+        <div class="sc am"><div class="sl">Platform Earnings</div><div class="sv" style="color:var(--amber)" id="s-com">...</div><div class="sm up">10% commission</div></div>
+      </div>
+      <div class="g3">
+        <div class="card"><div class="ch"><div class="ct">Recent Orders</div><button class="btn btn-ghost btn-sm" onclick="nav('orders',document.querySelectorAll('.nav-item')[2])">All →</button></div><div id="d-orders"><div class="load"><div class="sp"></div></div></div></div>
+        <div class="card"><div class="ch"><div class="ct">Live Stats</div></div><div class="cb"><div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">Live now</span><span class="badge live" id="qs-live">0</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">Pending verify</span><span class="badge pending" id="qs-pend">0</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">Today revenue</span><span class="go" id="qs-tod">...</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">Total buyers</span><span class="ab" id="qs-buy">...</span></div>
+        </div></div></div>
+      </div>
+    </div>
+
+    <!-- STREAMS -->
+    <div class="page" id="page-streams">
+      <div class="card"><div class="ch"><div class="ct">🔴 Currently Live</div><span style="font-size:10px;color:var(--text3)" id="str-time"></span></div><div id="str-live"><div class="load"><div class="sp"></div></div></div></div>
+      <div class="card"><div class="ch"><div class="ct">Past Streams</div></div><div id="str-ended"><div class="load"><div class="sp"></div></div></div></div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="page" id="page-orders">
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="loadOrders()">All</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadOrders('paid')">Paid</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadOrders('processing')">Packing</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadOrders('delivered')">Delivered</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadOrders('cancelled')">Cancelled</button>
+      </div>
+      <div class="card"><div class="ch"><div class="ct">Orders</div><span style="font-size:10px;color:var(--text3)" id="ord-count"></span></div><div id="ord-body"><div class="load"><div class="sp"></div></div></div></div>
+    </div>
+
+    <!-- SELLERS -->
+    <div class="page" id="page-sellers">
+      <div class="card"><div class="ch"><div class="ct">⚠️ Pending Verification</div><span class="badge pending" id="pend-badge">0</span></div><div id="sel-pend"><div class="load"><div class="sp"></div></div></div></div>
+      <div class="card"><div class="ch"><div class="ct">Verified Sellers</div></div><div id="sel-all"><div class="load"><div class="sp"></div></div></div></div>
+    </div>
+
+    <!-- BUYERS -->
+    <div class="page" id="page-buyers">
+      <div class="card"><div class="ch"><div class="ct">Buyers</div><span style="font-size:10px;color:var(--text3)" id="buy-count"></span></div><div id="buy-body"><div class="load"><div class="sp"></div></div></div></div>
+    </div>
+
+    <!-- COMMISSIONS -->
+    <div class="page" id="page-commissions">
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
+        <div class="sc gn"><div class="sl">Total Earned</div><div class="sv go" id="cm-tot">...</div><div class="sm">All time</div></div>
+        <div class="sc or"><div class="sl">Paid to Sellers</div><div class="sv ao" id="cm-pay">...</div><div class="sm">90% payout</div></div>
+        <div class="sc bl"><div class="sl">Rate</div><div class="sv ab">10%</div><div class="sm">Fixed</div></div>
+      </div>
+      <div class="card"><div class="ch"><div class="ct">By Seller</div></div><div id="cm-body"><div class="load"><div class="sp"></div></div></div></div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+const API='https://selllive.vercel.app/api';
+const TOK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIwNGY3M2ZkMC1hY2E4LTQ3NjktYmY0MC05Njk3YjZlMGQ3ZmEiLCJpYXQiOjE3NzQ5NzA3MDYsImV4cCI6MTgwNjUwNjcwNn0.oCwDRZTmxh0RIIEpuo1Cj1cHOysV9ihkLwLoW-e5ue0';
+const H={'Content-Type':'application/json','Authorization':'Bearer '+TOK};
+
+const naira=v=>'₦'+Number(v||0).toLocaleString('en-NG',{maximumFractionDigits:0});
+const ago=d=>{if(!d)return'—';const s=Math.floor((Date.now()-new Date(d))/1000);if(s<60)return s+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';};
+const COLS=['#8B4513','#1565C0','#6A1B9A','#2E7D32','#B71C1C','#006064','#4A148C','#37474F'];
+const ac=n=>COLS[(n||'x').charCodeAt(0)%COLS.length];
+const ini=n=>(n||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const av=n=>`<div class="av" style="background:${ac(n)}">${ini(n)}</div>`;
+const sb=s=>`<span class="badge ${s}">${(s||'').replace(/_/g,' ').toUpperCase()}</span>`;
+
+async function call(path,opt={}){
+  const r=await fetch(API+path,{headers:H,...opt});
+  if(!r.ok)throw new Error(r.status+' '+r.statusText);
+  return r.json();
+}
+function ok(msg){document.getElementById('sdot').className='sdot on';document.getElementById('stxt').style.color='var(--green)';document.getElementById('stxt').textContent=msg;document.getElementById('conn-status').textContent='✓ '+msg;}
+function err(msg){document.getElementById('sdot').className='sdot err';document.getElementById('stxt').style.color='var(--red)';document.getElementById('stxt').textContent=msg;document.getElementById('conn-status').textContent='✗ '+msg;}
+
+async function loadStats(){
+  try{
+    const d=await call('/admin/stats');
+    document.getElementById('s-rev').textContent=naira(d.total_revenue_naira);
+    document.getElementById('s-ord').textContent=(d.total_orders||0).toLocaleString();
+    document.getElementById('s-tod').textContent='Today: '+naira(d.today_revenue_naira);
+    document.getElementById('s-sel').textContent=d.total_sellers||0;
+    document.getElementById('s-buy').textContent='Buyers: '+(d.total_buyers||0);
+    document.getElementById('s-com').textContent=naira(d.total_commission_naira);
+    document.getElementById('qs-live').textContent=d.live_streams||0;
+    document.getElementById('qs-pend').textContent=d.pending_verifications||0;
+    document.getElementById('qs-tod').textContent=naira(d.today_revenue_naira);
+    document.getElementById('qs-buy').textContent=d.total_buyers||0;
+    document.getElementById('live-lbl').textContent=(d.live_streams||0)+' LIVE';
+    const lnb=document.getElementById('nb-live');
+    if(d.live_streams>0){lnb.textContent=d.live_streams;lnb.style.display='flex';}
+    const pnb=document.getElementById('nb-pending');
+    if(d.pending_verifications>0){pnb.textContent=d.pending_verifications;pnb.style.display='flex';}
+    ok('API Connected');
+  }catch(e){err('API Error: check Vercel');}
+}
+
+async function loadRecentOrders(){
+  const el=document.getElementById('d-orders');
+  try{
+    const d=await call('/admin/orders?limit=6');
+    const rows=d.orders||[];
+    if(!rows.length){el.innerHTML='<div class="empty">No orders yet</div>';return;}
+    el.innerHTML='<table><thead><tr><th>Ref</th><th>Buyer</th><th>Amount</th><th>Status</th><th>When</th></tr></thead><tbody>'+
+      rows.map(o=>`<tr><td class="tm">${o.order_ref||'—'}</td><td><div class="avr">${av(o.buyer?.name||'?')}<span>${o.buyer?.name||'—'}</span></div></td><td class="ao">${naira((o.total_amount||0)/100)}</td><td>${sb(o.status)}</td><td style="color:var(--text3)">${ago(o.created_at)}</td></tr>`).join('')+
+      '</tbody></table>';
+  }catch(e){el.innerHTML='<div class="empty">Could not load — '+e.message+'</div>';}
+}
+
+async function loadOrders(status=''){
+  const el=document.getElementById('ord-body');
+  el.innerHTML='<div class="load"><div class="sp"></div></div>';
+  try{
+    const d=await call('/admin/orders?limit=50'+(status?'&status='+status:''));
+    const rows=d.orders||[];
+    document.getElementById('ord-count').textContent=rows.length+' orders';
+    if(!rows.length){el.innerHTML='<div class="empty">No orders found</div>';return;}
+    el.innerHTML='<table><thead><tr><th>Ref</th><th>Buyer</th><th>Seller</th><th>Product</th><th>Amount</th><th>Commission</th><th>Status</th><th>Date</th></tr></thead><tbody>'+
+      rows.map(o=>`<tr><td class="tm">${o.order_ref||'—'}</td><td>${o.buyer?.name||'—'}</td><td style="color:var(--text2)">${o.seller_profile?.business_name||o.seller?.name||'—'}</td><td>${o.product?.name||'—'}</td><td class="ao">${naira((o.total_amount||0)/100)}</td><td class="go">${naira((o.commission||0)/100)}</td><td>${sb(o.status)}</td><td style="color:var(--text3)">${ago(o.created_at)}</td></tr>`).join('')+
+      '</tbody></table>';
+  }catch(e){el.innerHTML='<div class="empty">'+e.message+'</div>';}
+}
+
+async function loadSellers(){
+  const pEl=document.getElementById('sel-pend'),aEl=document.getElementById('sel-all');
+  try{
+    const [pd,ad]=await Promise.all([call('/admin/sellers?verified=false'),call('/admin/sellers?verified=true')]);
+    const pend=pd.sellers||[],all=ad.sellers||[];
+    document.getElementById('pend-badge').textContent=pend.length;
+    if(!pend.length){pEl.innerHTML='<div class="empty">✓ No pending verifications</div>';}
+    else{pEl.innerHTML='<table><thead><tr><th>Seller</th><th>Phone</th><th>When</th><th>Action</th></tr></thead><tbody>'+
+      pend.map(s=>`<tr><td><div class="avr">${av(s.name)}<div><div class="tn">${s.name}</div><div style="font-size:9px;color:var(--text3)">${s.profile?.business_name||''}</div></div></div></td><td style="color:var(--text3)">${s.phone}</td><td style="color:var(--text3)">${ago(s.created_at)}</td><td><button class="btn btn-ok btn-sm" onclick="verify('${s.id}',true,this)">✓ Verify</button> <button class="btn btn-no btn-sm" onclick="verify('${s.id}',false,this)">✗ Reject</button></td></tr>`).join('')+
+      '</tbody></table>';}
+    if(!all.length){aEl.innerHTML='<div class="empty">No verified sellers yet</div>';}
+    else{aEl.innerHTML='<table><thead><tr><th>Seller</th><th>Sales</th><th>Earnings</th><th>Trust</th><th>Followers</th><th>Joined</th></tr></thead><tbody>'+
+      all.map(s=>`<tr><td><div class="avr">${av(s.name)}<div><div class="tn">${s.profile?.business_name||s.name}</div><div style="font-size:9px;color:var(--text3)">${s.phone}</div></div></div></td><td>${s.profile?.total_sales||0}</td><td class="go">${naira((s.profile?.total_earnings||0)/100)}</td><td><span class="stars">${'★'.repeat(Math.round(s.profile?.trust_score||5))}${'☆'.repeat(5-Math.round(s.profile?.trust_score||5))}</span></td><td>${(s.profile?.followers_count||0).toLocaleString()}</td><td style="color:var(--text3)">${ago(s.created_at)}</td></tr>`).join('')+
+      '</tbody></table>';}
+  }catch(e){pEl.innerHTML=aEl.innerHTML='<div class="empty">'+e.message+'</div>';}
+}
+
+async function verify(id,approved,btn){
+  btn.disabled=true;btn.textContent='...';
+  try{
+    await call('/admin/sellers/'+id+'/verify',{method:'PATCH',body:JSON.stringify({approved})});
+    loadSellers();loadStats();
+  }catch(e){btn.disabled=false;btn.textContent=approved?'✓ Verify':'✗ Reject';alert('Failed: '+e.message);}
+}
+
+async function loadStreams(){
+  const lEl=document.getElementById('str-live'),eEl=document.getElementById('str-ended');
+  document.getElementById('str-time').textContent='Updated '+new Date().toLocaleTimeString();
+  try{
+    const[ld,ed]=await Promise.all([call('/admin/streams?status=live'),call('/admin/streams?status=ended')]);
+    const live=ld.streams||[],ended=ed.streams||[];
+    if(!live.length){lEl.innerHTML='<div class="empty">No streams live right now</div>';}
+    else{lEl.innerHTML='<table><thead><tr><th>Seller</th><th>Title</th><th>Viewers</th><th>Orders</th><th>Started</th><th></th></tr></thead><tbody>'+
+      live.map(s=>`<tr><td><div class="avr">${av(s.seller_profile?.business_name||'?')}<span>${s.seller_profile?.business_name||'—'}</span></div></td><td class="tn"><span style="display:inline-block;width:6px;height:6px;background:var(--red);border-radius:50%;margin-right:5px;animation:blink 1s infinite"></span>${s.title}</td><td class="ao">${(s.viewer_count||0).toLocaleString()}</td><td class="go">${s.total_orders||0}</td><td style="color:var(--text3)">${ago(s.started_at)}</td><td><button class="btn btn-no btn-sm" onclick="endStream('${s.id}',this)">End</button></td></tr>`).join('')+
+      '</tbody></table>';}
+    if(!ended.length){eEl.innerHTML='<div class="empty">No past streams</div>';}
+    else{eEl.innerHTML='<table><thead><tr><th>Seller</th><th>Title</th><th>Peak Viewers</th><th>Orders</th><th>Ended</th></tr></thead><tbody>'+
+      ended.slice(0,15).map(s=>`<tr><td><div class="avr">${av(s.seller_profile?.business_name||'?')}<span>${s.seller_profile?.business_name||'—'}</span></div></td><td>${s.title}</td><td>${(s.peak_viewers||0).toLocaleString()}</td><td class="go">${s.total_orders||0}</td><td style="color:var(--text3)">${ago(s.ended_at)}</td></tr>`).join('')+
+      '</tbody></table>';}
+  }catch(e){lEl.innerHTML=eEl.innerHTML='<div class="empty">'+e.message+'</div>';}
+}
+
+async function endStream(id,btn){
+  if(!confirm('Force-end this stream?'))return;
+  btn.disabled=true;
+  try{await call('/admin/streams/'+id,{method:'DELETE'});loadStreams();loadStats();}
+  catch(e){btn.disabled=false;alert('Failed: '+e.message);}
+}
+
+async function loadBuyers(){
+  const el=document.getElementById('buy-body');
+  try{
+    const d=await call('/admin/buyers');
+    const rows=d.buyers||[];
+    document.getElementById('buy-count').textContent=rows.length+' buyers';
+    if(!rows.length){el.innerHTML='<div class="empty">No buyers yet</div>';return;}
+    el.innerHTML='<table><thead><tr><th>Name</th><th>Phone</th><th>Joined</th></tr></thead><tbody>'+
+      rows.map(b=>`<tr><td><div class="avr">${av(b.name)}<span class="tn">${b.name}</span></div></td><td style="color:var(--text3)">${b.phone}</td><td style="color:var(--text3)">${ago(b.created_at)}</td></tr>`).join('')+
+      '</tbody></table>';
+  }catch(e){el.innerHTML='<div class="empty">'+e.message+'</div>';}
+}
+
+async function loadCommissions(){
+  const el=document.getElementById('cm-body');
+  try{
+    const d=await call('/admin/commissions');
+    document.getElementById('cm-tot').textContent=naira(d.total_commission_naira);
+    const totalGross=(d.by_seller||[]).reduce((s,r)=>s+r.gross_naira,0);
+    document.getElementById('cm-pay').textContent=naira(totalGross-(d.total_commission_naira||0));
+    const rows=d.by_seller||[];
+    if(!rows.length){el.innerHTML='<div class="empty">No commissions yet</div>';return;}
+    el.innerHTML='<table><thead><tr><th>Seller</th><th>Orders</th><th>Gross Sales</th><th>Commission (10%)</th><th>Seller Payout</th></tr></thead><tbody>'+
+      rows.map(r=>`<tr><td><div class="avr">${av(r.business_name)}<span class="tn">${r.business_name}</span></div></td><td>${r.orders}</td><td>${naira(r.gross_naira)}</td><td class="go">${naira(r.commission_naira)}</td><td style="color:var(--text2)">${naira(r.seller_payout_naira)}</td></tr>`).join('')+
+      `<tr style="background:var(--bg3);font-weight:700"><td colspan="2">TOTAL</td><td>${naira((d.by_seller||[]).reduce((s,r)=>s+r.gross_naira,0))}</td><td class="go">${naira(d.total_commission_naira)}</td><td>${naira((d.by_seller||[]).reduce((s,r)=>s+r.seller_payout_naira,0))}</td></tr>` +
+      '</tbody></table>';
+  }catch(e){el.innerHTML='<div class="empty">'+e.message+'</div>';}
+}
+
+const PL={dashboard:()=>{loadStats();loadRecentOrders();},streams:loadStreams,orders:loadOrders,sellers:loadSellers,buyers:loadBuyers,commissions:loadCommissions};
+
+function nav(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.getElementById('page-title').textContent=name.charAt(0).toUpperCase()+name.slice(1);
+  PL[name]?.();
+}
+
+function refresh(){
+  const cur=document.querySelector('.page.active')?.id?.replace('page-','');
+  PL[cur]?.();
+  loadStats();
+  document.getElementById('last-refresh').textContent='↻ '+new Date().toLocaleTimeString();
+}
+
+// Init
+loadStats();
+loadRecentOrders();
+setInterval(()=>{loadStats();document.getElementById('last-refresh').textContent='Auto '+new Date().toLocaleTimeString();},30000);
+</script>
+</body>
+</html>
