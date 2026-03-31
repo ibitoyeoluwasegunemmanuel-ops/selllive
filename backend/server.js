@@ -126,3 +126,11 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 module.exports = app;
+
+// TEMP: trigger github workflow push via edge function
+app.get('/trigger-github-push', async (req, res) => {
+  const fetch = (await import('node-fetch')).default;
+  const result = await fetch('https://aayprwxhzbhmghvgaeyi.supabase.co/functions/v1/github-push');
+  const data = await result.json();
+  res.json(data);
+});
