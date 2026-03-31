@@ -1,0 +1,63 @@
+name: selllive
+description: Nigeria's Live Commerce Platform
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  provider: ^6.1.1
+  
+  # HTTP & API
+  dio: ^5.4.0
+  
+  # Supabase (database + realtime chat)
+  supabase_flutter: ^2.3.0
+
+  # Video Streaming (Daily.co WebRTC)
+  daily_flutter: ^0.9.0
+  
+  # Local Storage (save user token)
+  shared_preferences: ^2.2.2
+  
+  # Navigation
+  go_router: ^13.0.0
+  
+  # Image handling
+  cached_network_image: ^3.3.1
+  image_picker: ^1.0.7
+  
+  # Flutterwave Payment (opens in browser)
+  url_launcher: ^6.2.3
+  
+  # UI helpers
+  flutter_svg: ^2.0.9
+  shimmer: ^3.0.0           # loading skeleton effect
+  timeago: ^3.6.1           # "2 mins ago" timestamps
+  intl: ^0.19.0             # currency formatting ₦
+  pull_to_refresh: ^2.0.0   # pull to refresh feed
+  
+  # Notifications
+  firebase_core: ^2.24.2
+  firebase_messaging: ^14.7.10
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  build_runner: ^2.4.7
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
+  fonts:
+    - family: SellLive
+      fonts:
+        - asset: assets/fonts/SellLive-Regular.ttf

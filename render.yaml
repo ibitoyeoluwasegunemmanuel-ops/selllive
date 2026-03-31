@@ -1,0 +1,30 @@
+# render.yaml — Deploy SellLive backend on Render.com (free tier)
+services:
+  - type: web
+    name: selllive-api
+    env: node
+    region: frankfurt  # closest to Nigeria
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      # Add these manually in Render dashboard (sensitive values):
+      # SUPABASE_URL
+      # SUPABASE_SERVICE_KEY
+      # JWT_SECRET
+      # FLW_PUBLIC_KEY
+      # FLW_SECRET_KEY
+      # FLW_ENCRYPTION_KEY
+      # FLW_WEBHOOK_SECRET
+      # DAILY_API_KEY
+      # TERMII_API_KEY
+      # TERMII_SENDER_ID
+      # APP_URL
+      # FRONTEND_URL
+      # COMMISSION_PERCENT
+    healthCheckPath: /health
