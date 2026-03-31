@@ -22,11 +22,16 @@ const generateToken = (userId) => jwt.sign(
 );
 
 // Send SMS via Termii (Nigerian SMS gateway)
+// If no Termii key is configured, OTP is returned in the API response directly
 const sendSMS = async (phone, message) => {
+  if (!process.env.TERMII_API_KEY) {
+    console.log(`📱 NO SMS KEY — OTP for ${phone}: ${message}`);
+    return false; // signals caller to include OTP in response
+  }
   try {
     await axios.post('https://api.ng.termii.com/api/sms/send', {
       to: phone,
-      from: process.env.TERMII_SENDER_ID,
+      from: process.env.TERMII_SENDER_ID || 'SellLive',
       sms: message,
       type: 'plain',
       channel: 'generic',
@@ -35,11 +40,7 @@ const sendSMS = async (phone, message) => {
     return true;
   } catch (err) {
     console.error('SMS failed:', err.message);
-    // In dev mode, just log the OTP
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`📱 DEV OTP for ${phone}: ${message}`);
-      return true;
-    }
+    console.log(`📱 SMS FALLBACK OTP for ${phone}: ${message}`);
     return false;
   }
 };
@@ -76,15 +77,14 @@ router.post('/send-otp', async (req, res) => {
     return res.status(500).json({ error: 'Failed to create OTP. Try again.' });
   }
 
-  // Send SMS
+  // Send SMS — returns false if no Termii key configured
   const smsMessage = `Your SellLive verification code is: ${code}. Valid for 10 minutes. Do not share this code.`;
-  await sendSMS(phone, smsMessage);
+  const smsSent = await sendSMS(phone, smsMessage);
 
   res.json({
     success: true,
-    message: `OTP sent to ${phone}`,
-    // Only expose in dev
-    ...(process.env.NODE_ENV === 'development' && { dev_code: code }),
+    message: smsSent ? `OTP sent to ${phone}` : `OTP ready for ${phone}`,
+    ...(!smsSent && { code }),
   });
 });
 

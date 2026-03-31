@@ -81,17 +81,20 @@ router.post('/', authenticate, sellerOnly, async (req, res) => {
 
   if (dbError) return res.status(500).json({ error: 'Failed to create stream.' });
 
-  // Create Daily.co room
+  // Create Daily.co room (only if API key is configured)
   let dailyRoom = null;
-  try {
-    dailyRoom = await createDailyRoom(stream.id);
-    await supabase.from('streams').update({
-      daily_room_url: dailyRoom.url,
-      daily_room_name: dailyRoom.name,
-    }).eq('id', stream.id);
-  } catch (err) {
-    console.error('Daily.co room creation failed:', err.message);
-    // Don't fail the whole request — stream can still work via WebRTC fallback
+  if (process.env.DAILY_API_KEY) {
+    try {
+      dailyRoom = await createDailyRoom(stream.id);
+      await supabase.from('streams').update({
+        daily_room_url: dailyRoom.url,
+        daily_room_name: dailyRoom.name,
+      }).eq('id', stream.id);
+    } catch (err) {
+      console.error('Daily.co room creation failed:', err.message);
+    }
+  } else {
+    console.log('ℹ️  No DAILY_API_KEY — skipping video room creation');
   }
 
   res.status(201).json({
