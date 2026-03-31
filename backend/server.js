@@ -17,6 +17,7 @@ const orderRoutes = require('./routes/orders');
 const paymentRoutes = require('./routes/payments');
 const sellerRoutes = require('./routes/sellers');
 const buyerRoutes = require('./routes/buyers');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -82,6 +83,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/sellers', sellerRoutes);
 app.use('/api/buyers', buyerRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Flutterwave webhook (no rate limiting — it's from Flutterwave's servers)
 app.use('/webhook/flutterwave', paymentRoutes);

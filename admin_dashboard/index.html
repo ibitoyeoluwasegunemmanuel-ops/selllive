@@ -6,257 +6,94 @@
 <title>SellLive Admin</title>
 <style>
   :root {
-    --bg: #080808;
-    --bg2: #111111;
-    --bg3: #1a1a1a;
-    --bg4: #222222;
-    --border: #2a2a2a;
-    --border2: #333;
-    --orange: #FF5722;
-    --orange2: #E64A19;
-    --orange-dim: rgba(255,87,34,0.12);
-    --green: #4CAF50;
-    --green-dim: rgba(76,175,80,0.12);
-    --red: #F44336;
-    --red-dim: rgba(244,67,54,0.12);
-    --blue: #2196F3;
-    --blue-dim: rgba(33,150,243,0.12);
-    --amber: #FF9800;
-    --amber-dim: rgba(255,152,0,0.12);
-    --text: #ffffff;
-    --text2: #aaaaaa;
-    --text3: #555555;
-    --radius: 10px;
-    --font: 'Inter', -apple-system, sans-serif;
+    --bg:#080808;--bg2:#111;--bg3:#1a1a1a;--bg4:#222;
+    --border:#2a2a2a;--border2:#333;
+    --orange:#FF5722;--orange2:#E64A19;--orange-dim:rgba(255,87,34,0.12);
+    --green:#4CAF50;--green-dim:rgba(76,175,80,0.12);
+    --red:#F44336;--red-dim:rgba(244,67,54,0.12);
+    --blue:#2196F3;--blue-dim:rgba(33,150,243,0.12);
+    --amber:#FF9800;--amber-dim:rgba(255,152,0,0.12);
+    --text:#fff;--text2:#aaa;--text3:#555;--radius:10px;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
-
-  /* SIDEBAR */
-  .sidebar {
-    width: 220px; min-height: 100vh; background: var(--bg2);
-    border-right: 1px solid var(--border); display: flex; flex-direction: column;
-    position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
-  }
-  .sidebar-logo {
-    padding: 20px 20px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 10px;
-  }
-  .logo-icon {
-    width: 32px; height: 32px; background: var(--orange);
-    border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 800; color: white;
-  }
-  .logo-text { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; }
-  .logo-text span { color: var(--orange); }
-  .logo-badge {
-    margin-left: auto; background: var(--orange-dim); color: var(--orange);
-    font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px;
-  }
-  .nav { flex: 1; padding: 12px 10px; }
-  .nav-section { font-size: 10px; color: var(--text3); font-weight: 600;
-    letter-spacing: 0.08em; padding: 8px 10px 6px; text-transform: uppercase; }
-  .nav-item {
-    display: flex; align-items: center; gap: 10px; padding: 9px 10px;
-    border-radius: 8px; cursor: pointer; color: var(--text2); font-size: 13px;
-    transition: all 0.15s; margin-bottom: 2px; border: none; background: none;
-    width: 100%; text-align: left;
-  }
-  .nav-item:hover { background: var(--bg3); color: var(--text); }
-  .nav-item.active { background: var(--orange-dim); color: var(--orange); font-weight: 600; }
-  .nav-item svg { flex-shrink: 0; }
-  .nav-badge {
-    margin-left: auto; background: var(--red); color: white;
-    font-size: 10px; font-weight: 700; min-width: 18px; height: 18px;
-    border-radius: 9px; display: flex; align-items: center; justify-content: center;
-    padding: 0 5px;
-  }
-  .sidebar-footer {
-    padding: 14px; border-top: 1px solid var(--border);
-    font-size: 11px; color: var(--text3);
-  }
-  .sidebar-footer strong { display: block; color: var(--text2); margin-bottom: 2px; }
-
-  /* MAIN */
-  .main { margin-left: 220px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
-  .topbar {
-    height: 56px; background: var(--bg2); border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; padding: 0 24px; gap: 16px;
-    position: sticky; top: 0; z-index: 50;
-  }
-  .topbar-title { font-size: 15px; font-weight: 700; flex: 1; }
-  .topbar-search {
-    background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
-    padding: 7px 12px; font-size: 12px; color: var(--text); width: 200px;
-    outline: none;
-  }
-  .topbar-search:focus { border-color: var(--orange); }
-  .topbar-search::placeholder { color: var(--text3); }
-  .live-indicator {
-    display: flex; align-items: center; gap: 6px; background: var(--red-dim);
-    border: 1px solid rgba(244,67,54,0.3); border-radius: 20px;
-    padding: 4px 10px; font-size: 11px; color: var(--red); font-weight: 600;
-  }
-  .live-dot { width: 6px; height: 6px; background: var(--red); border-radius: 50%;
-    animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-  .content { padding: 24px; flex: 1; }
-
-  /* STATS GRID */
-  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
-  .stat-card {
-    background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 16px 18px; position: relative; overflow: hidden;
-  }
-  .stat-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  }
-  .stat-card.orange::before { background: var(--orange); }
-  .stat-card.green::before { background: var(--green); }
-  .stat-card.blue::before { background: var(--blue); }
-  .stat-card.amber::before { background: var(--amber); }
-  .stat-label { font-size: 11px; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em; }
-  .stat-value { font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; }
-  .stat-change { font-size: 11px; }
-  .stat-change.up { color: var(--green); }
-  .stat-change.down { color: var(--red); }
-  .stat-icon {
-    position: absolute; right: 14px; top: 14px; width: 32px; height: 32px;
-    border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-  }
-  .stat-icon.orange { background: var(--orange-dim); }
-  .stat-icon.green { background: var(--green-dim); }
-  .stat-icon.blue { background: var(--blue-dim); }
-  .stat-icon.amber { background: var(--amber-dim); }
-
-  /* GRID LAYOUT */
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
-  .grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 24px; }
-
-  /* CARD */
-  .card {
-    background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .card-header {
-    padding: 14px 18px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 10px;
-  }
-  .card-title { font-size: 13px; font-weight: 700; flex: 1; }
-  .card-action {
-    font-size: 11px; color: var(--orange); cursor: pointer; font-weight: 600;
-    background: none; border: none; padding: 0;
-  }
-  .card-body { padding: 14px 18px; }
-
-  /* TABLE */
-  table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  th { text-align: left; padding: 8px 12px; color: var(--text3); font-weight: 600;
-    font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em;
-    border-bottom: 1px solid var(--border); }
-  td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--bg3); }
-  .td-name { color: var(--text); font-weight: 600; }
-  .td-mono { font-family: monospace; font-size: 11px; }
-
-  /* BADGES */
-  .badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 8px; border-radius: 5px; font-size: 10px; font-weight: 700;
-    letter-spacing: 0.04em;
-  }
-  .badge.live { background: var(--red-dim); color: var(--red); }
-  .badge.paid { background: var(--green-dim); color: var(--green); }
-  .badge.pending { background: var(--amber-dim); color: var(--amber); }
-  .badge.delivered { background: var(--blue-dim); color: var(--blue); }
-  .badge.verified { background: var(--green-dim); color: var(--green); }
-  .badge.unverified { background: var(--amber-dim); color: var(--amber); }
-  .badge.processing { background: var(--orange-dim); color: var(--orange); }
-
-  /* BUTTONS */
-  .btn {
-    padding: 7px 14px; border-radius: 7px; font-size: 12px; font-weight: 600;
-    border: none; cursor: pointer; transition: all 0.15s;
-  }
-  .btn-primary { background: var(--orange); color: white; }
-  .btn-primary:hover { background: var(--orange2); }
-  .btn-ghost { background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
-  .btn-ghost:hover { border-color: var(--border2); color: var(--text); }
-  .btn-sm { padding: 4px 10px; font-size: 11px; }
-  .btn-danger { background: var(--red-dim); color: var(--red); }
-  .btn-success { background: var(--green-dim); color: var(--green); }
-
-  /* AVATAR */
-  .avatar {
-    width: 30px; height: 30px; border-radius: 50%; background: var(--orange);
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700; color: white; flex-shrink: 0;
-  }
-  .avatar-row { display: flex; align-items: center; gap: 8px; }
-
-  /* CHART BARS */
-  .chart-bars { display: flex; align-items: flex-end; gap: 4px; height: 80px; padding: 0 4px; }
-  .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .bar {
-    width: 100%; border-radius: 4px 4px 0 0; background: var(--orange);
-    opacity: 0.7; transition: opacity 0.2s; min-height: 4px;
-  }
-  .bar:hover { opacity: 1; }
-  .bar-label { font-size: 9px; color: var(--text3); }
-
-  /* LIVE STREAMS TABLE */
-  .stream-live-dot { width: 7px; height: 7px; background: var(--red); border-radius: 50%;
-    display: inline-block; margin-right: 5px; animation: pulse 1.5s infinite; }
-
-  /* QUICK ACTIONS */
-  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .action-item {
-    background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
-    padding: 12px; cursor: pointer; transition: all 0.15s;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .action-item:hover { border-color: var(--orange); background: var(--orange-dim); }
-  .action-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
-  .action-label { font-size: 12px; font-weight: 600; color: var(--text2); }
-
-  /* PAGE SECTIONS */
-  .page { display: none; }
-  .page.active { display: block; }
-
-  /* COMMISSION SUMMARY */
-  .commission-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 0; border-bottom: 1px solid var(--border);
-  }
-  .commission-row:last-child { border-bottom: none; }
-
-  /* EMPTY STATE */
-  .empty { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 13px; }
-
-  /* NOTIFICATION DOT */
-  .notif { position: relative; }
-  .notif::after {
-    content: ''; position: absolute; top: -2px; right: -2px;
-    width: 7px; height: 7px; background: var(--red); border-radius: 50%;
-    border: 2px solid var(--bg2);
-  }
-
-  /* RATING STARS */
-  .stars { color: #FFC107; font-size: 11px; }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;font-size:13px}
+  .sidebar{width:210px;min-height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+  .sidebar-logo{padding:18px 16px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+  .logo-icon{width:30px;height:30px;background:var(--orange);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:white;flex-shrink:0}
+  .logo-text{font-size:15px;font-weight:800;letter-spacing:-.5px}
+  .logo-text span{color:var(--orange)}
+  .logo-badge{margin-left:auto;background:var(--orange-dim);color:var(--orange);font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px}
+  .nav{flex:1;padding:10px 8px}
+  .nav-section{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:.1em;padding:8px 8px 5px;text-transform:uppercase}
+  .nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--text2);font-size:12px;border:none;background:none;width:100%;text-align:left;margin-bottom:1px;transition:all .12s}
+  .nav-item:hover{background:var(--bg3);color:var(--text)}
+  .nav-item.active{background:var(--orange-dim);color:var(--orange);font-weight:600}
+  .nav-badge{margin-left:auto;background:var(--red);color:white;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+  .sidebar-footer{padding:12px 14px;border-top:1px solid var(--border);font-size:10px;color:var(--text3);line-height:1.6}
+  .main{margin-left:210px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+  .topbar{height:50px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;position:sticky;top:0;z-index:50}
+  .topbar-title{font-size:14px;font-weight:700;flex:1}
+  .api-status{display:flex;align-items:center;gap:5px;font-size:11px}
+  .sdot{width:6px;height:6px;border-radius:50%;background:var(--text3);transition:background .3s}
+  .sdot.on{background:var(--green)}
+  .sdot.err{background:var(--red);animation:blink 1s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  .live-badge{display:flex;align-items:center;gap:5px;background:var(--red-dim);border:1px solid rgba(244,67,54,.3);border-radius:20px;padding:3px 9px;font-size:10px;color:var(--red);font-weight:700}
+  .ldot{width:5px;height:5px;background:var(--red);border-radius:50%;animation:blink 1.2s infinite}
+  .btn{padding:6px 12px;border-radius:7px;font-size:11px;font-weight:600;border:none;cursor:pointer;transition:all .12s}
+  .btn-primary{background:var(--orange);color:white}
+  .btn-ghost{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+  .btn-sm{padding:3px 9px;font-size:10px}
+  .btn-ok{background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,80,.3)}
+  .btn-no{background:var(--red-dim);color:var(--red);border:1px solid rgba(244,67,54,.3)}
+  .content{padding:20px;flex:1}
+  .page{display:none}
+  .page.active{display:block}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .sc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;position:relative;overflow:hidden}
+  .sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .sc.or::before{background:var(--orange)}.sc.gn::before{background:var(--green)}.sc.bl::before{background:var(--blue)}.sc.am::before{background:var(--amber)}
+  .sl{font-size:10px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.07em;font-weight:600}
+  .sv{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:3px}
+  .sm{font-size:10px;color:var(--text3)}
+  .sm.up{color:var(--green)}
+  .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
+  .ch{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+  .ct{font-size:12px;font-weight:700;flex:1}
+  .cb{padding:14px 16px}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .g3{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+  table{width:100%;border-collapse:collapse;font-size:11px}
+  th{text-align:left;padding:7px 12px;color:var(--text3);font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--border)}
+  td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:var(--bg3)}
+  .tn{color:var(--text);font-weight:600}
+  .tm{font-family:monospace;font-size:10px}
+  .badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.05em}
+  .badge.live{background:var(--red-dim);color:var(--red)}
+  .badge.paid{background:var(--green-dim);color:var(--green)}
+  .badge.pending,.badge.payment_initiated{background:var(--amber-dim);color:var(--amber)}
+  .badge.delivered{background:var(--blue-dim);color:var(--blue)}
+  .badge.processing{background:var(--orange-dim);color:var(--orange)}
+  .badge.verified{background:var(--green-dim);color:var(--green)}
+  .badge.unverified{background:var(--amber-dim);color:var(--amber)}
+  .badge.cancelled,.badge.refunded{background:var(--red-dim);color:var(--red)}
+  .av{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0}
+  .avr{display:flex;align-items:center;gap:7px}
+  .load{text-align:center;padding:32px;color:var(--text3)}
+  .sp{display:inline-block;width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .empty{text-align:center;padding:32px;color:var(--text3)}
+  .go{color:var(--green);font-weight:700}
+  .ao{color:var(--orange);font-weight:700}
+  .ab{color:var(--blue);font-weight:700}
+  .stars{color:#FFC107}
+  ::-webkit-scrollbar{width:4px}
+  ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 </style>
 </head>
 <body>
-
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-icon">SL</div>
@@ -265,438 +102,260 @@
   </div>
   <nav class="nav">
     <div class="nav-section">Main</div>
-    <button class="nav-item active" onclick="showPage('dashboard', this)">
-      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-      Dashboard
-    </button>
-    <button class="nav-item" onclick="showPage('streams', this)">
-      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-      Live Streams
-      <span class="nav-badge" id="live-count">3</span>
-    </button>
-    <button class="nav-item" onclick="showPage('orders', this)">
-      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
-      Orders
-      <span class="nav-badge">12</span>
-    </button>
-
-    <div class="nav-section" style="margin-top:8px">Users</div>
-    <button class="nav-item" onclick="showPage('sellers', this)">
-      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-      Sellers
-      <span class="nav-badge">2</span>
-    </button>
-    <button class="nav-item" onclick="showPage('buyers', this)">
-      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-      Buyers
-    </button>
-
-    <div class="nav-section" style="margin-top:8px">Finance</div>
-    <button class="nav-item" onclick="showPage('commissions', this)">
-      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-      Commissions
-    </button>
-    <button class="nav-item" onclick="showPage('disputes', this)">
-      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      Disputes
-    </button>
+    <button class="nav-item active" onclick="nav('dashboard',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</button>
+    <button class="nav-item" onclick="nav('streams',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>Live Streams<span class="nav-badge" id="nb-live" style="display:none">0</span></button>
+    <button class="nav-item" onclick="nav('orders',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>Orders</button>
+    <div class="nav-section" style="margin-top:6px">People</div>
+    <button class="nav-item" onclick="nav('sellers',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Sellers<span class="nav-badge" id="nb-pending" style="display:none">0</span></button>
+    <button class="nav-item" onclick="nav('buyers',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Buyers</button>
+    <div class="nav-section" style="margin-top:6px">Finance</div>
+    <button class="nav-item" onclick="nav('commissions',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Commissions</button>
   </nav>
   <div class="sidebar-footer">
-    <strong>selllive.vercel.app</strong>
-    API: Connected ✓
+    <strong id="conn-status">Connecting...</strong><br>
+    <span id="last-refresh">—</span>
   </div>
 </aside>
 
-<!-- MAIN CONTENT -->
 <main class="main">
   <header class="topbar">
     <div class="topbar-title" id="page-title">Dashboard</div>
-    <input class="topbar-search" placeholder="Search orders, sellers..." type="text">
-    <div class="live-indicator">
-      <div class="live-dot"></div>
-      3 LIVE
-    </div>
-    <button class="btn btn-primary btn-sm" onclick="refreshData()">↻ Refresh</button>
+    <div class="api-status"><div class="sdot" id="sdot"></div><span id="stxt" style="color:var(--text3)">...</span></div>
+    <div class="live-badge"><div class="ldot"></div><span id="live-lbl">0 LIVE</span></div>
+    <button class="btn btn-ghost btn-sm" onclick="refresh()">↻ Refresh</button>
   </header>
-
   <div class="content">
 
-    <!-- ===== DASHBOARD PAGE ===== -->
+    <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="stats-grid">
-        <div class="stat-card orange">
-          <div class="stat-icon orange">₦</div>
-          <div class="stat-label">Total Revenue</div>
-          <div class="stat-value" style="color:var(--orange)">₦2.4M</div>
-          <div class="stat-change up">↑ 18% this week</div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-icon green">📦</div>
-          <div class="stat-label">Total Orders</div>
-          <div class="stat-value" style="color:var(--green)">1,247</div>
-          <div class="stat-change up">↑ 34 today</div>
-        </div>
-        <div class="stat-card blue">
-          <div class="stat-icon blue">👥</div>
-          <div class="stat-label">Active Sellers</div>
-          <div class="stat-value" style="color:var(--blue)">48</div>
-          <div class="stat-change up">↑ 3 this week</div>
-        </div>
-        <div class="stat-card amber">
-          <div class="stat-icon amber">💰</div>
-          <div class="stat-label">Platform Earnings</div>
-          <div class="stat-value" style="color:var(--amber)">₦241K</div>
-          <div class="stat-change up">↑ 10% commission</div>
-        </div>
+        <div class="sc or"><div class="sl">Total Revenue</div><div class="sv ao" id="s-rev">...</div><div class="sm">Platform gross</div></div>
+        <div class="sc gn"><div class="sl">Total Orders</div><div class="sv go" id="s-ord">...</div><div class="sm up" id="s-tod">Today: ...</div></div>
+        <div class="sc bl"><div class="sl">Sellers / Buyers</div><div class="sv ab" id="s-sel">...</div><div class="sm" id="s-buy">Buyers: ...</div></div>
+        <div class="sc am"><div class="sl">Platform Earnings</div><div class="sv" style="color:var(--amber)" id="s-com">...</div><div class="sm up">10% commission</div></div>
       </div>
-
-      <div class="grid-3">
-        <!-- Revenue Chart -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Daily Revenue (₦)</div>
-            <button class="card-action">7 days ▾</button>
-          </div>
-          <div class="card-body">
-            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-              <span style="font-size:22px;font-weight:800;color:var(--orange)">₦2,412,500</span>
-              <span style="font-size:11px;color:var(--green);align-self:center">↑ 18.4%</span>
-            </div>
-            <div class="chart-bars" id="revenue-chart"></div>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Quick Actions</div>
-          </div>
-          <div class="card-body">
-            <div class="action-grid">
-              <div class="action-item" onclick="showPage('sellers', document.querySelector('[onclick*=sellers]'))">
-                <div class="action-icon" style="background:var(--amber-dim)">✓</div>
-                <div class="action-label">Verify Sellers</div>
-              </div>
-              <div class="action-item" onclick="showPage('disputes', document.querySelector('[onclick*=disputes]'))">
-                <div class="action-icon" style="background:var(--red-dim)">⚠</div>
-                <div class="action-label">Disputes</div>
-              </div>
-              <div class="action-item" onclick="showPage('commissions', document.querySelector('[onclick*=commissions]'))">
-                <div class="action-icon" style="background:var(--green-dim)">₦</div>
-                <div class="action-label">Commissions</div>
-              </div>
-              <div class="action-item" onclick="showPage('streams', document.querySelector('[onclick*=streams]'))">
-                <div class="action-icon" style="background:var(--red-dim)">🔴</div>
-                <div class="action-label">Live Now</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <!-- Recent Orders -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Recent Orders</div>
-            <button class="card-action" onclick="showPage('orders', document.querySelector('[onclick*=orders]'))">View all →</button>
-          </div>
-          <div class="card-body" style="padding:0">
-            <table>
-              <thead><tr>
-                <th>Order</th><th>Buyer</th><th>Amount</th><th>Status</th>
-              </tr></thead>
-              <tbody>
-                <tr><td class="td-mono">SL-20250331-A1B2</td><td><div class="avatar-row"><div class="avatar" style="background:#1565C0">KO</div>@kolade</div></td><td style="color:var(--orange);font-weight:700">₦22,000</td><td><span class="badge paid">PAID</span></td></tr>
-                <tr><td class="td-mono">SL-20250331-C3D4</td><td><div class="avatar-row"><div class="avatar" style="background:#6A1B9A">CH</div>@chisom</div></td><td style="color:var(--orange);font-weight:700">₦8,500</td><td><span class="badge processing">PACKING</span></td></tr>
-                <tr><td class="td-mono">SL-20250331-E5F6</td><td><div class="avatar-row"><div class="avatar" style="background:#2E7D32">NG</div>@ngozi</div></td><td style="color:var(--orange);font-weight:700">₦15,000</td><td><span class="badge delivered">DELIVERED</span></td></tr>
-                <tr><td class="td-mono">SL-20250331-G7H8</td><td><div class="avatar-row"><div class="avatar" style="background:#8B4513">AD</div>@ade</div></td><td style="color:var(--orange);font-weight:700">₦6,200</td><td><span class="badge pending">PENDING</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Top Sellers -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Top Sellers This Week</div>
-          </div>
-          <div class="card-body" style="padding:0">
-            <table>
-              <thead><tr><th>Seller</th><th>Sales</th><th>Score</th></tr></thead>
-              <tbody>
-                <tr><td><div class="avatar-row"><div class="avatar" style="background:#8B4513">AM</div><div><div class="td-name">Ada Market Lagos</div><div style="font-size:10px;color:var(--text3)">48 streams</div></div></div></td><td style="color:var(--green);font-weight:700">₦842K</td><td><span class="stars">★★★★★</span><span style="font-size:10px;margin-left:3px;color:var(--text3)">4.9</span></td></tr>
-                <tr><td><div class="avatar-row"><div class="avatar" style="background:#1565C0">KK</div><div><div class="td-name">Kolade Kicks</div><div style="font-size:10px;color:var(--text3)">32 streams</div></div></div></td><td style="color:var(--green);font-weight:700">₦631K</td><td><span class="stars">★★★★☆</span><span style="font-size:10px;margin-left:3px;color:var(--text3)">4.7</span></td></tr>
-                <tr><td><div class="avatar-row"><div class="avatar" style="background:#6A1B9A">BT</div><div><div class="td-name">Bunmi Tech</div><div style="font-size:10px;color:var(--text3)">21 streams</div></div></div></td><td style="color:var(--green);font-weight:700">₦412K</td><td><span class="stars">★★★★☆</span><span style="font-size:10px;margin-left:3px;color:var(--text3)">4.5</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+      <div class="g3">
+        <div class="card"><div class="ch"><div class="ct">Recent Orders</div><button class="btn btn-ghost btn-sm" onclick="nav('orders',document.querySelectorAll('.nav-item')[2])">All →</button></div><div id="d-orders"><div class="load"><div class="sp"></div></div></div></div>
+        <div class="card"><div class="ch"><div class="ct">Live Stats</div></div><div class="cb"><div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">Live now</span><span class="badge live" id="qs-live">0</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">Pending verify</span><span class="badge pending" id="qs-pend">0</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">Today revenue</span><span class="go" id="qs-tod">...</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">Total buyers</span><span class="ab" id="qs-buy">...</span></div>
+        </div></div></div>
       </div>
     </div>
 
-    <!-- ===== LIVE STREAMS PAGE ===== -->
+    <!-- STREAMS -->
     <div class="page" id="page-streams">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">🔴 Currently Live</div>
-          <span style="font-size:11px;color:var(--text3)">Auto-refreshes every 30s</span>
-        </div>
-        <div class="card-body" style="padding:0">
-          <table>
-            <thead><tr><th>Seller</th><th>Title</th><th>Viewers</th><th>Orders</th><th>Duration</th><th>Action</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><div class="avatar-row"><div class="avatar" style="background:#8B4513">AM</div>Ada Market Lagos</div></td>
-                <td class="td-name"><span class="stream-live-dot"></span>Ankara dresses — 3 left!</td>
-                <td><span style="color:var(--orange);font-weight:700">1,243</span></td>
-                <td><span style="color:var(--green);font-weight:700">47</span></td>
-                <td style="color:var(--text3)">1h 23m</td>
-                <td><button class="btn btn-ghost btn-sm">View</button> <button class="btn btn-danger btn-sm">End</button></td>
-              </tr>
-              <tr>
-                <td><div class="avatar-row"><div class="avatar" style="background:#1565C0">KK</div>Kolade Kicks</div></td>
-                <td class="td-name"><span class="stream-live-dot"></span>Imported sneakers drop</td>
-                <td><span style="color:var(--orange);font-weight:700">843</span></td>
-                <td><span style="color:var(--green);font-weight:700">23</span></td>
-                <td style="color:var(--text3)">45m</td>
-                <td><button class="btn btn-ghost btn-sm">View</button> <button class="btn btn-danger btn-sm">End</button></td>
-              </tr>
-              <tr>
-                <td><div class="avatar-row"><div class="avatar" style="background:#2E7D32">NF</div>Ngozi Fashion</div></td>
-                <td class="td-name"><span class="stream-live-dot"></span>Lace & Aso-Oke flash sale</td>
-                <td><span style="color:var(--orange);font-weight:700">421</span></td>
-                <td><span style="color:var(--green);font-weight:700">11</span></td>
-                <td style="color:var(--text3)">18m</td>
-                <td><button class="btn btn-ghost btn-sm">View</button> <button class="btn btn-danger btn-sm">End</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div style="margin-top:16px" class="card">
-        <div class="card-header"><div class="card-title">Past Streams (Today)</div></div>
-        <div class="card-body" style="padding:0">
-          <table>
-            <thead><tr><th>Seller</th><th>Title</th><th>Peak Viewers</th><th>Orders</th><th>Revenue</th><th>Ended</th></tr></thead>
-            <tbody>
-              <tr><td><div class="avatar-row"><div class="avatar" style="background:#6A1B9A">BT</div>Bunmi Tech</div></td><td>iPhone 15 accessories</td><td>2,100</td><td>89</td><td style="color:var(--green);font-weight:700">₦534K</td><td style="color:var(--text3)">2h ago</td></tr>
-              <tr><td><div class="avatar-row"><div class="avatar" style="background:#8B4513">AM</div>Ada Market</div></td><td>Morning Ankara haul</td><td>987</td><td>34</td><td style="color:var(--green);font-weight:700">₦289K</td><td style="color:var(--text3)">5h ago</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <div class="card"><div class="ch"><div class="ct">🔴 Currently Live</div><span style="font-size:10px;color:var(--text3)" id="str-time"></span></div><div id="str-live"><div class="load"><div class="sp"></div></div></div></div>
+      <div class="card"><div class="ch"><div class="ct">Past Streams</div></div><div id="str-ended"><div class="load"><div class="sp"></div></div></div></div>
     </div>
 
-    <!-- ===== SELLERS PAGE ===== -->
-    <div class="page" id="page-sellers">
-      <div class="card" style="margin-bottom:16px">
-        <div class="card-header">
-          <div class="card-title">⚠️ Pending Verification (2)</div>
-          <span style="font-size:11px;color:var(--amber)">Action required</span>
-        </div>
-        <div class="card-body" style="padding:0">
-          <table>
-            <thead><tr><th>Seller</th><th>Phone</th><th>Bank</th><th>Registered</th><th>Action</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><div class="avatar-row"><div class="avatar" style="background:#B71C1C">TJ</div><div><div class="td-name">Tunde Jewels</div><div style="font-size:10px;color:var(--text3)">+234 803 456 7890</div></div></div></td>
-                <td>+234 803 456 7890</td>
-                <td style="font-size:11px">Access Bank ****4521</td>
-                <td style="color:var(--text3)">2h ago</td>
-                <td>
-                  <button class="btn btn-success btn-sm" onclick="alert('Seller verified!')">✓ Verify</button>
-                  <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="alert('Seller rejected')">✗ Reject</button>
-                </td>
-              </tr>
-              <tr>
-                <td><div class="avatar-row"><div class="avatar" style="background:#006064">SC</div><div><div class="td-name">Sandra Cosmetics</div><div style="font-size:10px;color:var(--text3)">+234 706 789 0123</div></div></div></td>
-                <td>+234 706 789 0123</td>
-                <td style="font-size:11px">GTBank ****8834</td>
-                <td style="color:var(--text3)">5h ago</td>
-                <td>
-                  <button class="btn btn-success btn-sm" onclick="alert('Seller verified!')">✓ Verify</button>
-                  <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="alert('Seller rejected')">✗ Reject</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header"><div class="card-title">All Verified Sellers (48)</div><button class="card-action">Export CSV</button></div>
-        <div class="card-body" style="padding:0">
-          <table>
-            <thead><tr><th>Seller</th><th>Total Sales</th><th>Earnings</th><th>Trust</th><th>Followers</th><th>Status</th></tr></thead>
-            <tbody>
-              <tr><td><div class="avatar-row"><div class="avatar" style="background:#8B4513">AM</div>Ada Market Lagos</div></td><td>412</td><td style="color:var(--green);font-weight:700">₦3.7M</td><td><span class="stars">★★★★★</span> 4.9</td><td>12.3k</td><td><span class="badge verified">VERIFIED</span></td></tr>
-              <tr><td><div class="avatar-row"><div class="avatar" style="background:#1565C0">KK</div>Kolade Kicks</div></td><td>231</td><td style="color:var(--green);font-weight:700">₦2.1M</td><td><span class="stars">★★★★☆</span> 4.7</td><td>8.1k</td><td><span class="badge verified">VERIFIED</span></td></tr>
-              <tr><td><div class="avatar-row"><div class="avatar" style="background:#6A1B9A">BT</div>Bunmi Tech</div></td><td>189</td><td style="color:var(--green);font-weight:700">₦1.7M</td><td><span class="stars">★★★★☆</span> 4.5</td><td>6.4k</td><td><span class="badge verified">VERIFIED</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== ORDERS PAGE ===== -->
+    <!-- ORDERS -->
     <div class="page" id="page-orders">
-      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
-        <button class="btn btn-primary btn-sm" onclick="filterOrders('all')">All (1,247)</button>
-        <button class="btn btn-ghost btn-sm" onclick="filterOrders('paid')">Paid (34)</button>
-        <button class="btn btn-ghost btn-sm" onclick="filterOrders('processing')">Packing (12)</button>
-        <button class="btn btn-ghost btn-sm" onclick="filterOrders('delivered')">Delivered (1,189)</button>
-        <button class="btn btn-ghost btn-sm" onclick="filterOrders('cancelled')">Cancelled (12)</button>
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="loadOrders()">All</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadOrders('paid')">Paid</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadOrders('processing')">Packing</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadOrders('delivered')">Delivered</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadOrders('cancelled')">Cancelled</button>
       </div>
-      <div class="card">
-        <div class="card-header"><div class="card-title">All Orders</div><button class="card-action">Export CSV</button></div>
-        <div class="card-body" style="padding:0">
-          <table>
-            <thead><tr><th>Order Ref</th><th>Buyer</th><th>Seller</th><th>Product</th><th>Amount</th><th>Commission</th><th>Status</th><th>Date</th></tr></thead>
-            <tbody id="orders-tbody">
-              <tr><td class="td-mono">SL-20250331-A1B2</td><td>@kolade</td><td>Kolade Kicks</td><td>Imported Sneakers x1</td><td style="color:var(--orange);font-weight:700">₦22,000</td><td style="color:var(--green)">₦2,200</td><td><span class="badge paid">PAID</span></td><td style="color:var(--text3)">2h ago</td></tr>
-              <tr><td class="td-mono">SL-20250331-C3D4</td><td>@chisom</td><td>Ada Market</td><td>Ankara Dress x2</td><td style="color:var(--orange);font-weight:700">₦17,000</td><td style="color:var(--green)">₦1,700</td><td><span class="badge processing">PACKING</span></td><td style="color:var(--text3)">3h ago</td></tr>
-              <tr><td class="td-mono">SL-20250331-E5F6</td><td>@ngozi_b</td><td>Bunmi Tech</td><td>iPhone Case</td><td style="color:var(--orange);font-weight:700">₦4,500</td><td style="color:var(--green)">₦450</td><td><span class="badge delivered">DELIVERED</span></td><td style="color:var(--text3)">5h ago</td></tr>
-              <tr><td class="td-mono">SL-20250331-G7H8</td><td>@temi_s</td><td>Ada Market</td><td>Headwrap Set</td><td style="color:var(--orange);font-weight:700">₦4,200</td><td style="color:var(--green)">₦420</td><td><span class="badge pending">PENDING</span></td><td style="color:var(--text3)">1h ago</td></tr>
-              <tr><td class="td-mono">SL-20250330-I9J0</td><td>@james_o</td><td>Kolade Kicks</td><td>Ankara Dress x1</td><td style="color:var(--orange);font-weight:700">₦8,500</td><td style="color:var(--green)">₦850</td><td><span class="badge delivered">DELIVERED</span></td><td style="color:var(--text3)">1d ago</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <div class="card"><div class="ch"><div class="ct">Orders</div><span style="font-size:10px;color:var(--text3)" id="ord-count"></span></div><div id="ord-body"><div class="load"><div class="sp"></div></div></div></div>
     </div>
 
-    <!-- ===== BUYERS PAGE ===== -->
+    <!-- SELLERS -->
+    <div class="page" id="page-sellers">
+      <div class="card"><div class="ch"><div class="ct">⚠️ Pending Verification</div><span class="badge pending" id="pend-badge">0</span></div><div id="sel-pend"><div class="load"><div class="sp"></div></div></div></div>
+      <div class="card"><div class="ch"><div class="ct">Verified Sellers</div></div><div id="sel-all"><div class="load"><div class="sp"></div></div></div></div>
+    </div>
+
+    <!-- BUYERS -->
     <div class="page" id="page-buyers">
-      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
-        <div class="stat-card blue"><div class="stat-icon blue">👤</div><div class="stat-label">Total Buyers</div><div class="stat-value" style="color:var(--blue)">4,821</div><div class="stat-change up">↑ 124 this week</div></div>
-        <div class="stat-card green"><div class="stat-icon green">🛍</div><div class="stat-label">Repeat Buyers</div><div class="stat-value" style="color:var(--green)">1,247</div><div class="stat-change up">25.8%</div></div>
-        <div class="stat-card amber"><div class="stat-icon amber">📱</div><div class="stat-label">Avg Orders/Buyer</div><div class="stat-value" style="color:var(--amber)">2.4</div><div class="stat-change up">↑ 0.3 this month</div></div>
-      </div>
-      <div class="card">
-        <div class="card-header"><div class="card-title">Top Buyers</div></div>
-        <div class="card-body" style="padding:0">
-          <table>
-            <thead><tr><th>Buyer</th><th>Phone</th><th>Total Orders</th><th>Total Spent</th><th>Joined</th></tr></thead>
-            <tbody>
-              <tr><td><div class="avatar-row"><div class="avatar" style="background:#B71C1C">KO</div>@kolade</div></td><td style="color:var(--text3)">+234 803 ***</td><td>47</td><td style="color:var(--green);font-weight:700">₦412K</td><td style="color:var(--text3)">Jan 2025</td></tr>
-              <tr><td><div class="avatar-row"><div class="avatar" style="background:#006064">CH</div>@chisom_b</div></td><td style="color:var(--text3)">+234 706 ***</td><td>31</td><td style="color:var(--green);font-weight:700">₦241K</td><td style="color:var(--text3)">Feb 2025</td></tr>
-              <tr><td><div class="avatar-row"><div class="avatar" style="background:#1B5E20">NG</div>@ngozi_lagos</div></td><td style="color:var(--text3)">+234 812 ***</td><td>28</td><td style="color:var(--green);font-weight:700">₦198K</td><td style="color:var(--text3)">Jan 2025</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <div class="card"><div class="ch"><div class="ct">Buyers</div><span style="font-size:10px;color:var(--text3)" id="buy-count"></span></div><div id="buy-body"><div class="load"><div class="sp"></div></div></div></div>
     </div>
 
-    <!-- ===== COMMISSIONS PAGE ===== -->
+    <!-- COMMISSIONS -->
     <div class="page" id="page-commissions">
-      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
-        <div class="stat-card green"><div class="stat-icon green">₦</div><div class="stat-label">Total Earned</div><div class="stat-value" style="color:var(--green)">₦241,500</div><div class="stat-change up">All time</div></div>
-        <div class="stat-card orange"><div class="stat-icon orange">📅</div><div class="stat-label">This Month</div><div class="stat-value" style="color:var(--orange)">₦84,200</div><div class="stat-change up">↑ 22%</div></div>
-        <div class="stat-card blue"><div class="stat-icon blue">%</div><div class="stat-label">Commission Rate</div><div class="stat-value" style="color:var(--blue)">10%</div><div class="stat-change" style="color:var(--text3)">Fixed rate</div></div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
+        <div class="sc gn"><div class="sl">Total Earned</div><div class="sv go" id="cm-tot">...</div><div class="sm">All time</div></div>
+        <div class="sc or"><div class="sl">Paid to Sellers</div><div class="sv ao" id="cm-pay">...</div><div class="sm">90% payout</div></div>
+        <div class="sc bl"><div class="sl">Rate</div><div class="sv ab">10%</div><div class="sm">Fixed</div></div>
       </div>
-      <div class="card">
-        <div class="card-header"><div class="card-title">Commission Breakdown by Seller</div><button class="card-action">Export</button></div>
-        <div class="card-body" style="padding:0">
-          <table>
-            <thead><tr><th>Seller</th><th>Orders</th><th>Gross Sales</th><th>10% Commission</th><th>Seller Payout</th></tr></thead>
-            <tbody>
-              <tr><td><div class="avatar-row"><div class="avatar" style="background:#8B4513">AM</div>Ada Market Lagos</div></td><td>412</td><td>₦3,700,000</td><td style="color:var(--green);font-weight:700">₦370,000</td><td>₦3,330,000</td></tr>
-              <tr><td><div class="avatar-row"><div class="avatar" style="background:#1565C0">KK</div>Kolade Kicks</div></td><td>231</td><td>₦2,100,000</td><td style="color:var(--green);font-weight:700">₦210,000</td><td>₦1,890,000</td></tr>
-              <tr><td><div class="avatar-row"><div class="avatar" style="background:#6A1B9A">BT</div>Bunmi Tech</div></td><td>189</td><td>₦1,700,000</td><td style="color:var(--green);font-weight:700">₦170,000</td><td>₦1,530,000</td></tr>
-              <tr style="font-weight:700;background:var(--bg3)"><td colspan="2">TOTAL</td><td>₦7,500,000</td><td style="color:var(--green)">₦750,000</td><td>₦6,750,000</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== DISPUTES PAGE ===== -->
-    <div class="page" id="page-disputes">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">⚠️ Open Disputes (0)</div>
-          <span style="font-size:11px;color:var(--green)">All clear!</span>
-        </div>
-        <div class="card-body">
-          <div class="empty">
-            <div style="font-size:32px;margin-bottom:12px">✓</div>
-            <div style="color:var(--text2);font-weight:600;margin-bottom:6px">No open disputes</div>
-            <div>Disputes appear here when buyers report delivery issues or wrong items.</div>
-          </div>
-        </div>
-      </div>
-      <div class="card" style="margin-top:16px">
-        <div class="card-header"><div class="card-title">Resolved Disputes</div></div>
-        <div class="card-body" style="padding:0">
-          <table>
-            <thead><tr><th>Order</th><th>Buyer</th><th>Seller</th><th>Issue</th><th>Resolution</th><th>Date</th></tr></thead>
-            <tbody>
-              <tr><td class="td-mono">SL-20250325-XX91</td><td>@bisi_a</td><td>Ada Market</td><td>Wrong size delivered</td><td style="color:var(--green)">Refunded ₦8,500</td><td style="color:var(--text3)">6 days ago</td></tr>
-              <tr><td class="td-mono">SL-20250318-YY42</td><td>@emeka_j</td><td>Kolade Kicks</td><td>Item not delivered</td><td style="color:var(--green)">Re-shipped</td><td style="color:var(--text3)">13 days ago</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <div class="card"><div class="ch"><div class="ct">By Seller</div></div><div id="cm-body"><div class="load"><div class="sp"></div></div></div></div>
     </div>
 
   </div>
 </main>
 
 <script>
-  const API = 'https://selllive.vercel.app/api';
+const API='https://selllive.vercel.app/api';
+const TOK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIwNGY3M2ZkMC1hY2E4LTQ3NjktYmY0MC05Njk3YjZlMGQ3ZmEiLCJpYXQiOjE3NzQ5NzA3MDYsImV4cCI6MTgwNjUwNjcwNn0.oCwDRZTmxh0RIIEpuo1Cj1cHOysV9ihkLwLoW-e5ue0';
+const H={'Content-Type':'application/json','Authorization':'Bearer '+TOK};
 
-  // Page navigation
-  function showPage(name, btn) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('page-' + name).classList.add('active');
-    if (btn) btn.classList.add('active');
-    document.getElementById('page-title').textContent =
-      name.charAt(0).toUpperCase() + name.slice(1);
-  }
+const naira=v=>'₦'+Number(v||0).toLocaleString('en-NG',{maximumFractionDigits:0});
+const ago=d=>{if(!d)return'—';const s=Math.floor((Date.now()-new Date(d))/1000);if(s<60)return s+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';};
+const COLS=['#8B4513','#1565C0','#6A1B9A','#2E7D32','#B71C1C','#006064','#4A148C','#37474F'];
+const ac=n=>COLS[(n||'x').charCodeAt(0)%COLS.length];
+const ini=n=>(n||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const av=n=>`<div class="av" style="background:${ac(n)}">${ini(n)}</div>`;
+const sb=s=>`<span class="badge ${s}">${(s||'').replace(/_/g,' ').toUpperCase()}</span>`;
 
-  // Revenue chart
-  const data = [320, 480, 290, 640, 580, 820, 760];
-  const days = ['M','T','W','T','F','S','S'];
-  const max = Math.max(...data);
-  const chart = document.getElementById('revenue-chart');
-  data.forEach((v, i) => {
-    const wrap = document.createElement('div');
-    wrap.className = 'bar-wrap';
-    const bar = document.createElement('div');
-    bar.className = 'bar';
-    bar.style.height = (v / max * 72) + 'px';
-    bar.title = '₦' + (v * 1000).toLocaleString();
-    if (i === data.length - 1) bar.style.background = 'var(--orange)';
-    else bar.style.background = 'var(--bg4)';
-    const label = document.createElement('div');
-    label.className = 'bar-label';
-    label.textContent = days[i];
-    wrap.appendChild(bar);
-    wrap.appendChild(label);
-    chart.appendChild(wrap);
-  });
+async function call(path,opt={}){
+  const r=await fetch(API+path,{headers:H,...opt});
+  if(!r.ok)throw new Error(r.status+' '+r.statusText);
+  return r.json();
+}
+function ok(msg){document.getElementById('sdot').className='sdot on';document.getElementById('stxt').style.color='var(--green)';document.getElementById('stxt').textContent=msg;document.getElementById('conn-status').textContent='✓ '+msg;}
+function err(msg){document.getElementById('sdot').className='sdot err';document.getElementById('stxt').style.color='var(--red)';document.getElementById('stxt').textContent=msg;document.getElementById('conn-status').textContent='✗ '+msg;}
 
-  // Live API check
-  async function refreshData() {
-    try {
-      const r = await fetch(API + '/streams');
-      if (r.ok) {
-        const data = await r.json();
-        const count = (data.streams || []).length;
-        document.getElementById('live-count').textContent = count || 3;
-        document.querySelector('.live-indicator').lastChild.textContent = ' ' + (count || 3) + ' LIVE';
-      }
-    } catch(e) {
-      console.log('API not reachable yet — showing demo data');
-    }
-  }
+async function loadStats(){
+  try{
+    const d=await call('/admin/stats');
+    document.getElementById('s-rev').textContent=naira(d.total_revenue_naira);
+    document.getElementById('s-ord').textContent=(d.total_orders||0).toLocaleString();
+    document.getElementById('s-tod').textContent='Today: '+naira(d.today_revenue_naira);
+    document.getElementById('s-sel').textContent=d.total_sellers||0;
+    document.getElementById('s-buy').textContent='Buyers: '+(d.total_buyers||0);
+    document.getElementById('s-com').textContent=naira(d.total_commission_naira);
+    document.getElementById('qs-live').textContent=d.live_streams||0;
+    document.getElementById('qs-pend').textContent=d.pending_verifications||0;
+    document.getElementById('qs-tod').textContent=naira(d.today_revenue_naira);
+    document.getElementById('qs-buy').textContent=d.total_buyers||0;
+    document.getElementById('live-lbl').textContent=(d.live_streams||0)+' LIVE';
+    const lnb=document.getElementById('nb-live');
+    if(d.live_streams>0){lnb.textContent=d.live_streams;lnb.style.display='flex';}
+    const pnb=document.getElementById('nb-pending');
+    if(d.pending_verifications>0){pnb.textContent=d.pending_verifications;pnb.style.display='flex';}
+    ok('API Connected');
+  }catch(e){err('API Error: check Vercel');}
+}
 
-  // Filter orders
-  function filterOrders(status) { /* filter implementation */ }
+async function loadRecentOrders(){
+  const el=document.getElementById('d-orders');
+  try{
+    const d=await call('/admin/orders?limit=6');
+    const rows=d.orders||[];
+    if(!rows.length){el.innerHTML='<div class="empty">No orders yet</div>';return;}
+    el.innerHTML='<table><thead><tr><th>Ref</th><th>Buyer</th><th>Amount</th><th>Status</th><th>When</th></tr></thead><tbody>'+
+      rows.map(o=>`<tr><td class="tm">${o.order_ref||'—'}</td><td><div class="avr">${av(o.buyer?.name||'?')}<span>${o.buyer?.name||'—'}</span></div></td><td class="ao">${naira((o.total_amount||0)/100)}</td><td>${sb(o.status)}</td><td style="color:var(--text3)">${ago(o.created_at)}</td></tr>`).join('')+
+      '</tbody></table>';
+  }catch(e){el.innerHTML='<div class="empty">Could not load — '+e.message+'</div>';}
+}
 
-  // Initial data load
-  refreshData();
-  setInterval(refreshData, 30000);
+async function loadOrders(status=''){
+  const el=document.getElementById('ord-body');
+  el.innerHTML='<div class="load"><div class="sp"></div></div>';
+  try{
+    const d=await call('/admin/orders?limit=50'+(status?'&status='+status:''));
+    const rows=d.orders||[];
+    document.getElementById('ord-count').textContent=rows.length+' orders';
+    if(!rows.length){el.innerHTML='<div class="empty">No orders found</div>';return;}
+    el.innerHTML='<table><thead><tr><th>Ref</th><th>Buyer</th><th>Seller</th><th>Product</th><th>Amount</th><th>Commission</th><th>Status</th><th>Date</th></tr></thead><tbody>'+
+      rows.map(o=>`<tr><td class="tm">${o.order_ref||'—'}</td><td>${o.buyer?.name||'—'}</td><td style="color:var(--text2)">${o.seller_profile?.business_name||o.seller?.name||'—'}</td><td>${o.product?.name||'—'}</td><td class="ao">${naira((o.total_amount||0)/100)}</td><td class="go">${naira((o.commission||0)/100)}</td><td>${sb(o.status)}</td><td style="color:var(--text3)">${ago(o.created_at)}</td></tr>`).join('')+
+      '</tbody></table>';
+  }catch(e){el.innerHTML='<div class="empty">'+e.message+'</div>';}
+}
+
+async function loadSellers(){
+  const pEl=document.getElementById('sel-pend'),aEl=document.getElementById('sel-all');
+  try{
+    const [pd,ad]=await Promise.all([call('/admin/sellers?verified=false'),call('/admin/sellers?verified=true')]);
+    const pend=pd.sellers||[],all=ad.sellers||[];
+    document.getElementById('pend-badge').textContent=pend.length;
+    if(!pend.length){pEl.innerHTML='<div class="empty">✓ No pending verifications</div>';}
+    else{pEl.innerHTML='<table><thead><tr><th>Seller</th><th>Phone</th><th>When</th><th>Action</th></tr></thead><tbody>'+
+      pend.map(s=>`<tr><td><div class="avr">${av(s.name)}<div><div class="tn">${s.name}</div><div style="font-size:9px;color:var(--text3)">${s.profile?.business_name||''}</div></div></div></td><td style="color:var(--text3)">${s.phone}</td><td style="color:var(--text3)">${ago(s.created_at)}</td><td><button class="btn btn-ok btn-sm" onclick="verify('${s.id}',true,this)">✓ Verify</button> <button class="btn btn-no btn-sm" onclick="verify('${s.id}',false,this)">✗ Reject</button></td></tr>`).join('')+
+      '</tbody></table>';}
+    if(!all.length){aEl.innerHTML='<div class="empty">No verified sellers yet</div>';}
+    else{aEl.innerHTML='<table><thead><tr><th>Seller</th><th>Sales</th><th>Earnings</th><th>Trust</th><th>Followers</th><th>Joined</th></tr></thead><tbody>'+
+      all.map(s=>`<tr><td><div class="avr">${av(s.name)}<div><div class="tn">${s.profile?.business_name||s.name}</div><div style="font-size:9px;color:var(--text3)">${s.phone}</div></div></div></td><td>${s.profile?.total_sales||0}</td><td class="go">${naira((s.profile?.total_earnings||0)/100)}</td><td><span class="stars">${'★'.repeat(Math.round(s.profile?.trust_score||5))}${'☆'.repeat(5-Math.round(s.profile?.trust_score||5))}</span></td><td>${(s.profile?.followers_count||0).toLocaleString()}</td><td style="color:var(--text3)">${ago(s.created_at)}</td></tr>`).join('')+
+      '</tbody></table>';}
+  }catch(e){pEl.innerHTML=aEl.innerHTML='<div class="empty">'+e.message+'</div>';}
+}
+
+async function verify(id,approved,btn){
+  btn.disabled=true;btn.textContent='...';
+  try{
+    await call('/admin/sellers/'+id+'/verify',{method:'PATCH',body:JSON.stringify({approved})});
+    loadSellers();loadStats();
+  }catch(e){btn.disabled=false;btn.textContent=approved?'✓ Verify':'✗ Reject';alert('Failed: '+e.message);}
+}
+
+async function loadStreams(){
+  const lEl=document.getElementById('str-live'),eEl=document.getElementById('str-ended');
+  document.getElementById('str-time').textContent='Updated '+new Date().toLocaleTimeString();
+  try{
+    const[ld,ed]=await Promise.all([call('/admin/streams?status=live'),call('/admin/streams?status=ended')]);
+    const live=ld.streams||[],ended=ed.streams||[];
+    if(!live.length){lEl.innerHTML='<div class="empty">No streams live right now</div>';}
+    else{lEl.innerHTML='<table><thead><tr><th>Seller</th><th>Title</th><th>Viewers</th><th>Orders</th><th>Started</th><th></th></tr></thead><tbody>'+
+      live.map(s=>`<tr><td><div class="avr">${av(s.seller_profile?.business_name||'?')}<span>${s.seller_profile?.business_name||'—'}</span></div></td><td class="tn"><span style="display:inline-block;width:6px;height:6px;background:var(--red);border-radius:50%;margin-right:5px;animation:blink 1s infinite"></span>${s.title}</td><td class="ao">${(s.viewer_count||0).toLocaleString()}</td><td class="go">${s.total_orders||0}</td><td style="color:var(--text3)">${ago(s.started_at)}</td><td><button class="btn btn-no btn-sm" onclick="endStream('${s.id}',this)">End</button></td></tr>`).join('')+
+      '</tbody></table>';}
+    if(!ended.length){eEl.innerHTML='<div class="empty">No past streams</div>';}
+    else{eEl.innerHTML='<table><thead><tr><th>Seller</th><th>Title</th><th>Peak Viewers</th><th>Orders</th><th>Ended</th></tr></thead><tbody>'+
+      ended.slice(0,15).map(s=>`<tr><td><div class="avr">${av(s.seller_profile?.business_name||'?')}<span>${s.seller_profile?.business_name||'—'}</span></div></td><td>${s.title}</td><td>${(s.peak_viewers||0).toLocaleString()}</td><td class="go">${s.total_orders||0}</td><td style="color:var(--text3)">${ago(s.ended_at)}</td></tr>`).join('')+
+      '</tbody></table>';}
+  }catch(e){lEl.innerHTML=eEl.innerHTML='<div class="empty">'+e.message+'</div>';}
+}
+
+async function endStream(id,btn){
+  if(!confirm('Force-end this stream?'))return;
+  btn.disabled=true;
+  try{await call('/admin/streams/'+id,{method:'DELETE'});loadStreams();loadStats();}
+  catch(e){btn.disabled=false;alert('Failed: '+e.message);}
+}
+
+async function loadBuyers(){
+  const el=document.getElementById('buy-body');
+  try{
+    const d=await call('/admin/buyers');
+    const rows=d.buyers||[];
+    document.getElementById('buy-count').textContent=rows.length+' buyers';
+    if(!rows.length){el.innerHTML='<div class="empty">No buyers yet</div>';return;}
+    el.innerHTML='<table><thead><tr><th>Name</th><th>Phone</th><th>Joined</th></tr></thead><tbody>'+
+      rows.map(b=>`<tr><td><div class="avr">${av(b.name)}<span class="tn">${b.name}</span></div></td><td style="color:var(--text3)">${b.phone}</td><td style="color:var(--text3)">${ago(b.created_at)}</td></tr>`).join('')+
+      '</tbody></table>';
+  }catch(e){el.innerHTML='<div class="empty">'+e.message+'</div>';}
+}
+
+async function loadCommissions(){
+  const el=document.getElementById('cm-body');
+  try{
+    const d=await call('/admin/commissions');
+    document.getElementById('cm-tot').textContent=naira(d.total_commission_naira);
+    const totalGross=(d.by_seller||[]).reduce((s,r)=>s+r.gross_naira,0);
+    document.getElementById('cm-pay').textContent=naira(totalGross-(d.total_commission_naira||0));
+    const rows=d.by_seller||[];
+    if(!rows.length){el.innerHTML='<div class="empty">No commissions yet</div>';return;}
+    el.innerHTML='<table><thead><tr><th>Seller</th><th>Orders</th><th>Gross Sales</th><th>Commission (10%)</th><th>Seller Payout</th></tr></thead><tbody>'+
+      rows.map(r=>`<tr><td><div class="avr">${av(r.business_name)}<span class="tn">${r.business_name}</span></div></td><td>${r.orders}</td><td>${naira(r.gross_naira)}</td><td class="go">${naira(r.commission_naira)}</td><td style="color:var(--text2)">${naira(r.seller_payout_naira)}</td></tr>`).join('')+
+      `<tr style="background:var(--bg3);font-weight:700"><td colspan="2">TOTAL</td><td>${naira((d.by_seller||[]).reduce((s,r)=>s+r.gross_naira,0))}</td><td class="go">${naira(d.total_commission_naira)}</td><td>${naira((d.by_seller||[]).reduce((s,r)=>s+r.seller_payout_naira,0))}</td></tr>` +
+      '</tbody></table>';
+  }catch(e){el.innerHTML='<div class="empty">'+e.message+'</div>';}
+}
+
+const PL={dashboard:()=>{loadStats();loadRecentOrders();},streams:loadStreams,orders:loadOrders,sellers:loadSellers,buyers:loadBuyers,commissions:loadCommissions};
+
+function nav(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.getElementById('page-title').textContent=name.charAt(0).toUpperCase()+name.slice(1);
+  PL[name]?.();
+}
+
+function refresh(){
+  const cur=document.querySelector('.page.active')?.id?.replace('page-','');
+  PL[cur]?.();
+  loadStats();
+  document.getElementById('last-refresh').textContent='↻ '+new Date().toLocaleTimeString();
+}
+
+// Init
+loadStats();
+loadRecentOrders();
+setInterval(()=>{loadStats();document.getElementById('last-refresh').textContent='Auto '+new Date().toLocaleTimeString();},30000);
 </script>
 </body>
 </html>
