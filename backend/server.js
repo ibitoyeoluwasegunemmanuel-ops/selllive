@@ -108,15 +108,19 @@ app.use((err, req, res, next) => {
 
 // ============================================================
 // START SERVER
+// Vercel exports the app as a serverless function
+// Local dev uses app.listen
 // ============================================================
-app.listen(PORT, () => {
-  console.log(`
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`
   ╔═══════════════════════════════════╗
   ║   🔴 SellLive API is running       ║
   ║   Port: ${PORT}                       ║
   ║   Mode: ${process.env.NODE_ENV}            ║
   ╚═══════════════════════════════════╝
-  `);
-});
+    `);
+  });
+}
 
 module.exports = app;
