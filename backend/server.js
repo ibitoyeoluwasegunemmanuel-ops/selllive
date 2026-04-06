@@ -18,6 +18,10 @@ const paymentRoutes = require('./routes/payments');
 const sellerRoutes = require('./routes/sellers');
 const buyerRoutes = require('./routes/buyers');
 const adminRoutes = require('./routes/admin');
+const walletRoutes = require('./routes/wallet');
+const { router: notificationRoutes, notifyFollowers } = require('./routes/notifications');
+const uploadsRoutes = require('./routes/uploads');
+const exploreRoutes = require('./routes/explore');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -84,6 +88,10 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/sellers', sellerRoutes);
 app.use('/api/buyers', buyerRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/wallet', walletRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/uploads', uploadsRoutes);
+app.use('/api/explore', exploreRoutes);
 
 // Flutterwave webhook (no rate limiting — it's from Flutterwave's servers)
 app.use('/webhook/flutterwave', paymentRoutes);
@@ -127,10 +135,3 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = app;
 
-// TEMP: trigger github workflow push via edge function
-app.get('/trigger-github-push', async (req, res) => {
-  const fetch = (await import('node-fetch')).default;
-  const result = await fetch('https://aayprwxhzbhmghvgaeyi.supabase.co/functions/v1/github-push');
-  const data = await result.json();
-  res.json(data);
-});

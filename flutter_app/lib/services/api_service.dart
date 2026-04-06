@@ -198,4 +198,50 @@ class ApiService {
       if (comment != null) 'comment': comment,
     });
   }
+  // ===== WALLET =====
+  Future<Map<String, dynamic>> getWallet() async {
+    final r = await _dio.get('/wallet');
+    return r.data;
+  }
+
+  Future<Map<String, dynamic>> requestPayout({required double amountNaira}) async {
+    final r = await _dio.post('/wallet/withdraw', data: {'amount_naira': amountNaira});
+    return r.data;
+  }
+
+  Future<List<dynamic>> getBanks() async {
+    final r = await _dio.get('/wallet/banks');
+    return r.data['banks'];
+  }
+
+  Future<Map<String, dynamic>> verifyBankAccount({required String accountNumber, required String bankCode}) async {
+    final r = await _dio.post('/wallet/verify-account', data: {'account_number': accountNumber, 'account_bank': bankCode});
+    return r.data;
+  }
+
+  // ===== EXPLORE =====
+  Future<List<dynamic>> getTrending() async {
+    final r = await _dio.get('/explore/trending');
+    return r.data['streams'];
+  }
+
+  Future<Map<String, dynamic>> searchStreams(String q) async {
+    final r = await _dio.get('/explore/search', queryParameters: {'q': q});
+    return r.data;
+  }
+
+  Future<Map<String, dynamic>> shareStream(String streamId) async {
+    final r = await _dio.post('/explore/share/\$streamId');
+    return r.data;
+  }
+
+  // ===== IMAGE UPLOAD =====
+  Future<String> uploadProductImage(String filePath) async {
+    final formData = FormData.fromMap({
+      'image': await MultipartFile.fromFile(filePath),
+    });
+    final r = await _dio.post('/uploads/product-image', data: formData);
+    return r.data['url'];
+  }
+
 }

@@ -1,3 +1,4 @@
+const { notifyFollowers } = require('./notifications');
 // routes/streams.js — Live stream management
 const express = require('express');
 const router = express.Router();
@@ -96,6 +97,9 @@ router.post('/', authenticate, sellerOnly, async (req, res) => {
   } else {
     console.log('ℹ️  No DAILY_API_KEY — skipping video room creation');
   }
+
+  // Notify followers in background (don't await — don't block response)
+  notifyFollowers(req.user.id, value.title, stream.id).catch(console.error);
 
   res.status(201).json({
     success: true,
