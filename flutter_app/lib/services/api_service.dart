@@ -310,4 +310,80 @@ class ApiService {
     return r.data['posts'];
   }
 
+  // ===== CHAT =====
+  Future<List<dynamic>> getConversations() async {
+    final r = await _dio.get('/chat/conversations');
+    return r.data['conversations'];
+  }
+
+  Future<Map<String, dynamic>> startConversation(String sellerId) async {
+    final r = await _dio.post('/chat/conversations', data: {'seller_id': sellerId});
+    return r.data['conversation'];
+  }
+
+  Future<List<dynamic>> getMessages(String conversationId) async {
+    final r = await _dio.get('/chat/conversations/\$conversationId/messages');
+    return r.data['messages'];
+  }
+
+  Future<Map<String, dynamic>> sendMessage({required String conversationId, required String content, String type = 'text'}) async {
+    final r = await _dio.post('/chat/conversations/\$conversationId/messages', data: {'content': content, 'message_type': type});
+    return r.data['message'];
+  }
+
+  Future<Map<String, dynamic>> initiateCall({required String conversationId, required String callType}) async {
+    final r = await _dio.post('/chat/calls/initiate', data: {'conversation_id': conversationId, 'call_type': callType});
+    return r.data;
+  }
+
+  Future<void> updateCallStatus(String callId, String status) async {
+    await _dio.patch('/chat/calls/\$callId', data: {'status': status});
+  }
+
+  // ===== FLASH SALES =====
+  Future<List<dynamic>> getFlashSales() async {
+    final r = await _dio.get('/features/flash-sales');
+    return r.data['flash_sales'];
+  }
+
+  // ===== REFERRALS =====
+  Future<Map<String, dynamic>> getReferralData() async {
+    final r = await _dio.get('/features/referral');
+    return r.data;
+  }
+
+  Future<void> applyReferralCode(String code) async {
+    await _dio.post('/features/referral/apply', data: {'referral_code': code});
+  }
+
+  // ===== ADDRESSES =====
+  Future<List<dynamic>> getAddresses() async {
+    final r = await _dio.get('/features/addresses');
+    return r.data['addresses'];
+  }
+
+  Future<void> addAddress({required String label, required String fullAddress, required String phone, bool isDefault = false}) async {
+    await _dio.post('/features/addresses', data: {'label': label, 'full_address': fullAddress, 'phone': phone, 'is_default': isDefault});
+  }
+
+  Future<void> deleteAddress(String id) async {
+    await _dio.delete('/features/addresses/\$id');
+  }
+
+  // ===== DISPUTES =====
+  Future<List<dynamic>> getDisputes() async {
+    final r = await _dio.get('/features/disputes');
+    return r.data['disputes'];
+  }
+
+  Future<void> openDispute({required String orderId, required String reason, required String description}) async {
+    await _dio.post('/features/disputes', data: {'order_id': orderId, 'reason': reason, 'description': description});
+  }
+
+  // ===== ANALYTICS =====
+  Future<Map<String, dynamic>> getAnalytics() async {
+    final r = await _dio.get('/features/analytics');
+    return r.data;
+  }
+
 }
