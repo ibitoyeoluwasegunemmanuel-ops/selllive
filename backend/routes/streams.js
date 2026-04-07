@@ -42,7 +42,7 @@ router.get('/', async (req, res) => {
     .select(`
       id, title, thumbnail_url, status, viewer_count, total_orders, started_at,
       seller:users!seller_id(id, name, avatar_url),
-      seller_profile:seller_profiles!inner(business_name, trust_score, followers_count),
+      seller_profile:seller_profiles!inner(business_name, followers_count),
       products:stream_products(id, name, price, image_url, is_active)
     `)
     .eq('status', 'live')
@@ -222,7 +222,7 @@ router.get('/:id', async (req, res) => {
     .select(`
       *,
       seller:users!seller_id(id, name, avatar_url),
-      seller_profile:seller_profiles!inner(business_name, trust_score, followers_count),
+      seller_profile:seller_profiles!inner(business_name, followers_count),
       products:stream_products(id, name, price, image_url, stock, position, is_active)
     `)
     .eq('id', req.params.id)

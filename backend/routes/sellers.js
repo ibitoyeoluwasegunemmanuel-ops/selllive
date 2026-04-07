@@ -67,7 +67,7 @@ router.get('/:id', async (req, res) => {
     .from('users')
     .select(`
       id, name, avatar_url,
-      seller_profile:seller_profiles(business_name, bio, trust_score, followers_count, total_sales)
+      seller_profile:seller_profiles(business_name, bio, followers_count, total_sales)
     `)
     .eq('id', req.params.id)
     .eq('role', 'seller')

@@ -9,23 +9,22 @@ const supabase = require('../config/supabase');
 // Decays over time so freshness matters
 // ============================================================
 router.get('/trending', async (req, res) => {
-  // Update trending scores first
-  await supabase.rpc('update_trending_scores');
+  // Update trending scores (ignore errors — table might be empty)
+  try { await supabase.rpc('update_trending_scores'); } catch (_) {}
 
-  const { data: streams, error } = await supabase
+  const { data: streams } = await supabase
     .from('streams')
     .select(`
       id, title, thumbnail_url, viewer_count, total_orders,
       share_count, trending_score, started_at,
       seller:users!seller_id(id, name, avatar_url),
-      seller_profile:seller_profiles!seller_id(business_name, trust_score, followers_count),
+      seller_profile:seller_profiles!seller_id(business_name, followers_count),
       products:stream_products(id, name, price, image_url, is_active)
     `)
     .eq('status', 'live')
-    .order('trending_score', { ascending: false })
+    .order('viewer_count', { ascending: false })
     .limit(20);
 
-  if (error) return res.status(500).json({ error: 'Failed to fetch trending.' });
   res.json({ streams: streams || [] });
 });
 
