@@ -208,3 +208,69 @@ router.post('/complete-seller-profile', authenticate, async (req, res) => {
 });
 
 module.exports = router;
+
+// ============================================================
+// POST /api/auth/update-profile — update seller profile
+// ============================================================
+router.post('/update-profile', require('../middleware/auth').authenticate, async (req, res) => {
+  const { business_name, category, description, bank_account, bank_code, account_name, pickup_address } = req.body;
+
+  if (business_name || category || description || pickup_address) {
+    await supabase.from('seller_profiles').upsert({
+      user_id: req.user.id,
+      business_name: business_name || req.user.name,
+      category, description, pickup_address,
+    }, { onConflict: 'user_id' });
+  }
+
+  if (bank_account && bank_code && account_name) {
+    await supabase.from('seller_profiles').update({ bank_account, bank_code, account_name })
+      .eq('user_id', req.user.id);
+  }
+
+  res.json({ success: true });
+});
+
+// ============================================================
+// GET /api/auth/seller/:id — public seller profile
+// ============================================================
+router.get('/seller/:id', async (req, res) => {
+  const { id } = req.params;
+
+  const { data: profile } = await supabase.from('seller_profiles')
+    .select(`*, user:users!user_id(id, name, avatar_url, phone, created_at)`)
+    .eq('user_id', id).single();
+
+  if (!profile) return res.status(404).json({ error: 'Seller not found.' });
+
+  res.json({ profile, user: profile.user });
+});
+
+// ============================================================
+// GET /api/auth/search — unified search
+// ============================================================
+router.get('/search', async (req, res) => {
+  const { q } = req.query;
+  if (!q || q.length < 2) return res.status(400).json({ error: 'Query too short.' });
+
+  const [streams, sellers, posts] = await Promise.all([
+    supabase.from('streams').select(`id, title, viewer_count, status, thumbnail_url,
+      seller:users!seller_id(name, avatar_url),
+      seller_profile:seller_profiles!seller_id(business_name)`)
+      .ilike('title', `%${q}%`).in('status', ['live', 'scheduled']).limit(10),
+
+    supabase.from('seller_profiles').select(`business_name, category, is_verified, avg_rating, followers_count,
+      user:users!user_id(id, name, avatar_url)`)
+      .ilike('business_name', `%${q}%`).limit(10),
+
+    supabase.from('posts').select(`id, caption, media_url, media_type, thumbnail_url, like_count, view_count,
+      products:post_products(id, name, price, image_url)`)
+      .ilike('caption', `%${q}%`).eq('is_active', true).limit(10),
+  ]);
+
+  res.json({
+    streams: streams.data || [],
+    sellers: sellers.data || [],
+    posts:   posts.data   || [],
+  });
+});

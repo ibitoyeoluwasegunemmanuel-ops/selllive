@@ -37,7 +37,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         role: widget.data['role'] ?? 'buyer',
       );
       if (!mounted) return;
-      context.go('/home');
+      if (isSeller) {
+          context.go('/onboarding/seller');
+        } else {
+          context.go('/home');
+        }
     } catch (e) {
       setState(() => _error = 'Something went wrong. Please try again.');
     } finally {

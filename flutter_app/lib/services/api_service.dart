@@ -386,4 +386,58 @@ class ApiService {
     return r.data;
   }
 
+  // ===== SELLER PROFILE =====
+  Future<Map<String, dynamic>> getSellerProfile(String sellerId) async {
+    final r = await _dio.get('/auth/seller/\$sellerId');
+    return r.data;
+  }
+
+  Future<List<dynamic>> getSellerReviews(String sellerId) async {
+    final r = await _dio.get('/reviews/seller/\$sellerId/all');
+    return r.data['reviews'];
+  }
+
+  Future<Map<String, dynamic>> updateSellerProfile({
+    String? businessName, String? category, String? description,
+    String? bankAccount, String? bankCode, String? accountName,
+    String? pickupAddress,
+  }) async {
+    final r = await _dio.post('/auth/update-profile', data: {
+      if (businessName != null) 'business_name': businessName,
+      if (category != null) 'category': category,
+      if (description != null) 'description': description,
+      if (bankAccount != null) 'bank_account': bankAccount,
+      if (bankCode != null) 'bank_code': bankCode,
+      if (accountName != null) 'account_name': accountName,
+      if (pickupAddress != null) 'pickup_address': pickupAddress,
+    });
+    return r.data;
+  }
+
+  Future<Map<String, dynamic>> followSeller(String sellerId) async {
+    final r = await _dio.post('/sellers/\$sellerId/follow');
+    return r.data;
+  }
+
+  // ===== UNIFIED SEARCH =====
+  Future<Map<String, dynamic>> searchAll(String q) async {
+    final r = await _dio.get('/auth/search', queryParameters: {'q': q});
+    return r.data;
+  }
+
+  // ===== ORDERS =====
+  Future<List<dynamic>> getOrders() async {
+    final r = await _dio.get('/orders');
+    return r.data['orders'] ?? [];
+  }
+
+  // ===== PAYMENT VERIFY =====
+  Future<Map<String, dynamic>> verifyPayment({String? transactionId, String? txRef}) async {
+    final r = await _dio.post('/payments/verify', data: {
+      if (transactionId != null) 'transaction_id': transactionId,
+      if (txRef != null) 'tx_ref': txRef,
+    });
+    return r.data;
+  }
+
 }

@@ -249,3 +249,82 @@ router.post('/flutterwave', express.raw({ type: 'application/json' }), async (re
 });
 
 module.exports = router;
+// routes/payments.js — Payment callbacks and verification
+const express = require('express');
+const router = express.Router();
+const axios = require('axios');
+const supabase = require('../config/supabase');
+const { notifyOrderPaid } = require('./whatsapp');
+
+// GET /api/payments/callback — Flutterwave redirects buyer here after payment
+// Works for both stream orders and post orders
+router.get('/callback', async (req, res) => {
+  const { status, tx_ref, transaction_id, order_id, type } = req.query;
+
+  // Redirect to app deep link so Flutter catches it
+  if (status !== 'successful') {
+    return res.redirect(`selllive://payment/failed?order_id=${order_id || ''}`);
+  }
+
+  // Verify the transaction with Flutterwave
+  try {
+    if (process.env.FLW_SECRET_KEY && transaction_id) {
+      const flwRes = await axios.get(
+        `https://api.flutterwave.com/v3/transactions/${transaction_id}/verify`,
+        { headers: { Authorization: `Bearer ${process.env.FLW_SECRET_KEY}` } }
+      );
+
+      if (flwRes.data.data.status === 'successful') {
+        const table = type === 'post' ? 'post_orders' : 'orders';
+        const COMMISSION = Number(process.env.COMMISSION_PERCENT || 10) / 100;
+        const amountKobo = Math.round(flwRes.data.data.amount * 100);
+        const sellerPayout = Math.floor(amountKobo * (1 - COMMISSION));
+
+        // Find and update order
+        const { data: order } = await supabase.from(table)
+          .select('id, seller_id, buyer_id, status')
+          .eq('flw_tx_ref', tx_ref).single();
+
+        if (order && order.status !== 'paid') {
+          await supabase.from(table).update({ status: 'paid', paid_at: new Date() }).eq('id', order.id);
+          await supabase.rpc('increment_earnings', { seller_id: order.seller_id, amount: sellerPayout });
+
+          // WhatsApp notification
+          await notifyOrderPaid(order.id).catch(console.error);
+
+          // In-app notifications
+          await supabase.from('notifications').insert([
+            { user_id: order.seller_id, type: 'payment_received', title: '💰 Payment Received!', body: `₦${(sellerPayout/100).toLocaleString()} added to your wallet`, data: { order_id: order.id } },
+            { user_id: order.buyer_id, type: 'new_order', title: '✅ Order Confirmed!', body: `Your order has been paid. Seller will ship soon.`, data: { order_id: order.id } },
+          ]);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Payment verify error:', err.message);
+  }
+
+  // Redirect to app — Flutter handles selllive:// deep link
+  res.redirect(`selllive://payment/success?order_id=${order_id || ''}&tx_ref=${tx_ref || ''}`);
+});
+
+// POST /api/payments/verify — manual verification from Flutter
+router.post('/verify', async (req, res) => {
+  const { transaction_id, tx_ref } = req.body;
+  if (!transaction_id && !tx_ref) return res.status(400).json({ error: 'transaction_id or tx_ref required.' });
+
+  try {
+    if (process.env.FLW_SECRET_KEY) {
+      const flwRes = await axios.get(
+        `https://api.flutterwave.com/v3/transactions/${transaction_id}/verify`,
+        { headers: { Authorization: `Bearer ${process.env.FLW_SECRET_KEY}` } }
+      );
+      return res.json({ verified: flwRes.data.data.status === 'successful', data: flwRes.data.data });
+    }
+    res.json({ verified: true, mock: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Verification failed.' });
+  }
+});
+
+module.exports = router;

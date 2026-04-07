@@ -43,3 +43,12 @@ router.get('/seller/:id', async (req, res) => {
 });
 
 module.exports = router;
+
+// GET /api/reviews/seller/:id — used by seller profile
+router.get('/seller/:id/all', async (req, res) => {
+  const { data, error } = await supabase.from('reviews')
+    .select('id, rating, comment, photo_url, created_at, buyer:users!buyer_id(name, avatar_url)')
+    .eq('seller_id', req.params.id).order('created_at', { ascending: false }).limit(30);
+  if (error) return res.status(500).json({ error: 'Failed to fetch reviews.' });
+  res.json({ reviews: data || [] });
+});

@@ -19,6 +19,9 @@ import 'screens/feed/create_post_screen.dart';
 import 'screens/chat/chat_screen.dart';
 import 'screens/chat/call_screen.dart';
 import 'screens/features/features_screens.dart';
+import 'screens/onboarding/seller_onboarding_screen.dart';
+import 'screens/search/search_screen.dart';
+import 'screens/seller_profile/seller_profile_screen.dart';
 
 final _rootKey  = GlobalKey<NavigatorState>(debugLabel: 'root');
 final _shellKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
@@ -75,6 +78,11 @@ GoRouter buildRouter(AuthService auth) => GoRouter(
     GoRoute(path: '/disputes',      parentNavigatorKey: _rootKey,
       builder: (_, state) => DisputesScreen(orderId: state.extra as String?)),
     GoRoute(path: '/analytics',     parentNavigatorKey: _rootKey, builder: (_, __) => const AnalyticsScreen()),
+    GoRoute(path: '/onboarding/seller', parentNavigatorKey: _rootKey, builder: (_, __) => const SellerOnboardingScreen()),
+    GoRoute(path: '/search',            parentNavigatorKey: _rootKey,
+      builder: (_, state) => SearchScreen(initialQuery: state.extra as String?)),
+    GoRoute(path: '/seller/:id',        parentNavigatorKey: _rootKey,
+      builder: (_, state) => SellerProfileScreen(sellerId: state.pathParameters['id']!)),
   ],
 );
 
