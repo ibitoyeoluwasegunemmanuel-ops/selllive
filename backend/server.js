@@ -22,6 +22,7 @@ const walletRoutes = require('./routes/wallet');
 const { router: notificationRoutes, notifyFollowers } = require('./routes/notifications');
 const uploadsRoutes = require('./routes/uploads');
 const exploreRoutes = require('./routes/explore');
+const feedRoutes = require('./routes/feed');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -92,6 +93,7 @@ app.use('/api/wallet', walletRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/uploads', uploadsRoutes);
 app.use('/api/explore', exploreRoutes);
+app.use('/api/feed', feedRoutes);
 
 // Flutterwave webhook (no rate limiting — it's from Flutterwave's servers)
 app.use('/webhook/flutterwave', paymentRoutes);

@@ -244,4 +244,70 @@ class ApiService {
     return r.data['url'];
   }
 
+  // ===== SHOP FEED =====
+  Future<List<dynamic>> getFeedPosts({int page = 1}) async {
+    final r = await _dio.get('/feed', queryParameters: {'page': page});
+    return r.data['posts'];
+  }
+
+  Future<Map<String, dynamic>> createPost({
+    required String mediaUrl,
+    required String mediaType,
+    String? caption,
+    List<Map<String, dynamic>> products = const [],
+  }) async {
+    final r = await _dio.post('/feed', data: {
+      'media_url': mediaUrl,
+      'media_type': mediaType,
+      if (caption != null && caption.isNotEmpty) 'caption': caption,
+      if (products.isNotEmpty) 'products': products,
+    });
+    return r.data;
+  }
+
+  Future<Map<String, dynamic>> likePost(String postId) async {
+    final r = await _dio.post('/feed/\$postId/like');
+    return r.data;
+  }
+
+  Future<List<dynamic>> getPostComments(String postId) async {
+    final r = await _dio.get('/feed/\$postId/comments');
+    return r.data['comments'];
+  }
+
+  Future<Map<String, dynamic>> addPostComment(String postId, String comment) async {
+    final r = await _dio.post('/feed/\$postId/comment', data: {'comment': comment});
+    return r.data;
+  }
+
+  Future<Map<String, dynamic>> buyFromPost({
+    required String postId,
+    required String productId,
+    int quantity = 1,
+    String? deliveryAddress,
+    String? deliveryPhone,
+  }) async {
+    final r = await _dio.post('/feed/\$postId/buy', data: {
+      'product_id': productId,
+      'quantity': quantity,
+      if (deliveryAddress != null) 'delivery_address': deliveryAddress,
+      if (deliveryPhone != null) 'delivery_phone': deliveryPhone,
+    });
+    return r.data;
+  }
+
+  Future<Map<String, dynamic>> sharePost(String postId) async {
+    final r = await _dio.post('/explore/share/\$postId');
+    return r.data;
+  }
+
+  Future<void> trackPostView(String postId) async {
+    try { await _dio.patch('/feed/\$postId/view'); } catch (_) {}
+  }
+
+  Future<List<dynamic>> getSellerPosts(String sellerId) async {
+    final r = await _dio.get('/feed/seller/\$sellerId');
+    return r.data['posts'];
+  }
+
 }
