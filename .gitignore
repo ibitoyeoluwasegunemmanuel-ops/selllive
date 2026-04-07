@@ -17,7 +17,6 @@ flutter_app/.flutter-plugins-dependencies
 flutter_app/build/
 flutter_app/.packages
 flutter_app/pubspec.lock
-flutter_app/android/
 flutter_app/ios/
 flutter_app/macos/
 flutter_app/windows/
