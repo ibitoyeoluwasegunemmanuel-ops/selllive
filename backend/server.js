@@ -115,7 +115,6 @@ app.use('/api/loyalty', loyaltyRoutes);
 app.use('/api/verification', verificationRoutes);
 
 // Flutterwave webhook (no rate limiting — it's from Flutterwave's servers)
-app.use('/webhook/flutterwave', paymentRoutes);
 
 // ============================================================
 // ERROR HANDLING
