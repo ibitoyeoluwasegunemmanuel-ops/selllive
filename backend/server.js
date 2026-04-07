@@ -20,6 +20,10 @@ const buyerRoutes = require('./routes/buyers');
 const adminRoutes = require('./routes/admin');
 const walletRoutes = require('./routes/wallet');
 const { router: notificationRoutes, notifyFollowers } = require('./routes/notifications');
+const { router: waRouter, notifyOrderPaid } = require('./routes/whatsapp');
+const logisticsRoutes = require('./routes/logistics');
+const loyaltyRoutes = require('./routes/loyalty');
+const verificationRoutes = require('./routes/verification');
 const uploadsRoutes = require('./routes/uploads');
 const exploreRoutes = require('./routes/explore');
 const feedRoutes = require('./routes/feed');
@@ -104,6 +108,10 @@ app.use('/api/features', featuresRoutes);
 app.use('/webhook', webhookRoutes);
 app.use('/api/reviews', reviewsRoutes);
 app.use('/api/notifications', notifRoutes);
+app.use('/api/whatsapp', waRouter);
+app.use('/api/logistics', logisticsRoutes);
+app.use('/api/loyalty', loyaltyRoutes);
+app.use('/api/verification', verificationRoutes);
 
 // Flutterwave webhook (no rate limiting — it's from Flutterwave's servers)
 app.use('/webhook/flutterwave', paymentRoutes);
