@@ -1,80 +1,101 @@
-// lib/services/auth_service.dart — Auth state management
-import 'package:flutter/foundation.dart';
+// lib/services/auth_service.dart
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'api_service.dart';
 
 class AuthService extends ChangeNotifier {
-  final ApiService apiService;
-  final SharedPreferences prefs;
-
   Map<String, dynamic>? _user;
-  bool _isLoading = false;
+  String? _token;
+  bool _loaded = false;
 
-  AuthService({required this.apiService, required this.prefs}) {
-    _loadUserFromStorage();
+  Map<String, dynamic>? get user  => _user;
+  String?               get token => _token;
+  bool get isLoggedIn => _token != null && _user != null;
+  bool get isLoaded   => _loaded;
+
+  // ── Load persisted session on app start ──────────────────────
+  Future<void> loadUser() async {
+    if (_loaded) return;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final t = prefs.getString('auth_token');
+      final u = prefs.getString('auth_user');
+      if (t != null && u != null) {
+        _token = t;
+        _user  = jsonDecode(u) as Map<String, dynamic>;
+      }
+    } catch (_) {}
+    _loaded = true;
+    notifyListeners();
   }
 
-  Map<String, dynamic>? get user => _user;
-  bool get isLoading => _isLoading;
-  bool get isLoggedIn => _user != null;
-  bool get isSeller => _user?['role'] == 'seller';
-
-  void _loadUserFromStorage() {
-    final userId = prefs.getString('user_id');
-    final userName = prefs.getString('user_name');
-    final userPhone = prefs.getString('user_phone');
-    final userRole = prefs.getString('user_role');
-
-    if (userId != null) {
-      _user = {
-        'id': userId,
-        'name': userName,
-        'phone': userPhone,
-        'role': userRole,
-      };
-      notifyListeners();
-    }
-  }
-
+  // ── Request OTP ──────────────────────────────────────────────
   Future<Map<String, dynamic>> sendOTP(String phone) async {
-    return await apiService.sendOTP(phone);
+    final api = ApiService(baseUrl: _apiBase, token: null);
+    final res = await api.post('/auth/send-otp', {'phone': phone});
+    return res;
   }
 
+  // ── Verify OTP — returns true if new user (needs name) ───────
   Future<bool> verifyOTP({
     required String phone,
     required String code,
-    String? name,
     String role = 'buyer',
+    String? name,
+    String? businessName,
   }) async {
-    _isLoading = true;
-    notifyListeners();
+    final api = ApiService(baseUrl: _apiBase, token: null);
+    final body = <String, dynamic>{'phone': phone, 'code': code, 'role': role};
+    if (name != null)         body['name']          = name;
+    if (businessName != null) body['business_name'] = businessName;
 
-    try {
-      final result = await apiService.verifyOTP(
-        phone: phone,
-        code: code,
-        name: name,
-        role: role,
-      );
+    final res = await api.post('/auth/verify-otp', body);
 
-      // Save token and user data
-      await prefs.setString('auth_token', result['token']);
-      await prefs.setString('user_id', result['user']['id']);
-      await prefs.setString('user_name', result['user']['name']);
-      await prefs.setString('user_phone', result['user']['phone']);
-      await prefs.setString('user_role', result['user']['role']);
+    final token = res['token'] as String?;
+    final user  = res['user']  as Map<String, dynamic>?;
+    final isNew = res['is_new_user'] == true;
 
-      _user = result['user'];
-      return result['is_new_user'] == true;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+    if (token != null && user != null) {
+      await _persist(token, user);
     }
+
+    return isNew;
   }
 
+  // ── Logout ───────────────────────────────────────────────────
   Future<void> logout() async {
-    await prefs.clear();
-    _user = null;
+    _token = null;
+    _user  = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
+    await prefs.remove('auth_user');
     notifyListeners();
   }
+
+  // ── Update user data locally (after profile edits) ───────────
+  void updateUser(Map<String, dynamic> updates) {
+    if (_user == null) return;
+    _user = {..._user!, ...updates};
+    _saveUser(_user!);
+    notifyListeners();
+  }
+
+  // ── Persist to SharedPreferences ─────────────────────────────
+  Future<void> _persist(String token, Map<String, dynamic> user) async {
+    _token = token;
+    _user  = user;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('auth_token', token);
+    await prefs.setString('auth_user', jsonEncode(user));
+    notifyListeners();
+  }
+
+  Future<void> _saveUser(Map<String, dynamic> user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('auth_user', jsonEncode(user));
+  }
+
+  static const _apiBase = String.fromEnvironment(
+    'API_BASE_URL', defaultValue: 'https://selllive.vercel.app/api');
 }
