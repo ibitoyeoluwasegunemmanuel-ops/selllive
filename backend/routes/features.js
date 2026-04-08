@@ -14,9 +14,7 @@ router.get('/flash-sales', async (req, res) => {
   const { data, error } = await supabase
     .from('flash_sales')
     .select(`
-      id, title, description, discount_percent, starts_at, ends_at,
-      seller:users!seller_id(id, name, avatar_url),
-      seller_profile:seller_profiles!user_id(business_name),
+      id, title, description, discount_percent, starts_at, ends_at, seller_id,
       products:flash_sale_products(id, name, original_price, sale_price, image_url, stock, sold)
     `)
     .eq('is_active', true)
@@ -24,7 +22,13 @@ router.get('/flash-sales', async (req, res) => {
     .gte('ends_at', now)
     .order('ends_at', { ascending: true });
 
-  res.json({ flash_sales: data || [] });
+  // Enrich with seller info
+  const enriched = await Promise.all((data || []).map(async (sale) => {
+    const { data: seller } = await supabase.from('users').select('id, name, avatar_url').eq('id', sale.seller_id).single();
+    const { data: profile } = await supabase.from('seller_profiles').select('business_name').eq('user_id', sale.seller_id).single();
+    return { ...sale, seller, seller_profile: profile };
+  }));
+  res.json({ flash_sales: enriched });
 });
 
 // POST /api/features/flash-sales — create flash sale (seller)
@@ -254,7 +258,7 @@ router.get('/analytics', authenticate, sellerOnly, async (req, res) => {
     { data: topProducts },
     { data: wallet },
   ] = await Promise.all([
-    supabase.from('orders').select('total_amount, commission, created_at, status').eq('seller_id', sellerId).eq('status', 'paid'),
+    supabase.from('orders').select('id, total_amount, created_at, status').eq('seller_id', sellerId).eq('status', 'paid'),
     supabase.from('orders').select('total_amount, created_at').eq('seller_id', sellerId).eq('status', 'paid').gte('created_at', last30days),
     supabase.from('streams').select('viewer_count, total_orders, started_at, ended_at').eq('seller_id', sellerId).order('created_at', { ascending: false }).limit(30),
     supabase.from('posts').select('like_count, comment_count, view_count, created_at').eq('seller_id', sellerId),

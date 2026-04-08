@@ -14,18 +14,20 @@ router.get('/trending', async (req, res) => {
 
   const { data: streams } = await supabase
     .from('streams')
-    .select(`
-      id, title, thumbnail_url, viewer_count, total_orders,
-      share_count, trending_score, started_at,
-      seller:users!seller_id(id, name, avatar_url),
-      seller_profile:seller_profiles!user_id(business_name, followers_count),
-      products:stream_products(id, name, price, image_url, is_active)
-    `)
+    .select('id, title, thumbnail_url, viewer_count, total_orders, share_count, trending_score, started_at, seller_id')
     .eq('status', 'live')
     .order('viewer_count', { ascending: false })
     .limit(20);
 
-  res.json({ streams: streams || [] });
+  // Enrich with seller info
+  const enriched = await Promise.all((streams || []).map(async (stream) => {
+    const { data: seller } = await supabase.from('users').select('id, name, avatar_url').eq('id', stream.seller_id).single();
+    const { data: profile } = await supabase.from('seller_profiles').select('business_name, followers_count, is_verified').eq('user_id', stream.seller_id).single();
+    const { data: products } = await supabase.from('stream_products').select('id, name, price, image_url, is_active').eq('stream_id', stream.id).eq('is_active', true);
+    return { ...stream, seller, seller_profile: profile, products: products || [] };
+  }));
+
+  res.json({ streams: enriched || streams || [] });
 });
 
 // ============================================================

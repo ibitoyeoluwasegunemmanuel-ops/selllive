@@ -21,9 +21,7 @@ router.get('/', async (req, res) => {
     .from('posts')
     .select(`
       id, caption, media_url, media_type, thumbnail_url,
-      duration_secs, like_count, comment_count, share_count, view_count, created_at,
-      seller:users!seller_id(id, name, avatar_url),
-      seller_profile:seller_profiles!user_id(business_name, trust_score, is_verified),
+      duration_secs, like_count, comment_count, share_count, view_count, created_at, seller_id,
       products:post_products(id, name, price, image_url, stock, position)
     `)
     .eq('is_active', true)
@@ -31,7 +29,15 @@ router.get('/', async (req, res) => {
     .range(offset, offset + Number(limit) - 1);
 
   if (error) return res.status(500).json({ error: 'Failed to fetch feed.' });
-  res.json({ posts: posts || [], page: Number(page) });
+  
+  // Enrich with seller info
+  const enriched = await Promise.all((posts || []).map(async (post) => {
+    const { data: seller } = await supabase.from('users').select('id, name, avatar_url').eq('id', post.seller_id).single();
+    const { data: profile } = await supabase.from('seller_profiles').select('business_name, is_verified').eq('user_id', post.seller_id).single();
+    return { ...post, seller, seller_profile: profile };
+  }));
+  
+  res.json({ posts: enriched, page: Number(page) });
 });
 
 // ============================================================
