@@ -21,28 +21,51 @@ const generateToken = (userId) => jwt.sign(
   { expiresIn: '30d' }
 );
 
-// Send SMS via Termii (Nigerian SMS gateway)
-// If no Termii key is configured, OTP is returned in the API response directly
+// Send SMS — tries Sendchamp first, Termii fallback, then dev mode
 const sendSMS = async (phone, message) => {
-  if (!process.env.TERMII_API_KEY) {
-    console.log(`📱 NO SMS KEY — OTP for ${phone}: ${message}`);
-    return false; // signals caller to include OTP in response
+  // Normalize Nigerian number
+  let to = phone.replace(/\s+/g, '');
+  if (to.startsWith('0')) to = '+234' + to.slice(1);
+  if (!to.startsWith('+')) to = '+234' + to;
+
+  // 1. Sendchamp (primary - works in Nigeria, Termii alternative)
+  if (process.env.SENDCHAMP_API_KEY) {
+    try {
+      await axios.post('https://api.sendchamp.com/api/v1/sms/send', {
+        to: [to],
+        message,
+        sender_name: process.env.SENDCHAMP_SENDER_ID || 'SellLive',
+        route: 'dnd',
+      }, {
+        headers: { Authorization: `Bearer ${process.env.SENDCHAMP_API_KEY}` },
+      });
+      console.log(`✅ Sendchamp SMS sent to ${to}`);
+      return true;
+    } catch (err) {
+      console.error('Sendchamp error:', err.response?.data?.message || err.message);
+    }
   }
-  try {
-    await axios.post('https://api.ng.termii.com/api/sms/send', {
-      to: phone,
-      from: process.env.TERMII_SENDER_ID || 'SellLive',
-      sms: message,
-      type: 'plain',
-      channel: 'generic',
-      api_key: process.env.TERMII_API_KEY,
-    });
-    return true;
-  } catch (err) {
-    console.error('SMS failed:', err.message);
-    console.log(`📱 SMS FALLBACK OTP for ${phone}: ${message}`);
-    return false;
+
+  // 2. Termii (fallback)
+  if (process.env.TERMII_API_KEY) {
+    try {
+      await axios.post('https://api.ng.termii.com/api/sms/send', {
+        to,
+        from: process.env.TERMII_SENDER_ID || 'SellLive',
+        sms: message,
+        type: 'plain',
+        channel: 'generic',
+        api_key: process.env.TERMII_API_KEY,
+      });
+      return true;
+    } catch (err) {
+      console.error('Termii error:', err.message);
+    }
   }
+
+  // 3. Dev mode — OTP in API response
+  console.log(`📱 DEV OTP for ${to}: ${message}`);
+  return false;
 };
 
 // ============================================================

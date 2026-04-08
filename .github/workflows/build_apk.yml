@@ -3,134 +3,86 @@ name: Build SellLive APK
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:  # allows manual trigger from GitHub UI
+    paths:
+      - 'flutter_app/**'
+  workflow_dispatch:
 
 jobs:
-  build-apk:
-    name: Build Android APK
+  build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
-      # ── 1. Checkout code ──────────────────────────────────────
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # ── 2. Setup Java 17 ──────────────────────────────────────
-      - name: Setup Java 17
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: 'zulu'
           java-version: '17'
 
-      # ── 3. Setup Flutter ──────────────────────────────────────
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.0'
+          flutter-version: '3.24.0'
           channel: 'stable'
           cache: true
 
-      # ── 4. Install dependencies ───────────────────────────────
-      - name: Install Flutter dependencies
+      - name: Get dependencies
         working-directory: flutter_app
         run: flutter pub get
 
-      # ── 5. Create keystore from GitHub secret ─────────────────
+      - name: Create google-services.json placeholder
+        working-directory: flutter_app/android/app
+        run: |
+          if [ ! -f google-services.json ]; then
+            echo '${{ secrets.GOOGLE_SERVICES_JSON || "{\"project_info\":{\"project_number\":\"000000000000\",\"project_id\":\"selllive-placeholder\",\"storage_bucket\":\"selllive-placeholder.appspot.com\"},\"client\":[{\"client_info\":{\"mobilesdk_app_id\":\"1:000000000000:android:0000000000000000\",\"android_client_info\":{\"package_name\":\"ng.selllive.app\"}},\"api_key\":[{\"current_key\":\"placeholder\"}],\"services\":{\"appinvite_service\":{\"other_platform_oauth_client\":[]}}}],\"configuration_version\":\"1\"}" }}' > google-services.json
+          fi
+
       - name: Create keystore
         working-directory: flutter_app/android
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > selllive-release.jks
-          echo "storeFile=selllive-release.jks" > keystore.properties
-          echo "storePassword=${{ secrets.KEY_STORE_PASSWORD }}" >> keystore.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> keystore.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> keystore.properties
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/selllive-release.jks
 
-      # ── 6. Build Release APK ──────────────────────────────────
-      - name: Build APK
+      - name: Create key.properties
+        working-directory: flutter_app/android
+        run: |
+          cat > key.properties << EOF
+          storePassword=${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          storeFile=selllive-release.jks
+          EOF
+
+      - name: Build release APK
         working-directory: flutter_app
         run: |
           flutter build apk --release \
+            --dart-define=API_BASE_URL=https://selllive.vercel.app/api \
             --dart-define=SUPABASE_URL=https://aayprwxhzbhmghvgaeyi.supabase.co \
-            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
-            --dart-define=API_BASE_URL=https://selllive.vercel.app/api
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
 
-      # ── 7. Build App Bundle (for Google Play) ─────────────────
-      - name: Build App Bundle
-        working-directory: flutter_app
+      - name: Rename APK
         run: |
-          flutter build appbundle --release \
-            --dart-define=SUPABASE_URL=https://aayprwxhzbhmghvgaeyi.supabase.co \
-            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
-            --dart-define=API_BASE_URL=https://selllive.vercel.app/api
+          mkdir -p artifacts
+          cp flutter_app/build/app/outputs/flutter-apk/app-release.apk \
+             artifacts/SellLive-v1.0-$(date +%Y%m%d).apk
 
-      # ── 8. Rename outputs with version ───────────────────────
-      - name: Rename build outputs
-        run: |
-          VERSION=$(date +%Y%m%d)-$(echo ${{ github.sha }} | cut -c1-7)
-          mkdir -p releases
-          cp flutter_app/build/app/outputs/flutter-apk/app-release.apk releases/SellLive-$VERSION.apk
-          cp flutter_app/build/app/outputs/bundle/release/app-release.aab releases/SellLive-$VERSION.aab
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "APK_PATH=releases/SellLive-$VERSION.apk" >> $GITHUB_ENV
-          echo "AAB_PATH=releases/SellLive-$VERSION.aab" >> $GITHUB_ENV
-
-      # ── 9. Upload APK as downloadable artifact ────────────────
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SellLive-APK-${{ env.VERSION }}
-          path: releases/SellLive-${{ env.VERSION }}.apk
+          name: SellLive-APK
+          path: artifacts/*.apk
           retention-days: 30
 
-      # ── 10. Upload AAB artifact ───────────────────────────────
-      - name: Upload AAB artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: SellLive-AAB-${{ env.VERSION }}
-          path: releases/SellLive-${{ env.VERSION }}.aab
-          retention-days: 30
-
-      # ── 11. Create GitHub Release with APK attached ───────────
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+      - name: Create Release
         if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ env.VERSION }}
-          name: SellLive v${{ env.VERSION }}
-          body: |
-            ## SellLive Android Build
-
-            **Built from:** `${{ github.sha }}`
-            **Date:** ${{ github.run_started_at }}
-
-            ### Install
-            Download the APK below and install on your Android phone.
-            Enable "Install from unknown sources" in Settings if prompted.
-
-            ### Files
-            - `SellLive-*.apk` — Install directly on Android phone
-            - `SellLive-*.aab` — Upload to Google Play Store
-
-            ### What's in this build
-            - Live streaming (sellers go live from phone)
-            - Real-time chat + BUY command
-            - Flutterwave payment integration
-            - Push notifications when followed sellers go live
-            - Supabase real-time order tracking
-          files: |
-            releases/SellLive-${{ env.VERSION }}.apk
-            releases/SellLive-${{ env.VERSION }}.aab
-          draft: false
-          prerelease: false
+          tag_name: v1.0.${{ github.run_number }}
+          name: SellLive v1.0.${{ github.run_number }}
+          files: artifacts/*.apk
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # ── 12. Build summary ──────────────────────────────────────
-      - name: Build summary
-        run: |
-          echo "## ✅ SellLive APK Built Successfully" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**APK:** \`${{ env.APK_PATH }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Size:** $(du -sh releases/SellLive-${{ env.VERSION }}.apk | cut -f1)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Download from the **Artifacts** section below or from **Releases**." >> $GITHUB_STEP_SUMMARY
