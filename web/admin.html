@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SellLive Admin Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0d0d0d;color:#fff}
+.shell{display:flex;height:100vh;min-height:600px}
+.sidebar{width:210px;flex-shrink:0;background:#111;border-right:1px solid #222;display:flex;flex-direction:column;padding:16px 0}
+.logo{padding:0 16px 20px;font-size:18px;font-weight:800;letter-spacing:-.5px}
+.logo span{color:#FF5722}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:13px;cursor:pointer;color:#888;transition:all .15s}
+.nav-item:hover,.nav-item.active{background:rgba(255,87,34,.08);color:#FF5722}
+.nav-sep{height:1px;background:#222;margin:8px 16px}
+.main{flex:1;overflow-y:auto;padding:24px;background:#0d0d0d}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.page-title{font-size:20px;font-weight:800;letter-spacing:-.5px}
+.live-badge{background:rgba(255,23,68,.15);color:#FF1744;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;display:flex;align-items:center;gap:5px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#FF1744;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:16px}
+.stat-label{font-size:11px;color:#666;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.stat-val{font-size:24px;font-weight:800}
+.stat-sub{font-size:11px;color:#666;margin-top:3px}
+.stat-up{color:#22c55e}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:18px}
+.card-title{font-size:13px;font-weight:700;margin-bottom:14px;color:#aaa;text-transform:uppercase;letter-spacing:.5px}
+.stream-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #222}
+.stream-row:last-child{border-bottom:none}
+.avatar{width:36px;height:36px;border-radius:10px;background:#FF5722;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.name{font-size:13px;font-weight:700}
+.sub{font-size:11px;color:#666}
+.viewers{font-size:13px;font-weight:700;color:#FF5722}
+.badge{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.g{background:rgba(34,197,94,.15);color:#22c55e}
+.o{background:rgba(255,87,34,.15);color:#FF5722}
+.b{background:rgba(59,130,246,.15);color:#3b82f6}
+.r{background:rgba(239,68,68,.15);color:#ef4444}
+.order-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #222;font-size:12px}
+.order-row:last-child{border-bottom:none}
+.ref{font-weight:700;font-family:monospace;color:#FF5722;font-size:11px}
+.amt{font-weight:800;color:#FF5722}
+.table-w{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 10px;color:#555;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #222}
+td{padding:10px;border-bottom:1px solid #1e1e1e}
+tr:hover td{background:#1e1e1e}
+.btn{padding:5px 12px;border:1px solid #333;border-radius:8px;font-size:11px;cursor:pointer;background:transparent;color:#aaa}
+.btn:hover{background:#222;color:#fff}
+.btn-ok{color:#22c55e;border-color:rgba(34,197,94,.3)}
+.btn-no{color:#ef4444;border-color:rgba(239,68,68,.3)}
+.btn-primary{background:#FF5722;color:#fff;border-color:#FF5722;font-weight:700;padding:8px 18px;font-size:13px}
+.verify-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #222}
+.verify-row:last-child{border-bottom:none}
+.tab-row{display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid #222}
+.tab{padding:8px 16px;font-size:12px;cursor:pointer;color:#666;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab.active{color:#FF5722;border-bottom-color:#FF5722;font-weight:700}
+.chart-bar-wrap{display:flex;align-items:flex-end;gap:6px;height:80px}
+.bar{flex:1;border-radius:4px 4px 0 0;background:#FF5722;opacity:.7;transition:opacity .2s;cursor:pointer}
+.bar:hover{opacity:1}
+.chart-labels{display:flex;gap:6px;margin-top:5px}
+.cl{flex:1;text-align:center;font-size:9px;color:#555}
+.search{width:100%;padding:9px 14px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;color:#fff;font-size:13px;margin-bottom:16px}
+.search::placeholder{color:#555}
+input[type=range]{accent-color:#FF5722;width:100%}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="sidebar">
+  <div class="logo"><span>Sell</span>Live <span style="color:#555;font-size:12px;font-weight:400">Admin</span></div>
+  <div class="nav-item active" onclick="show('overview',this)">📊 Overview</div>
+  <div class="nav-item" onclick="show('streams',this)">🔴 Live Streams</div>
+  <div class="nav-item" onclick="show('sellers',this)">🏪 Sellers</div>
+  <div class="nav-item" onclick="show('orders',this)">📦 Orders</div>
+  <div class="nav-item" onclick="show('verify',this)">✅ Verification</div>
+  <div class="nav-sep"></div>
+  <div class="nav-item" onclick="show('settings',this)">⚙️ Settings</div>
+</div>
+<div class="main">
+
+<div id="page-overview">
+  <div class="topbar"><div class="page-title">Overview</div><div class="live-badge"><div class="live-dot"></div>3 live now</div></div>
+  <div class="stats">
+    <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-val">₦84.2M</div><div class="stat-sub stat-up">+12% this week</div></div>
+    <div class="stat-card"><div class="stat-label">Active Streams</div><div class="stat-val">3</div><div class="stat-sub stat-up">+2 from yesterday</div></div>
+    <div class="stat-card"><div class="stat-label">Total Orders</div><div class="stat-val">1,247</div><div class="stat-sub stat-up">82 today</div></div>
+    <div class="stat-card"><div class="stat-label">Platform Earnings</div><div class="stat-val">₦8.4M</div><div class="stat-sub" style="color:#555">10% commission</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Revenue — last 7 days</div>
+      <div class="chart-bar-wrap"><div class="bar" style="height:45%"></div><div class="bar" style="height:60%"></div><div class="bar" style="height:40%"></div><div class="bar" style="height:75%"></div><div class="bar" style="height:65%"></div><div class="bar" style="height:90%"></div><div class="bar" style="height:80%"></div></div>
+      <div class="chart-labels"><div class="cl">Mon</div><div class="cl">Tue</div><div class="cl">Wed</div><div class="cl">Thu</div><div class="cl">Fri</div><div class="cl">Sat</div><div class="cl">Sun</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Live Streams</div>
+      <div class="stream-row"><div class="avatar">A</div><div style="flex:1"><div class="name">Adunola Collections</div><div class="sub">Ankara Prints & Ready-to-Wear</div></div><div style="text-align:right"><div class="viewers">2,412</div><span class="badge g">LIVE</span></div></div>
+      <div class="stream-row"><div class="avatar" style="background:#4caf50">T</div><div style="flex:1"><div class="name">TechHub Nigeria</div><div class="sub">iPhone 14, Samsung S23</div></div><div style="text-align:right"><div class="viewers">987</div><span class="badge g">LIVE</span></div></div>
+      <div class="stream-row"><div class="avatar" style="background:#e91e63">B</div><div style="flex:1"><div class="name">BeautyByBisi</div><div class="sub">Natural Glow Skincare</div></div><div style="text-align:right"><div class="viewers">634</div><span class="badge g">LIVE</span></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Recent Orders</div>
+    <div class="order-row"><div class="ref">SL-A1B2-001</div><div style="flex:1"><div style="font-size:12px;font-weight:700">Ankara Print Dress</div><div style="font-size:11px;color:#666">Ngozi → Adunola</div></div><div class="amt">₦8,500</div><span class="badge g" style="margin-left:8px">Paid</span></div>
+    <div class="order-row"><div class="ref">SL-C3D4-002</div><div style="flex:1"><div style="font-size:12px;font-weight:700">iPhone 14 Pro Max</div><div style="font-size:11px;color:#666">Emeka → TechHub</div></div><div class="amt">₦180,000</div><span class="badge b" style="margin-left:8px">Processing</span></div>
+    <div class="order-row"><div class="ref">SL-E5F6-003</div><div style="flex:1"><div style="font-size:12px;font-weight:700">Glow Serum Set</div><div style="font-size:11px;color:#666">Amara → BeautyByBisi</div></div><div class="amt">₦4,500</div><span class="badge o" style="margin-left:8px">Shipped</span></div>
+    <div class="order-row"><div class="ref">SL-G7H8-004</div><div style="flex:1"><div style="font-size:12px;font-weight:700">Lace Fabric 5 yards</div><div style="font-size:11px;color:#666">Chioma → Adunola</div></div><div class="amt">₦12,000</div><span class="badge r" style="margin-left:8px">Dispute</span></div>
+  </div>
+</div>
+
+<div id="page-streams" style="display:none">
+  <div class="topbar"><div class="page-title">Live Streams</div><span style="color:#555;font-size:13px">3 active</span></div>
+  <div class="tab-row"><div class="tab active">Live (3)</div><div class="tab">Scheduled (1)</div><div class="tab">Ended (12)</div></div>
+  <div class="card" style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:14px"><div class="avatar" style="width:48px;height:48px;font-size:18px;border-radius:12px">A</div><div style="flex:1"><div class="name">Adunola Collections</div><div class="sub">Ankara Prints — started 45 min ago</div><div style="margin-top:6px;display:flex;gap:8px"><span class="badge g">LIVE</span><span style="font-size:11px;color:#666">2,412 viewers · 47 orders · ₦399,500 GMV</span></div></div><div style="display:flex;gap:6px"><button class="btn">View</button><button class="btn btn-no">End</button></div></div></div>
+  <div class="card" style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:14px"><div class="avatar" style="width:48px;height:48px;font-size:18px;border-radius:12px;background:#4caf50">T</div><div style="flex:1"><div class="name">TechHub Nigeria</div><div class="sub">iPhone 14 Pro — started 20 min ago</div><div style="margin-top:6px;display:flex;gap:8px"><span class="badge g">LIVE</span><span style="font-size:11px;color:#666">987 viewers · 23 orders · ₦2.1M GMV</span></div></div><div style="display:flex;gap:6px"><button class="btn">View</button><button class="btn btn-no">End</button></div></div></div>
+  <div class="card"><div style="display:flex;align-items:center;gap:14px"><div class="avatar" style="width:48px;height:48px;font-size:18px;border-radius:12px;background:#e91e63">B</div><div style="flex:1"><div class="name">BeautyByBisi</div><div class="sub">Natural Skincare — started 10 min ago</div><div style="margin-top:6px;display:flex;gap:8px"><span class="badge g">LIVE</span><span style="font-size:11px;color:#666">634 viewers · 12 orders · ₦54,000 GMV</span></div></div><div style="display:flex;gap:6px"><button class="btn">View</button><button class="btn btn-no">End</button></div></div></div>
+</div>
+
+<div id="page-sellers" style="display:none">
+  <div class="topbar"><div class="page-title">Sellers (3)</div><button class="btn btn-primary">+ Invite Seller</button></div>
+  <input class="search" placeholder="Search by name, phone, or category..."/>
+  <div class="card"><div class="table-w"><table>
+    <tr><th>Seller</th><th>Category</th><th>Followers</th><th>Total Sales</th><th>Rating</th><th>Status</th><th></th></tr>
+    <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="width:28px;height:28px;font-size:11px;border-radius:7px">A</div><div><div style="font-weight:700">Adunola Collections</div><div style="font-size:10px;color:#555">+234 803 111 1111</div></div></div></td><td>Fashion</td><td>1,240</td><td>₦28.4M</td><td>⭐ 4.8</td><td><span class="badge g">Verified</span></td><td><button class="btn">View</button></td></tr>
+    <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="width:28px;height:28px;font-size:11px;border-radius:7px;background:#4caf50">T</div><div><div style="font-weight:700">TechHub Nigeria</div><div style="font-size:10px;color:#555">+234 803 222 2222</div></div></div></td><td>Electronics</td><td>3,100</td><td>₦65M</td><td>⭐ 4.9</td><td><span class="badge g">Verified</span></td><td><button class="btn">View</button></td></tr>
+    <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="width:28px;height:28px;font-size:11px;border-radius:7px;background:#e91e63">B</div><div><div style="font-weight:700">BeautyByBisi</div><div style="font-size:10px;color:#555">+234 803 333 3333</div></div></div></td><td>Beauty</td><td>876</td><td>₦12M</td><td>⭐ 4.7</td><td><span class="badge o">Unverified</span></td><td><button class="btn">Verify</button></td></tr>
+  </table></div></div>
+</div>
+
+<div id="page-orders" style="display:none">
+  <div class="topbar"><div class="page-title">Orders (1,247)</div><button class="btn btn-primary">Export CSV</button></div>
+  <div class="tab-row"><div class="tab active" onclick="switchTab(this)">All (1,247)</div><div class="tab" onclick="switchTab(this)">Paid (892)</div><div class="tab" onclick="switchTab(this)">Shipped (243)</div><div class="tab" onclick="switchTab(this)">Disputes (12)</div></div>
+  <div class="card"><div class="table-w"><table>
+    <tr><th>Ref</th><th>Buyer</th><th>Seller</th><th>Product</th><th>Amount</th><th>Status</th><th>Date</th></tr>
+    <tr><td class="ref">SL-A1B2-001</td><td>Ngozi Okonkwo</td><td>Adunola</td><td>Ankara Dress</td><td style="font-weight:700;color:#FF5722">₦8,500</td><td><span class="badge g">Paid</span></td><td style="color:#555">Today</td></tr>
+    <tr><td class="ref">SL-C3D4-002</td><td>Emeka Chukwu</td><td>TechHub</td><td>iPhone 14 Pro</td><td style="font-weight:700;color:#FF5722">₦180,000</td><td><span class="badge b">Processing</span></td><td style="color:#555">Today</td></tr>
+    <tr><td class="ref">SL-E5F6-003</td><td>Amara Dike</td><td>BeautyByBisi</td><td>Glow Serum</td><td style="font-weight:700;color:#FF5722">₦4,500</td><td><span class="badge o">Shipped</span></td><td style="color:#555">Yesterday</td></tr>
+    <tr><td class="ref">SL-G7H8-004</td><td>Chioma Eze</td><td>Adunola</td><td>Lace Fabric</td><td style="font-weight:700;color:#FF5722">₦12,000</td><td><span class="badge r">Dispute</span></td><td style="color:#555">2 days ago</td></tr>
+    <tr><td class="ref">SL-I9J0-005</td><td>Kelechi Obi</td><td>TechHub</td><td>Samsung S23</td><td style="font-weight:700;color:#FF5722">₦125,000</td><td><span class="badge g">Delivered</span></td><td style="color:#555">3 days ago</td></tr>
+  </table></div></div>
+</div>
+
+<div id="page-verify" style="display:none">
+  <div class="topbar"><div class="page-title">Seller Verification</div><span style="color:#e91e63;font-size:13px;font-weight:700">2 pending</span></div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title">Pending Review</div>
+    <div class="verify-row"><div class="avatar" style="background:#e91e63">B</div><div style="flex:1"><div class="name">BeautyByBisi</div><div class="sub">NIN · Submitted 2 hours ago</div></div><div style="display:flex;gap:6px"><button class="btn">View ID</button><button class="btn btn-ok" onclick="this.textContent='Approved ✓';this.disabled=true">Approve</button><button class="btn btn-no" onclick="this.textContent='Rejected';this.disabled=true">Reject</button></div></div>
+    <div class="verify-row"><div class="avatar" style="background:#9c27b0">F</div><div style="flex:1"><div class="name">FashionByFola</div><div class="sub">Passport · Submitted 5 hours ago</div></div><div style="display:flex;gap:6px"><button class="btn">View ID</button><button class="btn btn-ok" onclick="this.textContent='Approved ✓';this.disabled=true">Approve</button><button class="btn btn-no" onclick="this.textContent='Rejected';this.disabled=true">Reject</button></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Approved Sellers</div>
+    <div class="verify-row"><div class="avatar">A</div><div style="flex:1"><div class="name">Adunola Collections</div><div class="sub">NIN · Approved yesterday</div></div><span class="badge g">Verified ✓</span></div>
+    <div class="verify-row"><div class="avatar" style="background:#4caf50">T</div><div style="flex:1"><div class="name">TechHub Nigeria</div><div class="sub">BVN · Approved 3 days ago</div></div><span class="badge g">Verified ✓</span></div>
+  </div>
+</div>
+
+<div id="page-settings" style="display:none">
+  <div class="topbar"><div class="page-title">Settings</div></div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title">Commission Rate</div>
+    <div style="display:flex;align-items:center;gap:16px;margin-top:8px"><input type="range" min="5" max="20" value="10" id="sl" oninput="document.getElementById('sv').textContent=this.value+'%'"><span id="sv" style="font-size:22px;font-weight:800;color:#FF5722;min-width:48px">10%</span><button class="btn btn-primary" style="font-size:13px">Save</button></div>
+    <div style="font-size:11px;color:#555;margin-top:8px">10% of each sale goes to SellLive. Currently generating ₦8.4M/month.</div>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title">System Status</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;font-size:13px">
+      <div style="display:flex;justify-content:space-between"><span>API (Vercel)</span><span class="badge g">Operational</span></div>
+      <div style="display:flex;justify-content:space-between"><span>Database (Supabase)</span><span class="badge g">Operational</span></div>
+      <div style="display:flex;justify-content:space-between"><span>SMS (Sendchamp)</span><span class="badge g">Operational</span></div>
+      <div style="display:flex;justify-content:space-between"><span>Payments (Flutterwave)</span><span class="badge g">Operational</span></div>
+      <div style="display:flex;justify-content:space-between"><span>Video (Daily.co)</span><span class="badge g">Operational</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Quick Links</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
+      <a href="https://selllive.vercel.app/api/test" target="_blank" style="color:#FF5722;font-size:13px">selllive.vercel.app/api/test ↗</a>
+      <a href="https://supabase.com/dashboard/project/aayprwxhzbhmghvgaeyi" target="_blank" style="color:#FF5722;font-size:13px">Supabase Dashboard ↗</a>
+      <a href="https://github.com/ibitoyeoluwasegunemmanuel-ops/selllive" target="_blank" style="color:#FF5722;font-size:13px">GitHub Repository ↗</a>
+      <a href="https://vercel.com/ibitoyeoluwasegunemmanuel-ops-projects/selllive" target="_blank" style="color:#FF5722;font-size:13px">Vercel Dashboard ↗</a>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+function show(page, el) {
+  document.querySelectorAll('[id^="page-"]').forEach(p => p.style.display='none');
+  document.getElementById('page-' + page).style.display = 'block';
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+}
+function switchTab(el) {
+  el.closest('.tab-row').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
