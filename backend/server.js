@@ -32,6 +32,7 @@ const featuresRoutes = require('./routes/features');
 const webhookRoutes = require('./routes/webhook');
 const reviewsRoutes = require('./routes/reviews');
 const notifRoutes = require('./routes/notifications_route');
+const productsRoutes = require('./routes/products');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -61,10 +62,16 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Trust Vercel's proxy so rate limiting works correctly
+app.set('trust proxy', 1);
+
 // Rate limiting — prevent abuse
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100,                  // 100 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: { xForwardedForHeader: false }, // suppress Vercel proxy warning
   message: { error: 'Too many requests, please slow down.' }
 });
 app.use('/api/', limiter);
@@ -73,6 +80,9 @@ app.use('/api/', limiter);
 const authLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 10,                   // 10 OTP requests per hour
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
   message: { error: 'Too many auth attempts. Try again in an hour.' }
 });
 app.use('/api/auth/', authLimiter);
@@ -109,6 +119,7 @@ app.use('/api/features', featuresRoutes);
 app.use('/webhook', webhookRoutes);
 app.use('/api/reviews', reviewsRoutes);
 app.use('/api/notif-centre', notifRoutes);
+app.use('/api/products', productsRoutes);
 app.use('/api/whatsapp', waRouter);
 app.use('/api/logistics', logisticsRoutes);
 app.use('/api/loyalty', loyaltyRoutes);

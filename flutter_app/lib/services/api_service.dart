@@ -386,6 +386,22 @@ class ApiService {
     return r.data;
   }
 
+  // ===== GENERIC HTTP METHODS =====
+  Future<dynamic> get(String path, {Map<String, dynamic>? params}) async {
+    final r = await _dio.get(path, queryParameters: params);
+    return r.data;
+  }
+
+  Future<dynamic> patch(String path, Map<String, dynamic> body) async {
+    final r = await _dio.patch(path, data: body);
+    return r.data;
+  }
+
+  Future<dynamic> delete(String path) async {
+    final r = await _dio.delete(path);
+    return r.data;
+  }
+
   // ===== SELLER PROFILE =====
   Future<Map<String, dynamic>> getSellerProfile(String sellerId) async {
     final r = await _dio.get('/auth/seller/\$sellerId');
