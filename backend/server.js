@@ -117,6 +117,44 @@ app.use('/api/verification', verificationRoutes);
 // Flutterwave webhook (no rate limiting — it's from Flutterwave's servers)
 
 // ============================================================
+// ============================================================
+// ROOT API ROUTES
+// ============================================================
+
+// GET /api — API index
+app.get('/api', (req, res) => {
+  res.json({
+    app: 'SellLive API',
+    version: '1.0.0',
+    status: 'ok',
+    time: new Date().toISOString(),
+    endpoints: [
+      '/health',
+      '/api/auth/send-otp',
+      '/api/auth/verify-otp',
+      '/api/explore/trending',
+      '/api/explore/categories',
+      '/api/feed',
+      '/api/features/flash-sales',
+      '/api/wallet/banks',
+      '/api/payments/initiate',
+      '/api/sellers',
+      '/api/orders',
+    ],
+  });
+});
+
+// GET /api/test — connectivity test (confirms API is deployed and reachable)
+app.get('/api/test', (req, res) => {
+  res.status(200).json({
+    message: 'API is working',
+    app: 'SellLive',
+    timestamp: new Date().toISOString(),
+    node_version: process.version,
+  });
+});
+
+// ============================================================
 // ERROR HANDLING
 // ============================================================
 
