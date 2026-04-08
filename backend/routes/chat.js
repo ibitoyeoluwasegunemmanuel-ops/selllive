@@ -19,7 +19,7 @@ router.get('/conversations', authenticate, async (req, res) => {
       id, last_message, last_message_at, buyer_unread, seller_unread,
       buyer:users!buyer_id(id, name, avatar_url),
       seller:users!seller_id(id, name, avatar_url),
-      seller_profile:seller_profiles!seller_id(business_name)
+      seller_profile:seller_profiles!user_id(business_name)
     `)
     .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
     .order('last_message_at', { ascending: false });

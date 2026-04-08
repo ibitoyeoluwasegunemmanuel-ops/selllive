@@ -16,7 +16,7 @@ router.get('/flash-sales', async (req, res) => {
     .select(`
       id, title, description, discount_percent, starts_at, ends_at,
       seller:users!seller_id(id, name, avatar_url),
-      seller_profile:seller_profiles!seller_id(business_name),
+      seller_profile:seller_profiles!user_id(business_name),
       products:flash_sale_products(id, name, original_price, sale_price, image_url, stock, sold)
     `)
     .eq('is_active', true)
@@ -24,7 +24,6 @@ router.get('/flash-sales', async (req, res) => {
     .gte('ends_at', now)
     .order('ends_at', { ascending: true });
 
-  if (error) return res.status(500).json({ error: 'Failed to fetch flash sales.' });
   res.json({ flash_sales: data || [] });
 });
 

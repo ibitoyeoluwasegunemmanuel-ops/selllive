@@ -18,7 +18,7 @@ router.get('/trending', async (req, res) => {
       id, title, thumbnail_url, viewer_count, total_orders,
       share_count, trending_score, started_at,
       seller:users!seller_id(id, name, avatar_url),
-      seller_profile:seller_profiles!seller_id(business_name, followers_count),
+      seller_profile:seller_profiles!user_id(business_name, followers_count),
       products:stream_products(id, name, price, image_url, is_active)
     `)
     .eq('status', 'live')

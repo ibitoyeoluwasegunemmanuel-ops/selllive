@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
       id, caption, media_url, media_type, thumbnail_url,
       duration_secs, like_count, comment_count, share_count, view_count, created_at,
       seller:users!seller_id(id, name, avatar_url),
-      seller_profile:seller_profiles!seller_id(business_name, trust_score, is_verified),
+      seller_profile:seller_profiles!user_id(business_name, trust_score, is_verified),
       products:post_products(id, name, price, image_url, stock, position)
     `)
     .eq('is_active', true)
