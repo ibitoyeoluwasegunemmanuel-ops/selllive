@@ -136,7 +136,7 @@ router.post('/withdraw', authenticate, sellerOnly, async (req, res) => {
 // ============================================================
 // GET /api/wallet/banks — list Nigerian banks for Flutterwave
 // ============================================================
-router.get('/banks', authenticate, async (req, res) => {
+router.get('/banks', async (req, res) => {
   try {
     if (process.env.FLW_SECRET_KEY) {
       const response = await axios.get(
