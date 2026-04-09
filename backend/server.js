@@ -42,8 +42,22 @@ const PORT = process.env.PORT || 3000;
 // MIDDLEWARE
 // ============================================================
 
-// Security headers
-app.use(helmet());
+// Security headers — allow inline scripts/onclick for web app pages
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrcAttr: ["'unsafe-inline'"],
+      styleSrc: ["'self'", "https:", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'", "https:", "data:"],
+      objectSrc: ["'none'"],
+    },
+  },
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
 
 // CORS — allow Flutter web and mobile
 app.use(cors({
