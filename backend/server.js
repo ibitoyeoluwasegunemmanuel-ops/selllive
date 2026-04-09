@@ -5,6 +5,7 @@
 
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -92,16 +93,12 @@ app.use('/api/auth/', authLimiter);
 // ============================================================
 
 // Health check (for Render/Railway deployment)
-// Root route — fixes Vercel preview "Route not found" display
+// Serve web/ static files (landing page, admin dashboard etc)
+app.use(express.static(path.join(__dirname, '../web')));
+
+// Root — serve landing page
 app.get('/', (req, res) => {
-  res.json({
-    app: 'SellLive',
-    status: 'running',
-    version: '1.0.0',
-    description: 'Nigeria Live Commerce Platform API',
-    docs: '/api',
-    health: '/health',
-  });
+  res.sendFile(path.join(__dirname, '../web/index.html'));
 });
 
 app.get('/health', (req, res) => {
