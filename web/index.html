@@ -3,309 +3,261 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
+<!-- CSP inline in HTML so it works regardless of server caching -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; script-src-attr 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https:;">
 <title>SellLive — Nigeria's Live Commerce Platform</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0a0a0a;--card:#141414;--card2:#1a1a1a;--bd:#222;--or:#FF5722;--red:#FF1744;--mu:#777;--wh:#fff;--gr:#22c55e;--ye:#FF9800}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--wh);min-height:100vh}
 a{text-decoration:none;color:inherit}
-img{display:block}
-
-/* ── NAV ── */
-nav{position:sticky;top:0;z-index:200;background:rgba(10,10,10,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd);padding:0 24px;display:flex;align-items:center;gap:24px;height:58px}
-.nav-logo{font-size:20px;font-weight:900;letter-spacing:-.5px;flex-shrink:0}
-.nav-logo span{color:var(--or)}
-.nav-tabs{display:flex;gap:4px;flex:1}
-.nav-tab{padding:7px 16px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;color:var(--mu);transition:all .2s;border:none;background:none}
-.nav-tab:hover{color:var(--wh);background:rgba(255,255,255,.06)}
-.nav-tab.on{background:var(--or);color:#fff}
-.nav-right{display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0}
-.nav-search{background:var(--card2);border:1px solid var(--bd);border-radius:20px;padding:7px 14px;font-size:13px;color:var(--mu);width:200px;outline:none}
-.nav-search:focus{border-color:var(--or);color:var(--wh)}
-.nav-login{background:var(--or);color:#fff;border:none;border-radius:20px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;animation:bk 1.2s infinite;margin-right:4px}
+nav{position:sticky;top:0;z-index:200;background:rgba(10,10,10,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd);padding:0 24px;display:flex;align-items:center;gap:16px;height:58px}
+.logo{font-size:20px;font-weight:900;letter-spacing:-.5px;flex-shrink:0;color:var(--wh)}
+.logo b{color:var(--or)}
+.tabs{display:flex;gap:4px;flex:1}
+.tab{padding:7px 16px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;color:var(--mu);border:none;background:none;transition:all .15s}
+.tab:hover{color:var(--wh);background:rgba(255,255,255,.07)}
+.tab.on{background:var(--or);color:#fff}
+.nav-r{display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0}
+.search-inp{background:var(--card2);border:1px solid var(--bd);border-radius:20px;padding:7px 14px;font-size:13px;color:var(--mu);width:190px;outline:none}
+.search-inp:focus{border-color:var(--or);color:var(--wh)}
+.sign-btn{background:var(--or);color:#fff;border:none;border-radius:20px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer}
+.ldot{width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;animation:bk 1.2s infinite;margin-right:4px;vertical-align:middle}
 @keyframes bk{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* ── PAGES ── */
 .page{display:none;padding:24px;max-width:1200px;margin:0 auto}
 .page.on{display:block}
-
-/* ── HOME ── */
-.hero-banner{background:linear-gradient(135deg,#1a0800,#0d0300);border:1px solid rgba(255,87,34,.2);border-radius:20px;padding:40px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
-.hero-h{font-size:clamp(24px,4vw,42px);font-weight:900;letter-spacing:-1.5px;line-height:1.05;margin-bottom:10px}
-.hero-h em{color:var(--or);font-style:normal}
-.hero-sub{font-size:14px;color:var(--mu);line-height:1.6;max-width:420px;margin-bottom:20px}
-.hero-btns{display:flex;gap:10px;flex-wrap:wrap}
-.btn-or{background:var(--or);color:#fff;border:none;border-radius:20px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer}
-.btn-out{background:transparent;color:var(--wh);border:1px solid var(--bd);border-radius:20px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer}
-.hero-stats{display:flex;gap:28px;flex-wrap:wrap}
+/* HERO */
+.hero{background:linear-gradient(135deg,#1a0800,#0d0300);border:1px solid rgba(255,87,34,.2);border-radius:20px;padding:40px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.hero-h{font-size:clamp(22px,4vw,40px);font-weight:900;letter-spacing:-1.5px;line-height:1.05;margin-bottom:10px}
+.hero-h i{color:var(--or);font-style:normal}
+.hero-sub{font-size:14px;color:var(--mu);line-height:1.6;max-width:420px;margin-bottom:18px}
+.hbtns{display:flex;gap:10px;flex-wrap:wrap}
+.btn-p{background:var(--or);color:#fff;border:none;border-radius:20px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer}
+.btn-o{background:transparent;color:var(--wh);border:1px solid var(--bd);border-radius:20px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer}
+.hstats{display:flex;gap:28px;flex-wrap:wrap}
 .hstat{text-align:center}
-.hstat-v{font-size:26px;font-weight:800;color:var(--or)}
-.hstat-l{font-size:11px;color:var(--mu);margin-top:2px}
-
-/* ── SECTION HEADER ── */
-.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.sec-title{font-size:17px;font-weight:800;letter-spacing:-.3px}
-.sec-link{font-size:12px;color:var(--or);cursor:pointer;font-weight:600}
-
-/* ── STREAM CARDS ── */
-.streams-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:32px}
-.stream-card{background:var(--card);border:1px solid var(--bd);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
-.stream-card:hover{transform:translateY(-3px);border-color:#333}
-.stream-thumb{height:160px;display:flex;align-items:center;justify-content:center;font-size:52px;position:relative;overflow:hidden}
-.stream-thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
-.stream-badges{position:absolute;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;pointer-events:none}
-.badge-live{background:var(--red);color:#fff;font-size:8px;font-weight:800;padding:3px 8px;border-radius:5px;letter-spacing:.5px}
-.badge-v{background:rgba(0,0,0,.75);color:#fff;font-size:10px;padding:3px 8px;border-radius:5px}
-.stream-body{padding:12px}
-.stream-seller{font-size:10px;color:var(--mu);margin-bottom:2px;display:flex;align-items:center;gap:4px}
-.verified{color:var(--or);font-size:9px}
-.stream-title{font-size:12px;font-weight:700;line-height:1.35;margin-bottom:6px}
-.stream-footer{display:flex;align-items:center;justify-content:space-between}
-.stream-price{font-size:15px;font-weight:800;color:var(--or)}
-.buy-pill{background:rgba(255,87,34,.12);color:var(--or);border:1px solid rgba(255,87,34,.3);border-radius:12px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer}
-.buy-pill:hover{background:var(--or);color:#fff}
-
-/* ── FEED ── */
-.feed-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
-.feed-card{background:var(--card);border:1px solid var(--bd);border-radius:16px;overflow:hidden;cursor:pointer}
-.feed-img{height:280px;display:flex;align-items:center;justify-content:center;font-size:70px;position:relative}
-.feed-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
-.feed-overlay{position:absolute;bottom:0;left:0;right:0;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,.85))}
-.feed-seller-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
-.feed-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
-.feed-actions{display:flex;gap:14px;padding:12px 14px;border-top:1px solid var(--bd)}
-.feed-action{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--mu);cursor:pointer;font-weight:600}
-.feed-action:hover{color:var(--wh)}
-.feed-product{margin:10px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px;display:flex;align-items:center;gap:10px}
-
-/* ── EXPLORE ── */
-.cat-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.cat-pill{padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--mu);transition:all .2s}
-.cat-pill.on{background:var(--or);color:#fff;border-color:var(--or)}
-.explore-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-
-/* ── FLASH SALE ── */
-.flash-bar{background:linear-gradient(135deg,#1a0000,#280000);border:1px solid rgba(255,23,68,.25);border-radius:16px;padding:18px 20px;display:flex;align-items:center;gap:16px;margin-bottom:28px;cursor:pointer}
-.flash-bar:hover{border-color:rgba(255,23,68,.5)}
-.flash-info{flex:1}
-.flash-title{font-size:16px;font-weight:800;color:var(--red)}
-.flash-sub{font-size:12px;color:var(--mu);margin-top:3px}
-.flash-timer{font-family:monospace;font-size:22px;font-weight:800;color:var(--red);flex-shrink:0}
-.flash-products{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:28px}
-.flash-card{background:linear-gradient(135deg,#1a0000,#0d0000);border:1px solid rgba(255,23,68,.2);border-radius:14px;padding:16px;cursor:pointer}
-.flash-card:hover{border-color:rgba(255,23,68,.4)}
-.original-price{font-size:12px;color:var(--mu);text-decoration:line-through}
-.sale-price{font-size:20px;font-weight:800;color:var(--red)}
-.off-badge{background:rgba(255,23,68,.15);color:var(--red);font-size:10px;font-weight:800;padding:2px 8px;border-radius:5px;margin-left:6px}
-
-/* ── STREAM VIEWER MODAL ── */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:none;align-items:center;justify-content:center}
-.modal-bg.on{display:flex}
-.sv-modal{background:#0d0d0d;border:1px solid var(--bd);border-radius:20px;width:min(900px,95vw);max-height:90vh;overflow:hidden;display:flex;flex-direction:column}
-.sv-top{background:#000;height:420px;display:flex;align-items:center;justify-content:center;font-size:100px;position:relative;flex-shrink:0}
-.sv-top img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
-.sv-top-bar{position:absolute;top:0;left:0;right:0;padding:16px;display:flex;align-items:center;gap:10px;background:linear-gradient(to bottom,rgba(0,0,0,.7),transparent)}
-.sv-bottom{display:flex;flex:1;overflow:hidden;min-height:0}
-.sv-left{flex:1;padding:18px;border-right:1px solid var(--bd);display:flex;flex-direction:column;min-width:0}
-.sv-products{flex-shrink:0}
-.sv-prod-card{background:var(--card2);border:1px solid var(--bd);border-radius:10px;padding:12px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.sv-right{width:300px;display:flex;flex-direction:column;flex-shrink:0}
-.sv-chat-messages{flex:1;padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;min-height:120px;max-height:200px}
-.sv-chat-messages::-webkit-scrollbar{width:3px}
-.sv-chat-messages::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
-.chat-msg{font-size:12px;color:var(--wh);line-height:1.4}
-.chat-input-row{padding:10px;border-top:1px solid var(--bd);display:flex;gap:8px}
-.chat-inp{flex:1;background:var(--card2);border:1px solid var(--bd);border-radius:16px;padding:8px 12px;color:var(--wh);font-size:13px;outline:none}
-.chat-inp:focus{border-color:var(--or)}
-.chat-send{background:var(--or);border:none;color:#fff;border-radius:16px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer}
-
-/* ── ORDERS ── */
-.orders-tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:20px}
+.hsv{font-size:26px;font-weight:800;color:var(--or)}
+.hsl{font-size:11px;color:var(--mu);margin-top:2px}
+/* SECTIONS */
+.sechdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sech{font-size:17px;font-weight:800;letter-spacing:-.3px}
+.secl{font-size:12px;color:var(--or);cursor:pointer;font-weight:600}
+/* STREAM CARDS */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:14px;margin-bottom:32px}
+.sc{background:var(--card);border:1px solid var(--bd);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s;user-select:none}
+.sc:hover{transform:translateY(-3px);border-color:#333}
+.sc:active{transform:scale(.98)}
+.sthumb{height:160px;display:flex;align-items:center;justify-content:center;font-size:52px;position:relative;overflow:hidden;pointer-events:none}
+.sovl{position:absolute;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;pointer-events:none}
+.bl{background:var(--red);color:#fff;font-size:8px;font-weight:800;padding:3px 8px;border-radius:5px}
+.bv{background:rgba(0,0,0,.75);color:#fff;font-size:10px;padding:3px 8px;border-radius:5px}
+.sbody{padding:12px;pointer-events:none}
+.ssell{font-size:10px;color:var(--mu);margin-bottom:2px}
+.stit{font-size:12px;font-weight:700;line-height:1.35;margin-bottom:6px}
+.sfooter{display:flex;align-items:center;justify-content:space-between}
+.sprice{font-size:15px;font-weight:800;color:var(--or)}
+.buy-btn{background:rgba(255,87,34,.12);color:var(--or);border:1px solid rgba(255,87,34,.3);border-radius:12px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;pointer-events:auto}
+.buy-btn:hover{background:var(--or);color:#fff}
+/* FEED */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.fc{background:var(--card);border:1px solid var(--bd);border-radius:16px;overflow:hidden}
+.fimg{height:280px;display:flex;align-items:center;justify-content:center;font-size:70px;position:relative}
+.fimg img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.fovl{position:absolute;bottom:0;left:0;right:0;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,.88))}
+.fav{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
+.factions{display:flex;gap:14px;padding:11px 14px;border-top:1px solid var(--bd)}
+.fact{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--mu);cursor:pointer;font-weight:600}
+.fact:hover{color:var(--wh)}
+.fact svg{pointer-events:none}
+/* EXPLORE */
+.cats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.cat{padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--mu);transition:all .15s}
+.cat.on{background:var(--or);color:#fff;border-color:var(--or)}
+/* FLASH */
+.flashbar{background:linear-gradient(135deg,#1a0000,#280000);border:1px solid rgba(255,23,68,.25);border-radius:16px;padding:18px 20px;display:flex;align-items:center;gap:16px;margin-bottom:20px;cursor:pointer}
+.flashbar:hover{border-color:rgba(255,23,68,.5)}
+.ftimer{font-family:monospace;font-size:22px;font-weight:800;color:var(--red)}
+.fpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:24px}
+.fpc{background:linear-gradient(135deg,#1a0000,#0d0000);border:1px solid rgba(255,23,68,.2);border-radius:14px;padding:16px;cursor:pointer}
+/* ORDERS */
+.otabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:20px}
 .otab{padding:10px 18px;font-size:13px;font-weight:700;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
 .otab.on{color:var(--or);border-bottom-color:var(--or)}
-.order-card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:12px}
-.order-ref{font-size:11px;font-weight:800;font-family:monospace;color:var(--or)}
-.order-product{font-size:14px;font-weight:700;margin:6px 0 4px}
-.order-amount{font-size:20px;font-weight:800;color:var(--or);margin-bottom:12px}
-.progress{display:flex;align-items:center;margin-bottom:12px}
+.ocard{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:12px}
+.oref{font-size:11px;font-weight:800;font-family:monospace;color:var(--or)}
+.pbar{display:flex;align-items:center;margin-bottom:12px}
 .pdot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
 .pline{flex:1;height:2px}
-.plbl{font-size:9px;font-weight:700;margin-top:4px;text-align:center}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--card2);border:1px solid var(--bd);border-radius:12px;padding:12px 20px;font-size:13px;font-weight:600;z-index:999;display:none;animation:su .25s ease;max-width:320px}
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.87);z-index:500;display:none;align-items:center;justify-content:center}
+.modal.on{display:flex}
+.mbox{background:#0d0d0d;border:1px solid var(--bd);border-radius:20px;width:min(900px,96vw);max-height:92vh;overflow:hidden;display:flex;flex-direction:column}
+.mvideo{background:#000;height:400px;display:flex;align-items:center;justify-content:center;font-size:100px;position:relative;flex-shrink:0}
+.mtopbar{position:absolute;top:0;left:0;right:0;padding:16px;display:flex;align-items:center;gap:10px;background:linear-gradient(to bottom,rgba(0,0,0,.75),transparent)}
+.mbot{display:flex;flex:1;overflow:hidden;min-height:0}
+.mleft{flex:1;padding:18px;border-right:1px solid var(--bd);overflow-y:auto}
+.mright{width:300px;display:flex;flex-direction:column;flex-shrink:0}
+.chatfeed{flex:1;padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;max-height:200px}
+.chatfeed::-webkit-scrollbar{width:3px}
+.chatfeed::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
+.chatmsg{font-size:12px;line-height:1.4}
+.chatrow{padding:10px;border-top:1px solid var(--bd);display:flex;gap:8px}
+.chatinp{flex:1;background:var(--card2);border:1px solid var(--bd);border-radius:16px;padding:8px 12px;color:var(--wh);font-size:13px;outline:none}
+.chatinp:focus{border-color:var(--or)}
+.chatsend{background:var(--or);border:none;color:#fff;border-radius:16px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer}
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:#1e1e1e;border:1px solid #333;border-radius:12px;padding:12px 20px;font-size:13px;font-weight:600;z-index:999;display:none;max-width:320px}
 .toast.on{display:block}
-@keyframes su{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
-
-/* ── LOADING ── */
-.skeleton{background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);background-size:200% 100%;animation:sk 1.5s infinite;border-radius:8px}
+/* SKELETON */
+.skel{background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);background-size:200% 100%;animation:sk 1.5s infinite;border-radius:14px;height:220px;margin-bottom:12px}
 @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.skel-card{height:220px;border-radius:16px;margin-bottom:14px}
-
-/* ── EMPTY ── */
 .empty{text-align:center;padding:60px 20px;color:var(--mu)}
-.empty-icon{font-size:48px;margin-bottom:12px}
-.empty-text{font-size:15px;font-weight:600;color:var(--wh);margin-bottom:6px}
-.empty-sub{font-size:13px}
-
-/* ── SELLER PROFILE ── */
-.seller-profile-header{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:24px;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-.seller-av-big{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;flex-shrink:0;background:var(--or)}
-
-/* ── RESPONSIVE ── */
 @media(max-width:600px){
-  nav{padding:0 14px;gap:12px}
-  .nav-search{display:none}
+  nav{padding:0 12px;gap:8px}
+  .search-inp{display:none}
   .page{padding:14px}
-  .hero-banner{padding:24px}
-  .sv-bottom{flex-direction:column}
-  .sv-right{width:100%;border-top:1px solid var(--bd);border-right:none}
-  .sv-chat-messages{max-height:140px}
+  .hero{padding:20px}
+  .mbot{flex-direction:column}
+  .mright{width:100%;border-top:1px solid var(--bd)}
+  .chatfeed{max-height:130px}
 }
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-logo"><span>Sell</span>Live</div>
-  <div class="nav-tabs">
-    <button class="nav-tab on" onclick="showPage('home',this)"><span class="live-dot"></span>Live</button>
-    <button class="nav-tab" onclick="showPage('feed',this)">Feed</button>
-    <button class="nav-tab" onclick="showPage('explore',this)">Explore</button>
-    <button class="nav-tab" onclick="showPage('flash',this)">⚡ Flash Sales</button>
-    <button class="nav-tab" onclick="showPage('orders',this)">Orders</button>
+  <div class="logo"><b>Sell</b>Live</div>
+  <div class="tabs">
+    <button class="tab on" data-page="home"><span class="ldot"></span>Live</button>
+    <button class="tab" data-page="feed">Feed</button>
+    <button class="tab" data-page="explore">Explore</button>
+    <button class="tab" data-page="flash">⚡ Flash Sales</button>
+    <button class="tab" data-page="orders">Orders</button>
   </div>
-  <div class="nav-right">
-    <input class="nav-search" placeholder="🔍  Search products, sellers..."/>
-    <button class="nav-login" onclick="T('📱 Download the SellLive app to log in!')">Sign In</button>
+  <div class="nav-r">
+    <input class="search-inp" id="searchinp" placeholder="🔍  Search products, sellers..."/>
+    <button class="sign-btn" id="signbtn">Sign In</button>
   </div>
 </nav>
 
-<!-- HOME -->
 <div class="page on" id="page-home">
-  <div class="hero-banner">
+  <div class="hero">
     <div>
-      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,23,68,.12);border:1px solid rgba(255,23,68,.3);color:var(--red);padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:14px"><span class="live-dot"></span><span id="live-label">3 SELLERS LIVE NOW</span></div>
-      <div class="hero-h">Shop Live.<br/><em>Buy Direct.</em><br/>Only in Nigeria.</div>
-      <div class="hero-sub">Watch sellers stream live, ask questions in real time, and buy instantly. Fashion, tech, beauty — going live now.</div>
-      <div class="hero-btns">
-        <button class="btn-or" onclick="showPage('home',document.querySelector('.nav-tab'))">Watch Live Now</button>
-        <button class="btn-out" onclick="showPage('explore',document.querySelectorAll('.nav-tab')[2])">Browse Products</button>
+      <div style="display:inline-flex;align-items:center;background:rgba(255,23,68,.12);border:1px solid rgba(255,23,68,.3);color:var(--red);padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:14px"><span class="ldot"></span><span id="livelabel">3 SELLERS LIVE NOW</span></div>
+      <div class="hero-h">Shop Live.<br/><i>Buy Direct.</i><br/>Only in Nigeria.</div>
+      <p class="hero-sub">Watch sellers stream live, ask questions in real time, and buy instantly. Fashion, tech, beauty — going live now.</p>
+      <div class="hbtns">
+        <button class="btn-p" id="watchbtn">Watch Live Now</button>
+        <button class="btn-o" id="browsebtn">Browse Products</button>
       </div>
     </div>
-    <div class="hero-stats">
-      <div class="hstat"><div class="hstat-v" id="hs-streams">3</div><div class="hstat-l">Live Streams</div></div>
-      <div class="hstat"><div class="hstat-v" id="hs-viewers">4,073</div><div class="hstat-l">Watching Now</div></div>
-      <div class="hstat"><div class="hstat-v">₦84M+</div><div class="hstat-l">GMV to Date</div></div>
+    <div class="hstats">
+      <div class="hstat"><div class="hsv" id="hs1">3</div><div class="hsl">Live Streams</div></div>
+      <div class="hstat"><div class="hsv" id="hs2">4,073</div><div class="hsl">Watching Now</div></div>
+      <div class="hstat"><div class="hsv">₦84M+</div><div class="hsl">GMV to Date</div></div>
     </div>
   </div>
-
-  <div class="sec-hdr"><div class="sec-title">🔴 Live Streams</div><div class="sec-link" onclick="showPage('explore',document.querySelectorAll('.nav-tab')[2])">See all →</div></div>
-  <div class="streams-row" id="home-streams"><div class="skeleton skel-card"></div><div class="skeleton skel-card"></div><div class="skeleton skel-card"></div></div>
-
-  <div class="sec-hdr"><div class="sec-title">📱 Shop Feed</div><div class="sec-link" onclick="showPage('feed',document.querySelectorAll('.nav-tab')[1])">See all →</div></div>
-  <div class="feed-grid" id="home-feed"><div class="skeleton skel-card"></div><div class="skeleton skel-card"></div><div class="skeleton skel-card"></div></div>
+  <div class="sechdr"><div class="sech">🔴 Live Streams</div><div class="secl" id="seeall1">See all →</div></div>
+  <div class="sgrid" id="home-streams"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+  <div class="sechdr"><div class="sech">📱 Shop Feed</div><div class="secl" id="seeall2">See all →</div></div>
+  <div class="fgrid" id="home-feed"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
 </div>
 
-<!-- FEED -->
 <div class="page" id="page-feed">
-  <div class="sec-hdr" style="margin-bottom:20px"><div class="sec-title">📱 Shop Feed</div></div>
-  <div class="feed-grid" id="feed-grid"><div class="skeleton skel-card"></div><div class="skeleton skel-card"></div><div class="skeleton skel-card" style="height:220px"></div></div>
+  <div class="sechdr" style="margin-bottom:20px"><div class="sech">📱 Shop Feed</div></div>
+  <div class="fgrid" id="feed-grid"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
 </div>
 
-<!-- EXPLORE -->
 <div class="page" id="page-explore">
-  <div class="sec-hdr" style="margin-bottom:16px"><div class="sec-title">Explore</div></div>
-  <div class="cat-row" id="cats"></div>
-  <div class="streams-row" id="explore-grid"><div class="skeleton skel-card"></div><div class="skeleton skel-card"></div><div class="skeleton skel-card"></div></div>
+  <div class="sechdr" style="margin-bottom:14px"><div class="sech">Explore</div></div>
+  <div class="cats" id="cats-row"></div>
+  <div class="sgrid" id="explore-grid"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
 </div>
 
-<!-- FLASH SALES -->
 <div class="page" id="page-flash">
-  <div class="sec-hdr" style="margin-bottom:20px"><div class="sec-title">⚡ Flash Sales</div></div>
-  <div id="flash-content"><div class="skeleton skel-card"></div></div>
+  <div class="sechdr" style="margin-bottom:20px"><div class="sech">⚡ Flash Sales</div></div>
+  <div id="flash-content"><div class="skel"></div></div>
 </div>
 
-<!-- ORDERS -->
 <div class="page" id="page-orders">
-  <div class="sec-hdr" style="margin-bottom:16px"><div class="sec-title">📦 My Orders</div></div>
-  <div class="orders-tabs">
-    <div class="otab on" onclick="oTab(this,'active')">Active (2)</div>
-    <div class="otab" onclick="oTab(this,'completed')">Completed (1)</div>
+  <div class="sechdr" style="margin-bottom:14px"><div class="sech">📦 My Orders</div></div>
+  <div class="otabs">
+    <div class="otab on" id="otab-a">Active (2)</div>
+    <div class="otab" id="otab-c">Completed (1)</div>
   </div>
-  <div id="orders-active">
-    <div class="order-card">
+  <div id="orders-a">
+    <div class="ocard">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-        <div class="order-ref">SL-A1B2-001</div>
+        <div class="oref">SL-A1B2-001</div>
         <span style="background:rgba(168,85,247,.15);color:#a855f7;font-size:10px;font-weight:800;padding:3px 10px;border-radius:6px">On the Way 📦</span>
       </div>
-      <div class="order-product">Ankara Print Dress (Size 14)</div>
-      <div class="order-amount">₦8,500</div>
-      <div class="progress">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--or);color:#fff">✓</div><div class="plbl" style="color:var(--or)">Paid</div></div>
+      <div style="font-size:14px;font-weight:700;margin:6px 0 4px">Ankara Print Dress (Size 14)</div>
+      <div style="font-size:20px;font-weight:800;color:var(--or);margin-bottom:12px">₦8,500</div>
+      <div class="pbar">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--or);color:#fff">✓</div><div style="font-size:9px;font-weight:700;color:var(--or)">Paid</div></div>
         <div class="pline" style="background:var(--or)"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--or);color:#fff">✓</div><div class="plbl" style="color:var(--or)">Packed</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--or);color:#fff">✓</div><div style="font-size:9px;font-weight:700;color:var(--or)">Packed</div></div>
         <div class="pline" style="background:var(--or)"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:#a855f7;color:#fff">✓</div><div class="plbl" style="color:#a855f7">Shipped</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:#a855f7;color:#fff">✓</div><div style="font-size:9px;font-weight:700;color:#a855f7">Shipped</div></div>
         <div class="pline" style="background:var(--bd)"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--bd)"></div><div class="plbl">Done</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--bd)"></div><div style="font-size:9px;font-weight:700;color:var(--mu)">Done</div></div>
       </div>
-      <div style="font-size:12px;color:var(--mu)">Seller: Adunola Collections · GIG Logistics · Est. delivery tomorrow</div>
+      <div style="font-size:12px;color:var(--mu)">Adunola Collections · GIG Logistics · Est. delivery tomorrow</div>
     </div>
-    <div class="order-card">
+    <div class="ocard">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-        <div class="order-ref">SL-C3D4-002</div>
+        <div class="oref">SL-C3D4-002</div>
         <span style="background:rgba(255,152,0,.15);color:var(--ye);font-size:10px;font-weight:800;padding:3px 10px;border-radius:6px">Being Packed</span>
       </div>
-      <div class="order-product">iPhone 14 Pro Max 256GB</div>
-      <div class="order-amount">₦180,000</div>
-      <div class="progress">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--or);color:#fff">✓</div><div class="plbl" style="color:var(--or)">Paid</div></div>
+      <div style="font-size:14px;font-weight:700;margin:6px 0 4px">iPhone 14 Pro Max 256GB</div>
+      <div style="font-size:20px;font-weight:800;color:var(--or);margin-bottom:12px">₦180,000</div>
+      <div class="pbar">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--or);color:#fff">✓</div><div style="font-size:9px;font-weight:700;color:var(--or)">Paid</div></div>
         <div class="pline" style="background:var(--or)"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--ye);color:#fff">✓</div><div class="plbl" style="color:var(--ye)">Packed</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--ye);color:#fff">✓</div><div style="font-size:9px;font-weight:700;color:var(--ye)">Packed</div></div>
         <div class="pline" style="background:var(--bd)"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--bd)"></div><div class="plbl">Ship</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--bd)"></div><div style="font-size:9px;font-weight:700;color:var(--mu)">Ship</div></div>
         <div class="pline" style="background:var(--bd)"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--bd)"></div><div class="plbl">Done</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--bd)"></div><div style="font-size:9px;font-weight:700;color:var(--mu)">Done</div></div>
       </div>
-      <div style="font-size:12px;color:var(--mu)">Seller: TechHub Nigeria · Awaiting shipment</div>
+      <div style="font-size:12px;color:var(--mu)">TechHub Nigeria · Awaiting shipment</div>
     </div>
   </div>
-  <div id="orders-completed" style="display:none">
-    <div class="order-card">
+  <div id="orders-c" style="display:none">
+    <div class="ocard">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-        <div class="order-ref">SL-E5F6-003</div>
+        <div class="oref">SL-E5F6-003</div>
         <span style="background:rgba(34,197,94,.15);color:var(--gr);font-size:10px;font-weight:800;padding:3px 10px;border-radius:6px">Delivered ✅</span>
       </div>
-      <div class="order-product">Glow Serum Set</div>
-      <div class="order-amount">₦4,500</div>
-      <div style="margin-top:10px"><button onclick="T('⭐ Review submitted! Thank you!')" style="padding:10px 20px;border-radius:10px;border:1px solid var(--bd);background:var(--card2);color:var(--or);font-size:13px;font-weight:700;cursor:pointer;width:100%">Leave a Review ⭐</button></div>
+      <div style="font-size:14px;font-weight:700;margin:6px 0 4px">Glow Serum Set</div>
+      <div style="font-size:20px;font-weight:800;color:var(--or);margin-bottom:12px">₦4,500</div>
+      <button id="reviewbtn" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--card2);color:var(--or);font-size:13px;font-weight:700;cursor:pointer">Leave a Review ⭐</button>
     </div>
   </div>
 </div>
 
 <!-- STREAM VIEWER MODAL -->
-<div class="modal-bg" id="sv-modal">
-  <div class="sv-modal">
-    <div class="sv-top" id="sv-bg">
-      <span id="sv-em" style="position:relative;z-index:1">👗</span>
-      <div class="sv-top-bar">
+<div class="modal" id="modal">
+  <div class="mbox">
+    <div class="mvideo" id="mvideo">
+      <span id="mvem" style="position:relative;z-index:1;pointer-events:none">👗</span>
+      <div class="mtopbar">
         <span style="background:var(--red);color:#fff;font-size:9px;font-weight:800;padding:3px 8px;border-radius:5px">LIVE</span>
-        <div style="flex:1;margin-left:8px"><div style="font-size:14px;font-weight:800" id="sv-name">Adunola</div><div style="font-size:11px;color:rgba(255,255,255,.7)" id="sv-viewers">👁 2,412 watching</div></div>
-        <button onclick="closeSV()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:18px;flex-shrink:0">✕</button>
+        <div style="flex:1;margin-left:8px">
+          <div style="font-size:14px;font-weight:800" id="mvname">Adunola</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.7)" id="mvv">👁 2,412 watching</div>
+        </div>
+        <button id="closebtn" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;flex-shrink:0">✕</button>
       </div>
     </div>
-    <div class="sv-bottom">
-      <div class="sv-left">
-        <div class="sv-products" id="sv-products"></div>
-      </div>
-      <div class="sv-right">
+    <div class="mbot">
+      <div class="mleft" id="mprods"></div>
+      <div class="mright">
         <div style="padding:10px 12px;border-bottom:1px solid var(--bd);font-size:12px;font-weight:700;color:var(--mu)">LIVE CHAT</div>
-        <div class="sv-chat-messages" id="sv-chat"></div>
-        <div class="chat-input-row">
-          <input class="chat-inp" id="chat-inp" placeholder="Type BUY to order or say hi..." onkeypress="if(event.key==='Enter')sendChat()"/>
-          <button class="chat-send" onclick="sendChat()">Send</button>
+        <div class="chatfeed" id="chatfeed"></div>
+        <div class="chatrow">
+          <input class="chatinp" id="chatinp" placeholder="Type BUY to order or say hi..."/>
+          <button class="chatsend" id="chatsend">Send</button>
         </div>
       </div>
     </div>
@@ -315,309 +267,291 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,10,10,.95);backdrop-fil
 <div class="toast" id="toast"></div>
 
 <script>
-const API = '';
-let streams = [], posts = [], categories = [], chatIntvl, chatIdx = {};
-const EMOJIS = {fashion:'👗',electronics:'📱',beauty:'💄',food:'🍲',jewelry:'💍',fabric:'🧵',phones:'📱',gadgets:'💻'};
+// ── DATA STORE (no JSON in onclick) ──
+const SL = { streams: [], posts: [], chatIntvl: null, chatIdx: 0 };
+const CHAT_MSGS = [
+  {u:'Ngozi',c:'#FF9800',t:'Beautiful! How much is delivery?'},
+  {u:'Seller',c:'#4CAF50',t:'Free delivery on orders over ₦10k 🔥'},
+  {u:'Emeka',c:'#2196F3',t:'BUY — size 14 please'},
+  {u:'SellLive',c:'#FF5722',t:'→ Order created for Emeka ✅'},
+  {u:'Chioma',c:'#FF9800',t:'Do you ship to Abuja?'},
+  {u:'Seller',c:'#4CAF50',t:'Yes! 2-3 days via GIG Logistics'},
+  {u:'Kele',c:'#9C27B0',t:'Last piece! I want it'},
+  {u:'SellLive',c:'#FF5722',t:'→ Order created for Kele ✅'},
+];
 const COLORS = ['#FF5722','#4CAF50','#e91e63','#2196F3','#9C27B0','#FF9800'];
 
-async function fetchData() {
-  try {
-    const [tr, fd, cats, fl] = await Promise.all([
-      fetch('/api/explore/trending').then(r=>r.json()),
-      fetch('/api/feed').then(r=>r.json()),
-      fetch('/api/explore/categories').then(r=>r.json()),
-      fetch('/api/features/flash-sales').then(r=>r.json()),
-    ]);
-    streams = tr.streams || [];
-    posts = fd.posts || [];
-    categories = cats.categories || [];
-
-    // Update hero stats
-    const viewers = streams.reduce((a,s)=>a+(s.viewer_count||0),0);
-    document.getElementById('hs-streams').textContent = streams.length;
-    document.getElementById('hs-viewers').textContent = viewers.toLocaleString();
-    document.getElementById('live-label').textContent = streams.length + ' SELLERS LIVE NOW';
-
-    renderHomeStreams();
-    renderHomeFeed();
-    renderFeedPage();
-    renderExplore();
-    renderFlash(fl.flash_sales||[]);
-  } catch(e) {
-    console.error(e);
-    T('⚠️ Could not load live data');
-  }
-}
-
-function getEmoji(title='') {
-  const t = title.toLowerCase();
-  if(t.includes('ankara')||t.includes('fashion')||t.includes('dress')||t.includes('lace')) return '👗';
+// ── HELPERS ──
+function emoji(t=''){
+  t=t.toLowerCase();
+  if(t.includes('ankara')||t.includes('dress')||t.includes('lace')||t.includes('fashion')) return '👗';
   if(t.includes('iphone')||t.includes('samsung')||t.includes('phone')) return '📱';
-  if(t.includes('serum')||t.includes('skin')||t.includes('beauty')||t.includes('glow')) return '💄';
-  if(t.includes('tech')||t.includes('laptop')||t.includes('gadget')) return '💻';
-  if(t.includes('food')||t.includes('snack')) return '🍲';
+  if(t.includes('serum')||t.includes('beauty')||t.includes('glow')||t.includes('skin')) return '💄';
+  if(t.includes('tech')||t.includes('laptop')) return '💻';
+  if(t.includes('food')) return '🍲';
   return '🛍️';
 }
-
-function getBg(title='') {
-  const t = title.toLowerCase();
-  if(t.includes('ankara')||t.includes('fashion')||t.includes('dress')) return 'linear-gradient(135deg,#1a0800,#3a1200)';
+function bg(t=''){
+  t=t.toLowerCase();
+  if(t.includes('ankara')||t.includes('dress')||t.includes('fashion')) return 'linear-gradient(135deg,#1a0800,#3a1200)';
   if(t.includes('iphone')||t.includes('tech')||t.includes('samsung')) return 'linear-gradient(135deg,#001a08,#003015)';
   if(t.includes('serum')||t.includes('beauty')||t.includes('glow')) return 'linear-gradient(135deg,#100015,#200025)';
-  return 'linear-gradient(135deg,#0d0d0d,#1a1a1a)';
+  return 'linear-gradient(135deg,#111,#1a1a1a)';
+}
+function price(p){ return p ? '₦'+(p/100).toLocaleString('en-NG',{maximumFractionDigits:0}) : ''; }
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),2800);
 }
 
-function fmtPrice(p) {
-  if(!p) return '';
-  return '₦' + (p/100).toLocaleString('en-NG',{maximumFractionDigits:0});
-}
+// ── NAV ──
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+    this.classList.add('on');
+    document.getElementById('page-'+this.dataset.page).classList.add('on');
+  });
+});
+document.getElementById('watchbtn').addEventListener('click',()=>{ document.querySelector('[data-page="home"]').click(); });
+document.getElementById('browsebtn').addEventListener('click',()=>{ document.querySelector('[data-page="explore"]').click(); });
+document.getElementById('seeall1').addEventListener('click',()=>{ document.querySelector('[data-page="explore"]').click(); });
+document.getElementById('seeall2').addEventListener('click',()=>{ document.querySelector('[data-page="feed"]').click(); });
+document.getElementById('signbtn').addEventListener('click',()=>toast('📱 Download the SellLive app to sign in!'));
+document.getElementById('reviewbtn').addEventListener('click',()=>toast('⭐ Review submitted! Thank you!'));
 
-function streamCardHTML(s) {
-  const em = getEmoji(s.title||'');
-  const bg = getBg(s.title||'');
-  const price = s.products?.[0]?.price ? fmtPrice(s.products[0].price) : '';
-  const name = s.seller_profile?.business_name || s.seller?.name || 'Seller';
-  const verified = s.seller_profile?.is_verified ? '<span class="verified">✓</span>' : '';
-  return `<div class="stream-card" onclick="openStream(${JSON.stringify(s).replace(/"/g,"&quot;")})">
-    <div class="stream-thumb" style="background:${bg}">${em}
-      <div class="stream-badges"><span class="badge-live">LIVE</span><span class="badge-v">👁 ${(s.viewer_count||0).toLocaleString()}</span></div>
+// ORDER TABS
+document.getElementById('otab-a').addEventListener('click', function(){
+  this.classList.add('on'); document.getElementById('otab-c').classList.remove('on');
+  document.getElementById('orders-a').style.display='block';
+  document.getElementById('orders-c').style.display='none';
+});
+document.getElementById('otab-c').addEventListener('click', function(){
+  this.classList.add('on'); document.getElementById('otab-a').classList.remove('on');
+  document.getElementById('orders-a').style.display='none';
+  document.getElementById('orders-c').style.display='block';
+});
+
+// ── RENDER STREAM CARD ──
+function streamCard(s, idx){
+  const em=emoji(s.title||''); const b=bg(s.title||'');
+  const nm=s.seller_profile?.business_name||s.seller?.name||'Seller';
+  const p=s.products?.[0]?.price ? price(s.products[0].price) : 'See prices';
+  const v=(s.seller_profile?.is_verified)?'✓':'';
+  const div=document.createElement('div');
+  div.className='sc'; div.dataset.idx=idx;
+  div.innerHTML=`
+    <div class="sthumb" style="background:${b}">${em}
+      <div class="sovl"><span class="bl">LIVE</span><span class="bv">👁 ${(s.viewer_count||0).toLocaleString()}</span></div>
     </div>
-    <div class="stream-body">
-      <div class="stream-seller">${name} ${verified}</div>
-      <div class="stream-title">${s.title||'Live Stream'}</div>
-      <div class="stream-footer">
-        <div class="stream-price">${price || 'See prices'}</div>
-        <div class="buy-pill" onclick="event.stopPropagation();T('🛒 Opening stream to order...');openStream(${JSON.stringify(s).replace(/"/g,"&quot;")})">BUY</div>
-      </div>
-    </div>
-  </div>`;
+    <div class="sbody">
+      <div class="ssell">${nm} ${v}</div>
+      <div class="stit">${s.title||'Live Stream'}</div>
+      <div class="sfooter"><div class="sprice">${p}</div><div class="buy-btn">BUY</div></div>
+    </div>`;
+  div.addEventListener('click', ()=>openStream(idx));
+  div.querySelector('.buy-btn').addEventListener('click', e=>{ e.stopPropagation(); openStream(idx); });
+  return div;
 }
 
-function postCardHTML(p, big=false) {
-  const em = getEmoji(p.caption||'');
-  const bg = getBg(p.caption||'');
-  const name = p.seller_profile?.business_name || p.seller?.name || 'Seller';
-  const initials = name[0]?.toUpperCase() || 'S';
-  const color = COLORS[Math.floor(Math.random()*COLORS.length)];
-  const prod = p.products?.[0];
-  const price = prod?.price ? fmtPrice(prod.price) : '';
-  const likes = (p.like_count||0) >= 1000 ? ((p.like_count||0)/1000).toFixed(1)+'k' : (p.like_count||0);
-
-  return `<div class="feed-card">
-    <div class="feed-img" style="background:${bg}">${p.media_url?`<img src="${p.media_url}" loading="lazy" onerror="this.style.display='none'"/>`:''}<span style="position:relative;z-index:1">${em}</span>
-      <div class="feed-overlay">
-        <div class="feed-seller-row">
-          <div class="feed-av" style="background:${color}">${initials}</div>
-          <span style="font-size:13px;font-weight:700">${name}${p.seller_profile?.is_verified?' ✓':''}</span>
-          <button onclick="T('✅ Following ${name}!')" style="margin-left:auto;padding:4px 12px;border:1.5px solid #fff;border-radius:12px;font-size:10px;font-weight:700;cursor:pointer;background:transparent;color:#fff">Follow</button>
+// ── RENDER FEED CARD ──
+function feedCard(p){
+  const em=emoji(p.caption||''); const b=bg(p.caption||'');
+  const nm=p.seller_profile?.business_name||p.seller?.name||'Seller';
+  const init=nm[0]?.toUpperCase()||'S';
+  const col=COLORS[Math.floor(Math.random()*COLORS.length)];
+  const prod=p.products?.[0]; const pr=prod?.price?price(prod.price):'';
+  const lk=(p.like_count||0)>=1000?((p.like_count||0)/1000).toFixed(1)+'k':(p.like_count||0);
+  const div=document.createElement('div'); div.className='fc';
+  div.innerHTML=`
+    <div class="fimg" style="background:${b}">
+      ${p.media_url?`<img src="${p.media_url}" loading="lazy" onerror="this.style.display='none'"/>`:'' }
+      <span style="position:relative;z-index:1;pointer-events:none">${em}</span>
+      <div class="fovl">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+          <div class="fav" style="background:${col}">${init}</div>
+          <span style="font-size:13px;font-weight:700">${nm}${p.seller_profile?.is_verified?' ✓':''}</span>
+          <button class="followbtn" style="margin-left:auto;padding:4px 12px;border:1.5px solid #fff;border-radius:12px;font-size:10px;font-weight:700;cursor:pointer;background:transparent;color:#fff">Follow</button>
         </div>
         ${prod?`<div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:10px">
-          <div style="flex:1"><div style="font-size:12px;font-weight:700">${prod.name||''}</div><div style="font-size:14px;font-weight:800;color:var(--or)">${price}</div></div>
-          <button onclick="T('🛒 Order created! Pay with Flutterwave →')" style="background:var(--or);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:800;cursor:pointer">BUY</button>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700">${prod.name||''}</div><div style="font-size:14px;font-weight:800;color:var(--or)">${pr}</div></div>
+          <button class="fc-buybtn" style="background:var(--or);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:800;cursor:pointer">BUY</button>
         </div>`:''}
       </div>
     </div>
-    <div style="padding:10px 14px;font-size:13px;color:rgba(255,255,255,.8);line-height:1.4">${(p.caption||'').slice(0,80)}${(p.caption||'').length>80?'...':''}</div>
-    <div class="feed-actions">
-      <div class="feed-action" onclick="likeFeed(this,${p.like_count||0})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> ${likes}</div>
-      <div class="feed-action" onclick="T('💬 ${p.comment_count||0} comments')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> ${p.comment_count||0}</div>
-      <div class="feed-action" onclick="T('📤 Sharing to WhatsApp...')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share</div>
-    </div>
-  </div>`;
+    <div style="padding:10px 14px;font-size:13px;color:rgba(255,255,255,.8);line-height:1.4">${(p.caption||'').slice(0,90)}</div>
+    <div class="factions">
+      <div class="fact like-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> <span>${lk}</span></div>
+      <div class="fact cmt-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> <span>${p.comment_count||0}</span></div>
+      <div class="fact share-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share</div>
+    </div>`;
+  div.querySelector('.followbtn').addEventListener('click', ()=>toast('✅ Following '+nm+'!'));
+  const b2=div.querySelector('.fc-buybtn');
+  if(b2) b2.addEventListener('click', ()=>toast('🛒 Order created! Pay with Flutterwave →'));
+  div.querySelector('.like-btn').addEventListener('click', function(){
+    const svg=this.querySelector('svg'), sp=this.querySelector('span');
+    svg.setAttribute('fill','#FF1744'); svg.setAttribute('stroke','#FF1744');
+    const n=parseInt(sp.textContent.replace('k',''))*(sp.textContent.includes('k')?1000:1)+1;
+    sp.textContent=n>=1000?(n/1000).toFixed(1)+'k':n;
+    toast('❤️ Liked!');
+  });
+  div.querySelector('.cmt-btn').addEventListener('click', ()=>toast('💬 '+(p.comment_count||0)+' comments'));
+  div.querySelector('.share-btn').addEventListener('click', ()=>toast('📤 Sharing to WhatsApp...'));
+  return div;
 }
 
-function renderHomeStreams() {
-  const el = document.getElementById('home-streams');
-  if(!streams.length){el.innerHTML='<div class="empty"><div class="empty-icon">📡</div><div class="empty-text">No live streams right now</div><div class="empty-sub">Check back soon</div></div>';return;}
-  el.innerHTML = streams.map(s=>streamCardHTML(s)).join('');
+// ── RENDER PAGES ──
+function renderStreams(container, list){
+  container.innerHTML='';
+  if(!list.length){ container.innerHTML='<div class="empty"><div style="font-size:48px">📡</div><p style="font-size:15px;font-weight:600;color:var(--wh);margin-top:12px">No live streams right now</p></div>'; return; }
+  list.forEach((s,i)=>container.appendChild(streamCard(s,i)));
 }
-function renderHomeFeed() {
-  const el = document.getElementById('home-feed');
-  if(!posts.length){el.innerHTML='';return;}
-  el.innerHTML = posts.slice(0,3).map(p=>postCardHTML(p)).join('');
+function renderFeed(container, list){
+  container.innerHTML='';
+  if(!list.length){ container.innerHTML='<div class="empty"><div style="font-size:48px">📭</div><p style="font-size:15px;font-weight:600;color:var(--wh);margin-top:12px">No posts yet</p></div>'; return; }
+  list.forEach(p=>container.appendChild(feedCard(p)));
 }
-function renderFeedPage() {
-  const el = document.getElementById('feed-grid');
-  if(!posts.length){el.innerHTML='<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No posts yet</div></div>';return;}
-  el.innerHTML = posts.map(p=>postCardHTML(p,true)).join('');
+
+// ── STREAM VIEWER ──
+function openStream(idx){
+  const s=SL.streams[idx]; if(!s) return;
+  const nm=s.seller_profile?.business_name||s.seller?.name||'Seller';
+  document.getElementById('mvem').textContent=emoji(s.title||'');
+  document.getElementById('mvideo').style.background=bg(s.title||'');
+  document.getElementById('mvname').textContent=nm;
+  document.getElementById('mvv').textContent='👁 '+(s.viewer_count||0).toLocaleString()+' watching';
+  const prods=s.products||[];
+  const mp=document.getElementById('mprods');
+  mp.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--mu);margin-bottom:10px">PINNED PRODUCTS</div>';
+  if(!prods.length){ mp.innerHTML+='<div style="color:var(--mu);font-size:13px">No products pinned yet</div>'; }
+  prods.forEach(p=>{
+    const d=document.createElement('div');
+    d.style.cssText='background:var(--card2);border:1px solid var(--bd);border-radius:10px;padding:12px;display:flex;align-items:center;gap:12px;margin-bottom:8px';
+    d.innerHTML=`<span style="font-size:28px">${emoji(p.name||'')}</span><div style="flex:1"><div style="font-size:13px;font-weight:700">${p.name||''}</div><div style="font-size:16px;font-weight:800;color:var(--or)">${price(p.price)}</div></div>`;
+    const bb=document.createElement('button');
+    bb.style.cssText='background:var(--or);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:800;cursor:pointer';
+    bb.textContent='BUY';
+    bb.addEventListener('click',()=>toast('🛒 Order created! Pay with Flutterwave →'));
+    d.appendChild(bb); mp.appendChild(d);
+  });
+  document.getElementById('chatfeed').innerHTML='';
+  SL.chatIdx=0;
+  clearInterval(SL.chatIntvl);
+  addChat(); SL.chatIntvl=setInterval(addChat,2000);
+  document.getElementById('modal').classList.add('on');
+  document.body.style.overflow='hidden';
 }
-function renderExplore() {
-  const catEl = document.getElementById('cats');
-  const cats = ['All','👗 Fashion','📱 Electronics','💄 Beauty','🍲 Food','💍 Jewelry','🧵 Fabric'];
-  catEl.innerHTML = cats.map((c,i)=>`<div class="cat-pill${i===0?' on':''}" onclick="selCat(this)">${c}</div>`).join('');
-  const el = document.getElementById('explore-grid');
-  if(!streams.length){el.innerHTML='<div class="empty"><div class="empty-text">No results</div></div>';return;}
-  el.innerHTML = streams.map(s=>streamCardHTML(s)).join('');
+
+function addChat(){
+  const m=CHAT_MSGS[SL.chatIdx%CHAT_MSGS.length];
+  const f=document.getElementById('chatfeed');
+  const d=document.createElement('div'); d.className='chatmsg';
+  d.innerHTML=`<b style="color:${m.c}">${m.u}:</b> ${m.t}`;
+  f.appendChild(d); if(f.children.length>8) f.removeChild(f.firstChild);
+  f.scrollTop=f.scrollHeight; SL.chatIdx++;
 }
-function renderFlash(sales) {
-  const el = document.getElementById('flash-content');
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('on');
+  document.body.style.overflow=''; clearInterval(SL.chatIntvl);
+}
+
+document.getElementById('closebtn').addEventListener('click', closeModal);
+document.getElementById('modal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+
+function sendChat(){
+  const inp=document.getElementById('chatinp'), txt=inp.value.trim(); if(!txt) return;
+  const f=document.getElementById('chatfeed');
+  const d=document.createElement('div'); d.className='chatmsg';
+  d.innerHTML=`<b style="color:#2196F3">You:</b> ${txt}`;
+  f.appendChild(d); f.scrollTop=f.scrollHeight;
+  if(txt.toLowerCase().startsWith('buy')){
+    setTimeout(()=>{
+      const d2=document.createElement('div'); d2.className='chatmsg';
+      d2.innerHTML='<b style="color:#FF5722">SellLive:</b> → Order created! Pay link sent ✅';
+      f.appendChild(d2); f.scrollTop=f.scrollHeight;
+    },700);
+  }
+  inp.value='';
+}
+document.getElementById('chatsend').addEventListener('click', sendChat);
+document.getElementById('chatinp').addEventListener('keypress', e=>{ if(e.key==='Enter') sendChat(); });
+
+// ── EXPLORE CATEGORIES ──
+function renderCats(){
+  const cats=['All','👗 Fashion','📱 Electronics','💄 Beauty','🍲 Food','💍 Jewelry','🧵 Fabric'];
+  const row=document.getElementById('cats-row'); row.innerHTML='';
+  cats.forEach((c,i)=>{
+    const d=document.createElement('div'); d.className='cat'+(i===0?' on':''); d.textContent=c;
+    d.addEventListener('click', function(){
+      row.querySelectorAll('.cat').forEach(x=>x.classList.remove('on'));
+      this.classList.add('on');
+    });
+    row.appendChild(d);
+  });
+}
+
+// ── FLASH SALES ──
+function renderFlash(sales){
+  const el=document.getElementById('flash-content'); el.innerHTML='';
   if(!sales.length){
-    el.innerHTML=`<div class="empty"><div class="empty-icon">⚡</div><div class="empty-text">No flash sales active right now</div><div class="empty-sub">Follow sellers to get notified when they run flash sales</div></div>`;
+    el.innerHTML='<div class="empty"><div style="font-size:48px">⚡</div><p style="font-size:15px;font-weight:600;color:var(--wh);margin-top:12px">No flash sales active right now</p><p style="font-size:13px;margin-top:6px">Follow sellers to get notified</p></div>';
     return;
   }
-  let html='';
   for(const sale of sales){
-    const ends = new Date(sale.ends_at).getTime();
-    html+=`<div class="flash-bar" id="flash-${sale.id}">
-      <div style="font-size:28px">⚡</div>
-      <div class="flash-info">
-        <div class="flash-title">${sale.title}</div>
-        <div class="flash-sub">By ${sale.seller_profile?.business_name||'Seller'} · ${sale.discount_percent}% off</div>
-      </div>
-      <div class="flash-timer" id="ft-${sale.id}">--:--:--</div>
-    </div>`;
+    const bar=document.createElement('div'); bar.className='flashbar';
+    bar.innerHTML=`<div style="font-size:28px">⚡</div><div style="flex:1"><div style="font-size:16px;font-weight:800;color:var(--red)">${sale.title}</div><div style="font-size:12px;color:var(--mu);margin-top:3px">By ${sale.seller_profile?.business_name||'Seller'} · ${sale.discount_percent}% off</div></div><div class="ftimer" id="ft-${sale.id}">--:--:--</div>`;
+    el.appendChild(bar);
+    const ends=new Date(sale.ends_at).getTime();
     setInterval(()=>{
       const left=Math.max(0,Math.floor((ends-Date.now())/1000));
       const h=Math.floor(left/3600),m=Math.floor((left%3600)/60),s=left%60;
-      const el=document.getElementById('ft-'+sale.id);
-      if(el) el.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      const t=document.getElementById('ft-'+sale.id);
+      if(t) t.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
     },1000);
     if(sale.products?.length){
-      html+='<div class="flash-products">';
+      const pg=document.createElement('div'); pg.className='fpgrid';
       for(const p of sale.products){
-        html+=`<div class="flash-card">
-          <div style="font-size:36px;margin-bottom:10px">${getEmoji(p.name||'')}</div>
-          <div style="font-size:14px;font-weight:700;margin-bottom:8px">${p.name||'Product'}</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-            <span class="original-price">${fmtPrice(p.original_price)}</span>
-            <span class="sale-price">${fmtPrice(p.sale_price)}</span>
-            <span class="off-badge">${sale.discount_percent}% OFF</span>
-          </div>
-          <div style="font-size:11px;color:var(--mu);margin-bottom:10px">Stock: ${p.stock} left · Sold: ${p.sold||0}</div>
-          <button onclick="T('🛒 Flash deal added! Pay now to secure.')" style="width:100%;padding:12px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer">Buy Now — ${fmtPrice(p.sale_price)}</button>
-        </div>`;
+        const pc=document.createElement('div'); pc.className='fpc';
+        pc.innerHTML=`<div style="font-size:36px;margin-bottom:10px">${emoji(p.name||'')}</div><div style="font-size:14px;font-weight:700;margin-bottom:8px">${p.name||''}</div><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:12px;color:var(--mu);text-decoration:line-through">${price(p.original_price)}</span><span style="font-size:20px;font-weight:800;color:var(--red)">${price(p.sale_price)}</span><span style="background:rgba(255,23,68,.15);color:var(--red);font-size:10px;font-weight:800;padding:2px 8px;border-radius:5px">${sale.discount_percent}% OFF</span></div><div style="font-size:11px;color:var(--mu);margin-bottom:10px">Stock: ${p.stock} left · Sold: ${p.sold||0}</div>`;
+        const bb=document.createElement('button');
+        bb.style.cssText='width:100%;padding:12px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer';
+        bb.textContent=`Buy Now — ${price(p.sale_price)}`;
+        bb.addEventListener('click',()=>toast('🛒 Flash deal added! Pay now to secure.'));
+        pc.appendChild(bb); pg.appendChild(pc);
       }
-      html+='</div>';
+      el.appendChild(pg);
     }
   }
-  el.innerHTML=html;
 }
 
-// Stream viewer
-const SV_CHATS = {
-  default:[
-    {u:'Ngozi',c:'#FF9800',t:'Wow this is beautiful!'},
-    {u:'Seller',c:'#4CAF50',t:'Thank you! Only 3 left 🔥'},
-    {u:'Emeka',c:'#2196F3',t:'BUY — send my order'},
-    {u:'SellLive',c:'#FF5722',t:'→ Order created for Emeka ✅'},
-    {u:'Chioma',c:'#FF9800',t:'What sizes available?'},
-    {u:'Seller',c:'#4CAF50',t:'10, 12, 14, 16 — all in stock'},
-  ]
-};
-
-function openStream(s) {
-  if(typeof s === 'string') s = JSON.parse(s);
-  const em = getEmoji(s.title||'');
-  const bg = getBg(s.title||'');
-  const name = s.seller_profile?.business_name || s.seller?.name || 'Seller';
-
-  document.getElementById('sv-em').textContent = em;
-  document.getElementById('sv-bg').style.background = bg;
-  document.getElementById('sv-name').textContent = name;
-  document.getElementById('sv-viewers').textContent = '👁 ' + (s.viewer_count||0).toLocaleString() + ' watching';
-
-  // Products
-  const prods = s.products || [];
-  document.getElementById('sv-products').innerHTML = prods.length ?
-    '<div style="font-size:11px;font-weight:700;color:var(--mu);margin-bottom:8px">PINNED PRODUCTS</div>' +
-    prods.map(p=>`<div class="sv-prod-card">
-      <span style="font-size:28px">${getEmoji(p.name||'')}</span>
-      <div style="flex:1"><div style="font-size:13px;font-weight:700">${p.name||''}</div><div style="font-size:16px;font-weight:800;color:var(--or)">${fmtPrice(p.price)}</div></div>
-      <button onclick="T('🛒 Order created! Pay with Flutterwave →')" style="background:var(--or);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:800;cursor:pointer">BUY</button>
-    </div>`).join('') :
-    '<div style="color:var(--mu);font-size:13px">No products pinned yet</div>';
-
-  // Chat
-  document.getElementById('sv-chat').innerHTML = '';
-  const msgs = SV_CHATS[s.id] || SV_CHATS.default;
-  chatIdx[s.id] = 0;
-  clearInterval(chatIntvl);
-  addChatMsg(s.id, msgs);
-  chatIntvl = setInterval(()=>addChatMsg(s.id, msgs), 2000);
-
-  document.getElementById('sv-modal').classList.add('on');
-  document.body.style.overflow = 'hidden';
-}
-
-function addChatMsg(id, msgs) {
-  const m = msgs[chatIdx[id] % msgs.length];
-  const feed = document.getElementById('sv-chat');
-  const d = document.createElement('div');
-  d.className = 'chat-msg';
-  d.innerHTML = `<b style="color:${m.c}">${m.u}:</b> ${m.t}`;
-  feed.appendChild(d);
-  if(feed.children.length > 8) feed.removeChild(feed.firstChild);
-  feed.scrollTop = feed.scrollHeight;
-  chatIdx[id]++;
-}
-
-function closeSV() {
-  document.getElementById('sv-modal').classList.remove('on');
-  document.body.style.overflow = '';
-  clearInterval(chatIntvl);
-}
-
-function sendChat() {
-  const inp = document.getElementById('chat-inp'), txt = inp.value.trim();
-  if(!txt) return;
-  const feed = document.getElementById('sv-chat');
-  const d = document.createElement('div');
-  d.className = 'chat-msg';
-  d.innerHTML = `<b style="color:#2196F3">You:</b> ${txt}`;
-  feed.appendChild(d);
-  feed.scrollTop = feed.scrollHeight;
-  if(txt.toLowerCase().startsWith('buy')) {
-    setTimeout(()=>{
-      const d2 = document.createElement('div');
-      d2.className = 'chat-msg';
-      d2.innerHTML = '<b style="color:#FF5722">SellLive:</b> → Order created! Pay link sent ✅';
-      feed.appendChild(d2);
-      feed.scrollTop = feed.scrollHeight;
-    }, 700);
+// ── FETCH DATA ──
+async function load(){
+  try{
+    const [tr,fd,fl]=await Promise.all([
+      fetch('/api/explore/trending').then(r=>r.json()),
+      fetch('/api/feed').then(r=>r.json()),
+      fetch('/api/features/flash-sales').then(r=>r.json()),
+    ]);
+    SL.streams=tr.streams||[];
+    SL.posts=fd.posts||[];
+    const viewers=SL.streams.reduce((a,s)=>a+(s.viewer_count||0),0);
+    document.getElementById('hs1').textContent=SL.streams.length;
+    document.getElementById('hs2').textContent=viewers.toLocaleString();
+    document.getElementById('livelabel').textContent=SL.streams.length+' SELLERS LIVE NOW';
+    renderStreams(document.getElementById('home-streams'),SL.streams);
+    renderStreams(document.getElementById('explore-grid'),SL.streams);
+    renderFeed(document.getElementById('home-feed'),SL.posts.slice(0,3));
+    renderFeed(document.getElementById('feed-grid'),SL.posts);
+    renderCats();
+    renderFlash(fl.flash_sales||[]);
+  }catch(e){
+    console.error(e);
+    toast('⚠️ Could not load live data — check connection');
   }
-  inp.value = '';
 }
-
-// Click outside modal to close
-document.getElementById('sv-modal').addEventListener('click', e=>{
-  if(e.target === e.currentTarget) closeSV();
-});
-
-function likeFeed(el, orig) {
-  const svg = el.querySelector('svg'), span = el.childNodes[1];
-  svg.setAttribute('fill','#FF1744'); svg.setAttribute('stroke','#FF1744');
-  const n = typeof orig === 'number' ? orig+1 : orig;
-  if(span) span.textContent = ' ' + (n>=1000?(n/1000).toFixed(1)+'k':n);
-  T('❤️ Liked!');
-}
-
-function selCat(el) {
-  el.closest('.cat-row').querySelectorAll('.cat-pill').forEach(c=>c.classList.remove('on'));
-  el.classList.add('on');
-}
-
-function showPage(id, navEl) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
-  document.getElementById('page-'+id).classList.add('on');
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('on'));
-  if(navEl) navEl.classList.add('on');
-}
-
-function oTab(el, which) {
-  el.closest('.orders-tabs').querySelectorAll('.otab').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');
-  document.getElementById('orders-active').style.display = which==='active'?'block':'none';
-  document.getElementById('orders-completed').style.display = which==='completed'?'block':'none';
-}
-
-let tT;
-function T(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('on');
-  clearTimeout(tT); tT = setTimeout(()=>t.classList.remove('on'), 2800);
-}
-
-fetchData();
+load();
 </script>
 </body>
 </html>
