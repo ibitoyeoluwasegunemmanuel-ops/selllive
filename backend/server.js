@@ -92,6 +92,18 @@ app.use('/api/auth/', authLimiter);
 // ============================================================
 
 // Health check (for Render/Railway deployment)
+// Root route — fixes Vercel preview "Route not found" display
+app.get('/', (req, res) => {
+  res.json({
+    app: 'SellLive',
+    status: 'running',
+    version: '1.0.0',
+    description: 'Nigeria Live Commerce Platform API',
+    docs: '/api',
+    health: '/health',
+  });
+});
+
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
