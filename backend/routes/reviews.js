@@ -1,54 +1,40 @@
-// routes/reviews.js — Product reviews after delivery
+// routes/reviews.js — Product reviews & ratings
 const express = require('express');
 const router = express.Router();
 const supabase = require('../config/supabase');
 const { authenticate } = require('../middleware/auth');
 
-// POST /api/reviews — leave a review
-router.post('/', authenticate, async (req, res) => {
-  const { order_id, rating, comment, photo_url } = req.body;
-  if (!order_id || !rating) return res.status(400).json({ error: 'order_id and rating required.' });
-
-  const { data: order } = await supabase.from('orders').select('buyer_id, seller_id, status')
-    .eq('id', order_id).single();
-
-  if (!order) return res.status(404).json({ error: 'Order not found.' });
-  if (order.buyer_id !== req.user.id) return res.status(403).json({ error: 'Only buyer can review.' });
-  if (!['delivered', 'completed'].includes(order.status)) return res.status(400).json({ error: 'Can only review delivered orders.' });
-
-  const { data: review, error } = await supabase.from('reviews')
-    .upsert({ order_id, buyer_id: req.user.id, seller_id: order.seller_id, rating, comment, photo_url },
-      { onConflict: 'order_id,buyer_id' })
-    .select().single();
-
-  if (error) return res.status(500).json({ error: 'Failed to save review.' });
-
-  await supabase.from('notifications').insert({
-    user_id: order.seller_id, type: 'new_review',
-    title: `⭐ New ${rating}-star review!`,
-    body: comment || 'A buyer left you a review',
-    data: { order_id, rating },
-  });
-
-  res.json({ success: true, review });
+// GET /api/reviews/product/:productId
+router.get('/product/:productId', async (req, res) => {
+  const { data, error } = await supabase
+    .from('product_reviews')
+    .select('id, rating, comment, reviewer_name, created_at')
+    .eq('product_id', req.params.productId)
+    .order('created_at', { ascending: false })
+    .limit(50);
+  if (error) return res.status(500).json({ error: 'Failed to load reviews' });
+  const reviews = data || [];
+  const avg = reviews.length ? (reviews.reduce((s,r)=>s+r.rating,0)/reviews.length).toFixed(1) : 0;
+  res.json({ reviews, avg_rating: parseFloat(avg), count: reviews.length });
 });
 
-// GET /api/reviews/seller/:id
-router.get('/seller/:id', async (req, res) => {
-  const { data, error } = await supabase.from('reviews')
-    .select('id, rating, comment, photo_url, created_at, buyer:users!buyer_id(name, avatar_url)')
-    .eq('seller_id', req.params.id).order('created_at', { ascending: false }).limit(20);
-  if (error) return res.status(500).json({ error: 'Failed to fetch reviews.' });
-  res.json({ reviews: data || [] });
+// POST /api/reviews
+router.post('/', authenticate, async (req, res) => {
+  const { product_id, rating, comment, order_id } = req.body;
+  if (!product_id || !rating) return res.status(400).json({ error: 'product_id and rating required' });
+  if (rating < 1 || rating > 5) return res.status(400).json({ error: 'Rating must be 1-5' });
+  const { data: user } = await supabase.from('users').select('name').eq('id', req.user.id).single();
+  const { data, error } = await supabase.from('product_reviews')
+    .upsert({ user_id: req.user.id, product_id, order_id: order_id||null, rating, comment: comment?.trim()||null, reviewer_name: user?.name||'Anonymous' }, { onConflict: 'user_id,product_id' })
+    .select().single();
+  if (error) return res.status(500).json({ error: 'Failed to submit review' });
+  // Update avg
+  const { data: all } = await supabase.from('product_reviews').select('rating').eq('product_id', product_id);
+  if (all?.length) {
+    const avg = all.reduce((s,r)=>s+r.rating,0)/all.length;
+    await supabase.from('stream_products').update({ avg_rating: Math.round(avg*10)/10, review_count: all.length }).eq('id', product_id);
+  }
+  res.json({ success: true, review: data });
 });
 
 module.exports = router;
-
-// GET /api/reviews/seller/:id — used by seller profile
-router.get('/seller/:id/all', async (req, res) => {
-  const { data, error } = await supabase.from('reviews')
-    .select('id, rating, comment, photo_url, created_at, buyer:users!buyer_id(name, avatar_url)')
-    .eq('seller_id', req.params.id).order('created_at', { ascending: false }).limit(30);
-  if (error) return res.status(500).json({ error: 'Failed to fetch reviews.' });
-  res.json({ reviews: data || [] });
-});

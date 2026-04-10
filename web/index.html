@@ -156,7 +156,7 @@ nav{position:sticky;top:0;z-index:300;background:rgba(10,10,10,.97);backdrop-fil
   </div>
   <div class="nav-r">
     <input class="nav-search" id="search-inp" placeholder="Search products..."/>
-    <div id="nav-auth-area"></div>
+    <button id="cart-nav-btn" style="background:none;border:none;cursor:pointer;color:var(--wh);position:relative;padding:4px;display:flex;align-items:center" title="Cart"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span id="cart-count" style="position:absolute;top:-4px;right:-4px;background:var(--or);color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:800;display:none;align-items:center;justify-content:center">0</span></button><div id="nav-auth-area"></div>
   </div>
 </nav>
 
@@ -291,6 +291,36 @@ nav{position:sticky;top:0;z-index:300;background:rgba(10,10,10,.97);backdrop-fil
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+
+<!-- CART MODAL -->
+<div class="modal" id="cart-modal">
+  <div class="mbox" style="width:min(520px,100%)">
+    <button class="mclose" id="cart-close">✕</button>
+    <div style="font-size:16px;font-weight:800;margin-bottom:16px">🛒 Shopping Cart</div>
+    <div id="cart-items-list"></div>
+    <div id="cart-footer" style="display:none;border-top:1px solid var(--bd);padding-top:14px;margin-top:8px">
+      <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px"><span>Subtotal</span><span id="cart-subtotal" style="font-weight:800;color:var(--or)">₦0</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:14px"><span style="color:var(--mu)">Delivery</span><span style="color:var(--gr)">Free</span></div>
+      <button class="btn-p" id="cart-checkout-btn" style="width:100%;padding:13px;font-size:14px">Checkout & Pay →</button>
+    </div>
+    <div id="cart-empty" style="text-align:center;padding:32px 0;display:none"><div style="font-size:40px;margin-bottom:10px">🛒</div><p style="font-size:14px;color:var(--wh);font-weight:600">Your cart is empty</p><p style="font-size:12px;color:var(--mu);margin-top:4px">Add products to get started</p></div>
+  </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="modal" id="review-modal">
+  <div class="mbox">
+    <button class="mclose" id="review-close">✕</button>
+    <div style="font-size:16px;font-weight:800;margin-bottom:6px">Leave a Review</div>
+    <div style="font-size:12px;color:var(--mu);margin-bottom:16px" id="review-product-name"></div>
+    <div class="fg"><label class="fl">Your Rating</label>
+      <div id="star-picker" style="display:flex;gap:6px;font-size:28px;cursor:pointer"></div>
+    </div>
+    <div class="fg"><label class="fl">Comment (optional)</label><textarea class="fi2" id="review-comment" rows="3" placeholder="Tell others what you think..."></textarea></div>
+    <button class="btn-p" id="submit-review-btn" style="width:100%;padding:12px;font-size:14px">Submit Review ⭐</button>
   </div>
 </div>
 
@@ -496,7 +526,7 @@ function feedCard(p){
     <div class="fact share-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share</div>
   </div>`;
   div.querySelector('.follow-btn').addEventListener('click',()=>toast('✅ Following '+nm+'!'));
-  div.querySelector('.fc-buy')?.addEventListener('click',()=>openCheckout({name:prod.name||'',price:prod.price||0,emo:em(prod.name||'')}));
+  div.querySelector('.fc-buy')?.addEventListener('click',()=>{ APP.checkoutProduct={name:prod.name||'',price:prod.price||0,emo:em(prod.name||''),productId:prod.id,sellerId:prod.seller_id}; addToCart(prod.id,prod.name||'Product',prod.price||0); });
   div.querySelector('.like-btn').addEventListener('click',function(){const svg=this.querySelector('svg'),sp=this.querySelector('span');svg.setAttribute('fill','#FF1744');svg.setAttribute('stroke','#FF1744');const n=parseInt(sp.textContent.replace('k',''))*(sp.textContent.includes('k')?1000:1)+1;sp.textContent=n>=1000?(n/1000).toFixed(1)+'k':n;toast('❤️ Liked!');});
   div.querySelector('.cmt-btn').addEventListener('click',()=>toast('💬 '+(p.comment_count||0)+' comments'));
   div.querySelector('.share-btn').addEventListener('click',()=>toast('📤 Shared to WhatsApp!'));
@@ -598,7 +628,7 @@ function renderOrdersPage(){
   <div id="o-done" style="display:none"><div class="ocard"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="font-size:10px;font-weight:800;font-family:monospace;color:var(--or)">SL-E5F6-003</div><span class="badge badge-gr">Delivered ✅</span></div><div style="font-size:13px;font-weight:700;margin:5px 0 3px">Glow Serum Set</div><div style="font-size:18px;font-weight:800;color:var(--or);margin-bottom:10px">₦4,500</div><button id="rev-btn" style="width:100%;padding:9px;border-radius:9px;border:1px solid var(--bd);background:var(--card2);color:var(--or);font-size:12px;font-weight:700;cursor:pointer">Leave a Review ⭐</button></div></div>`;
   document.getElementById('otab-a').addEventListener('click',function(){this.classList.add('on');document.getElementById('otab-c').classList.remove('on');document.getElementById('o-active').style.display='block';document.getElementById('o-done').style.display='none';});
   document.getElementById('otab-c').addEventListener('click',function(){this.classList.add('on');document.getElementById('otab-a').classList.remove('on');document.getElementById('o-active').style.display='none';document.getElementById('o-done').style.display='block';});
-  document.getElementById('rev-btn')?.addEventListener('click',()=>toast('⭐ Review submitted! Thank you!'));
+  document.getElementById('rev-btn')?.addEventListener('click',()=>openReviewModal('demo-product-id','Glow Serum Set'));
 }
 
 function renderMsgsPage(){
@@ -878,6 +908,216 @@ async function load(){
     APP.streams=tr.streams||[]; APP.posts=fd.posts||[];
     renderHome();
   }catch(e){ console.error(e); }
+}
+
+// ════════════════════════════════════════════
+// SHOPPING CART
+// ════════════════════════════════════════════
+let CART = []; // local cache
+
+async function loadCart(){
+  if(!APP.user) return;
+  try{
+    const res = await api('/api/cart');
+    CART = res.items || [];
+    updateCartBadge();
+  }catch(e){}
+}
+
+function updateCartBadge(){
+  const badge = document.getElementById('cart-count');
+  const total = CART.reduce((s,i)=>s+i.quantity,0);
+  if(total > 0){
+    badge.textContent = total > 99 ? '99+' : total;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+async function addToCart(productId, productName, price){
+  if(!APP.user){ openAuth(); toast('Sign in to add to cart'); return; }
+  try{
+    const res = await api('/api/cart', {method:'POST', body:JSON.stringify({product_id:productId, quantity:1})});
+    if(res.success){
+      toast('🛒 '+productName+' added to cart!');
+      await loadCart();
+    } else toast('❌ '+(res.error||'Could not add to cart'));
+  }catch(e){ toast('Network error'); }
+}
+
+function openCart(){
+  if(!APP.user){ openAuth(); return; }
+  renderCartModal();
+  document.getElementById('cart-modal').classList.add('on');
+}
+
+function renderCartModal(){
+  const list = document.getElementById('cart-items-list');
+  const footer = document.getElementById('cart-footer');
+  const empty = document.getElementById('cart-empty');
+  list.innerHTML = '';
+
+  if(!CART.length){
+    footer.style.display='none'; empty.style.display='block'; return;
+  }
+  empty.style.display='none'; footer.style.display='block';
+
+  let total = 0;
+  CART.forEach(item => {
+    const p = item.product;
+    if(!p) return;
+    const lineTotal = (p.price||0)*item.quantity;
+    total += lineTotal;
+    const row = document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--bd)';
+    row.innerHTML=`<div style="width:48px;height:48px;border-radius:8px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${em(p.name||'')}</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:700">${p.name||''}</div><div style="font-size:12px;color:var(--or);font-weight:700">${price(p.price)}</div></div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="qty-btn" data-id="${item.id}" data-delta="-1" style="width:26px;height:26px;border-radius:50%;border:1px solid var(--bd);background:var(--card2);color:var(--wh);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">−</button>
+        <span style="font-size:13px;font-weight:700;min-width:20px;text-align:center">${item.quantity}</span>
+        <button class="qty-btn" data-id="${item.id}" data-delta="1" style="width:26px;height:26px;border-radius:50%;border:1px solid var(--bd);background:var(--card2);color:var(--wh);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">+</button>
+        <button class="rm-btn" data-id="${item.id}" style="width:26px;height:26px;border-radius:50%;border:1px solid rgba(239,68,68,.3);background:transparent;color:#ef4444;cursor:pointer;font-size:14px;margin-left:4px;display:flex;align-items:center;justify-content:center">✕</button>
+      </div>`;
+    list.appendChild(row);
+  });
+
+  document.getElementById('cart-subtotal').textContent = price(total);
+
+  // Qty buttons
+  list.querySelectorAll('.qty-btn').forEach(btn=>{
+    btn.addEventListener('click', async()=>{
+      const item = CART.find(i=>i.id===btn.dataset.id);
+      if(!item) return;
+      const newQty = item.quantity + parseInt(btn.dataset.delta);
+      await api('/api/cart/'+btn.dataset.id, {method:'PATCH', body:JSON.stringify({quantity:newQty})});
+      await loadCart(); renderCartModal();
+    });
+  });
+  list.querySelectorAll('.rm-btn').forEach(btn=>{
+    btn.addEventListener('click', async()=>{
+      await api('/api/cart/'+btn.dataset.id, {method:'DELETE'});
+      await loadCart(); renderCartModal();
+    });
+  });
+}
+
+document.getElementById('cart-nav-btn').addEventListener('click', openCart);
+document.getElementById('cart-close').addEventListener('click',()=>document.getElementById('cart-modal').classList.remove('on'));
+document.getElementById('cart-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)document.getElementById('cart-modal').classList.remove('on');});
+
+document.getElementById('cart-checkout-btn').addEventListener('click', async()=>{
+  if(!CART.length){ toast('Your cart is empty'); return; }
+  document.getElementById('cart-modal').classList.remove('on');
+  // Build cart checkout with all items
+  const items = CART.map(i=>({
+    product_id: i.product_id,
+    quantity: i.quantity,
+    price: i.product?.price||0,
+    seller_id: i.product?.seller_id||null
+  }));
+  const total = items.reduce((s,i)=>s+i.price*i.quantity,0);
+  APP.checkoutProduct = { name: CART.length+' items', price: total, emo:'🛒', isCart:true, cartItems:items };
+  document.getElementById('co-product-info').innerHTML=`<span style="font-size:32px">🛒</span><div style="flex:1"><div style="font-size:13px;font-weight:700">${CART.length} item${CART.length>1?'s':''}</div><div style="font-size:16px;font-weight:800;color:var(--or)">${price(total)}</div></div>`;
+  document.getElementById('co-sub').textContent=price(total);
+  document.getElementById('co-total').textContent=price(total);
+  document.getElementById('co-phone').value=APP.user?.phone||'';
+  document.getElementById('checkout-modal').classList.add('on');
+});
+
+// ════════════════════════════════════════════
+// REAL FLUTTERWAVE PAYMENT
+// ════════════════════════════════════════════
+// Override place order to use real payment
+document.getElementById('place-order-btn').addEventListener('click', async()=>{
+  const addr = document.getElementById('co-addr').value.trim();
+  const phone = document.getElementById('co-phone').value.trim();
+  if(!addr){ toast('Enter your delivery address'); return; }
+  const btn = document.getElementById('place-order-btn');
+  btn.textContent='Creating order...'; btn.disabled=true;
+
+  try{
+    const prod = APP.checkoutProduct;
+    let body;
+    if(prod?.isCart && prod?.cartItems){
+      body = { items: prod.cartItems, delivery_address: addr, delivery_phone: phone };
+    } else {
+      body = {
+        items: [{ product_id: prod?.productId||'', quantity:1, price:prod?.price||0, seller_id: prod?.sellerId||null }],
+        delivery_address: addr, delivery_phone: phone
+      };
+    }
+    const res = await api('/api/payments/checkout', {method:'POST', body:JSON.stringify(body)});
+    if(res.success){
+      document.getElementById('checkout-modal').classList.remove('on');
+      if(res.payment_link){
+        // Open Flutterwave payment page
+        toast('🎉 Redirecting to payment...');
+        setTimeout(()=>window.open(res.payment_link,'_blank'), 500);
+      } else {
+        toast('🎉 Order placed! '+( res.dev_mode?'(DEV: no payment link)':'' ));
+      }
+      await loadCart();
+    } else {
+      toast('❌ '+(res.error||'Order failed'));
+    }
+  }catch(e){ toast('Network error. Try again.'); }
+  btn.textContent='Place Order & Pay'; btn.disabled=false;
+});
+
+// ════════════════════════════════════════════
+// PRODUCT REVIEWS
+// ════════════════════════════════════════════
+let reviewProductId = null;
+let selectedRating = 0;
+
+function openReviewModal(productId, productName){
+  if(!APP.user){ openAuth(); return; }
+  reviewProductId = productId; selectedRating = 0;
+  document.getElementById('review-product-name').textContent = productName || 'Product';
+  document.getElementById('review-comment').value = '';
+  renderStars(0);
+  document.getElementById('review-modal').classList.add('on');
+}
+
+function renderStars(rating){
+  const picker = document.getElementById('star-picker'); picker.innerHTML='';
+  for(let i=1;i<=5;i++){
+    const s = document.createElement('span');
+    s.textContent = i<=rating ? '⭐' : '☆';
+    s.style.cssText='cursor:pointer;font-size:28px;transition:transform .1s';
+    s.addEventListener('click',()=>{ selectedRating=i; renderStars(i); });
+    s.addEventListener('mouseenter',()=>renderStars(i));
+    picker.addEventListener('mouseleave',()=>renderStars(selectedRating));
+    picker.appendChild(s);
+  }
+}
+
+document.getElementById('review-close').addEventListener('click',()=>document.getElementById('review-modal').classList.remove('on'));
+document.getElementById('review-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)document.getElementById('review-modal').classList.remove('on');});
+
+document.getElementById('submit-review-btn').addEventListener('click', async()=>{
+  if(!selectedRating){ toast('Select a rating first'); return; }
+  if(!reviewProductId){ toast('No product selected'); return; }
+  const comment = document.getElementById('review-comment').value.trim();
+  const btn = document.getElementById('submit-review-btn'); btn.textContent='Submitting...'; btn.disabled=true;
+  try{
+    const res = await api('/api/reviews', {method:'POST', body:JSON.stringify({product_id:reviewProductId, rating:selectedRating, comment})});
+    if(res.success){
+      document.getElementById('review-modal').classList.remove('on');
+      toast('⭐ Review submitted! Thank you!');
+    } else toast('❌ '+(res.error||'Failed to submit'));
+  }catch(e){ toast('Network error'); }
+  btn.textContent='Submit Review ⭐'; btn.disabled=false;
+});
+
+// Load cart when user signs in
+const _origSaveAuth = saveAuth;
+// Patch to load cart after sign in
+const origUpdateAuthUI = updateAuthUI;
+function updateAuthUI(){
+  origUpdateAuthUI();
+  if(APP.user) loadCart();
 }
 
 // ════════════════════════════════════════════
