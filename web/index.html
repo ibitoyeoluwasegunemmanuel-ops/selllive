@@ -340,23 +340,27 @@ nav{position:sticky;top:0;z-index:300;background:rgba(10,10,10,.97);backdrop-fil
     <div id="auth-step-phone">
       <div style="font-size:22px;margin-bottom:4px">👋</div>
       <div style="font-size:18px;font-weight:800;margin-bottom:4px">Welcome to SellLive</div>
-      <div style="font-size:13px;color:var(--mu);margin-bottom:20px">Enter your phone number to continue</div>
+      <div style="font-size:13px;color:var(--mu);margin-bottom:20px">Sign in or create your account</div>
       <div class="form-group">
         <div class="form-label">Phone Number</div>
         <input class="form-inp" id="phone-inp" placeholder="+234 803 000 0000" type="tel"/>
       </div>
       <div class="form-group">
-        <div class="form-label">I want to</div>
+        <div class="form-label">Full Name <span style="color:var(--mu);font-weight:400;text-transform:none;letter-spacing:0">(new users)</span></div>
+        <input class="form-inp" id="name-inp" placeholder="e.g. Ngozi Okonkwo"/>
+      </div>
+      <div class="form-group">
+        <div class="form-label">I am a</div>
         <div style="display:flex;gap:8px">
-          <div class="cat on" id="role-buyer" data-role="buyer">🛍️ Buy</div>
-          <div class="cat" id="role-seller" data-role="seller">🏪 Sell</div>
+          <div class="cat on" id="role-buyer" data-role="buyer">🛍️ Buyer</div>
+          <div class="cat" id="role-seller" data-role="seller">🏪 Seller</div>
         </div>
       </div>
-      <button class="btn-p" id="send-otp-btn" style="width:100%;padding:12px;font-size:14px">Send OTP Code</button>
+      <button class="btn-p" id="send-otp-btn" style="width:100%;padding:12px;font-size:14px">Continue →</button>
     </div>
     <div id="auth-step-otp" style="display:none">
       <div style="font-size:22px;margin-bottom:4px">📱</div>
-      <div style="font-size:18px;font-weight:800;margin-bottom:4px">Enter OTP</div>
+      <div style="font-size:18px;font-weight:800;margin-bottom:4px">Enter your OTP</div>
       <div style="font-size:13px;color:var(--mu);margin-bottom:6px">We sent a 6-digit code to</div>
       <div style="font-size:14px;font-weight:700;margin-bottom:20px" id="otp-phone-display"></div>
       <div class="form-group">
@@ -364,12 +368,6 @@ nav{position:sticky;top:0;z-index:300;background:rgba(10,10,10,.97);backdrop-fil
         <input class="form-inp" id="otp-inp" placeholder="000000" maxlength="6" style="font-size:24px;letter-spacing:6px;text-align:center"/>
       </div>
       <div id="otp-dev-hint" style="display:none;background:rgba(255,87,34,.08);border:1px solid rgba(255,87,34,.2);border-radius:8px;padding:10px;font-size:12px;color:var(--or);margin-bottom:14px;font-family:monospace;text-align:center"></div>
-      <div id="auth-step-name" style="display:none">
-        <div class="form-group">
-          <div class="form-label">Your Full Name</div>
-          <input class="form-inp" id="name-inp" placeholder="e.g. Ngozi Okonkwo"/>
-        </div>
-      </div>
       <button class="btn-p" id="verify-otp-btn" style="width:100%;padding:12px;font-size:14px">Verify &amp; Sign In</button>
       <div style="text-align:center;margin-top:12px"><span style="font-size:12px;color:var(--mu)">Wrong number? </span><span style="font-size:12px;color:var(--or);cursor:pointer" id="back-to-phone">Go back</span></div>
     </div>
@@ -582,6 +580,7 @@ document.getElementById('verify-otp-btn').addEventListener('click',async()=>{
   const phone=document.getElementById('phone-inp').value.trim();
   const code=document.getElementById('otp-inp').value.trim();
   const name=document.getElementById('name-inp').value.trim();
+  if(!code||code.length<4){toast('Enter the OTP code');return;}
   const btn=document.getElementById('verify-otp-btn');
   btn.textContent='Verifying...'; btn.disabled=true;
   try{
@@ -590,21 +589,20 @@ document.getElementById('verify-otp-btn').addEventListener('click',async()=>{
     const res=await api('/api/auth/verify-otp',{method:'POST',body:JSON.stringify(body)});
     if(res.success){
       if(res.is_new_user&&!name){
-        // Need name
-        document.getElementById('auth-step-name').style.display='block';
-        document.getElementById('verify-otp-btn').textContent='Create Account';
-        toast('Welcome! Enter your name to finish.');
-        btn.disabled=false; return;
+        toast('Please enter your full name above');
+        document.getElementById('back-to-phone').click();
+        document.getElementById('name-inp').focus();
+        btn.textContent='Verify & Sign In'; btn.disabled=false; return;
       }
       saveAuth(res.user, res.token);
       document.getElementById('auth-modal').classList.remove('on');
       updateAuthUI();
-      toast('Welcome back, '+(res.user.name||'friend')+'! 🎉');
+      toast('Welcome, '+(res.user.name||'friend')+'! 🎉');
       if(res.user.role==='seller') loadSellerProfile();
     } else {
-      toast('Error: '+(res.error||'Invalid OTP'));
+      toast('❌ '+(res.error||'Invalid or expired OTP. Try again.'));
     }
-  } catch(e){toast('Network error');}
+  } catch(e){toast('Network error. Check your connection.');}
   btn.textContent='Verify & Sign In'; btn.disabled=false;
 });
 

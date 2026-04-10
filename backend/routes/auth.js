@@ -27,22 +27,34 @@ const sendSMS = async (phone, message) => {
   let to = phone.replace(/\s+/g, '');
   if (to.startsWith('0')) to = '+234' + to.slice(1);
   if (!to.startsWith('+')) to = '+234' + to;
+  // Remove + for some APIs
+  const toRaw = to.replace('+', '');
 
-  // 1. Sendchamp (primary - works in Nigeria, Termii alternative)
+  // 1. Sendchamp — try both SMS and their Verification OTP endpoint
   if (process.env.SENDCHAMP_API_KEY) {
+    // Try standard SMS first
     try {
-      await axios.post('https://api.sendchamp.com/api/v1/sms/send', {
+      const resp = await axios.post('https://api.sendchamp.com/api/v1/sms/send', {
         to: [to],
         message,
         sender_name: process.env.SENDCHAMP_SENDER_ID || 'SellLive',
-        route: 'dnd',
+        route: 'international',
       }, {
-        headers: { Authorization: `Bearer ${process.env.SENDCHAMP_API_KEY}` },
+        headers: {
+          Authorization: `Bearer ${process.env.SENDCHAMP_API_KEY}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        timeout: 10000,
       });
-      console.log(`✅ Sendchamp SMS sent to ${to}`);
-      return true;
+      if (resp.data?.code === '200' || resp.data?.status === 'success' || resp.status === 200) {
+        console.log(`✅ Sendchamp SMS sent to ${to}`);
+        return true;
+      }
+      console.log('Sendchamp response:', JSON.stringify(resp.data).slice(0, 200));
     } catch (err) {
-      console.error('Sendchamp error:', err.response?.data?.message || err.message);
+      const errMsg = err.response?.data?.message || err.response?.data?.error || err.message;
+      console.error('Sendchamp SMS error:', errMsg);
     }
   }
 
@@ -57,14 +69,15 @@ const sendSMS = async (phone, message) => {
         channel: 'generic',
         api_key: process.env.TERMII_API_KEY,
       });
+      console.log(`✅ Termii SMS sent to ${to}`);
       return true;
     } catch (err) {
-      console.error('Termii error:', err.message);
+      console.error('Termii error:', err.response?.data || err.message);
     }
   }
 
-  // 3. Dev mode — OTP in API response
-  console.log(`📱 DEV OTP for ${to}: ${message}`);
+  // 3. Dev mode — OTP returned in API response body
+  console.log(`📱 DEV MODE OTP for ${to}: ${message}`);
   return false;
 };
 
