@@ -3,261 +3,431 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<!-- CSP inline in HTML so it works regardless of server caching -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; script-src-attr 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https:;">
 <title>SellLive — Nigeria's Live Commerce Platform</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0a0a0a;--card:#141414;--card2:#1a1a1a;--bd:#222;--or:#FF5722;--red:#FF1744;--mu:#777;--wh:#fff;--gr:#22c55e;--ye:#FF9800}
+:root{--bg:#0a0a0a;--card:#141414;--card2:#1a1a1a;--bd:#252525;--or:#FF5722;--red:#FF1744;--mu:#666;--wh:#fff;--gr:#22c55e;--ye:#FF9800;--pu:#a855f7}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--wh);min-height:100vh}
-a{text-decoration:none;color:inherit}
-nav{position:sticky;top:0;z-index:200;background:rgba(10,10,10,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd);padding:0 24px;display:flex;align-items:center;gap:16px;height:58px}
-.logo{font-size:20px;font-weight:900;letter-spacing:-.5px;flex-shrink:0;color:var(--wh)}
+/* NAV */
+nav{position:sticky;top:0;z-index:300;background:rgba(10,10,10,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd);padding:0 20px;display:flex;align-items:center;gap:12px;height:56px}
+.logo{font-size:19px;font-weight:900;letter-spacing:-.5px;flex-shrink:0;cursor:pointer}
 .logo b{color:var(--or)}
-.tabs{display:flex;gap:4px;flex:1}
-.tab{padding:7px 16px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;color:var(--mu);border:none;background:none;transition:all .15s}
-.tab:hover{color:var(--wh);background:rgba(255,255,255,.07)}
-.tab.on{background:var(--or);color:#fff}
-.nav-r{display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0}
-.search-inp{background:var(--card2);border:1px solid var(--bd);border-radius:20px;padding:7px 14px;font-size:13px;color:var(--mu);width:190px;outline:none}
-.search-inp:focus{border-color:var(--or);color:var(--wh)}
-.sign-btn{background:var(--or);color:#fff;border:none;border-radius:20px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer}
-.ldot{width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;animation:bk 1.2s infinite;margin-right:4px;vertical-align:middle}
-@keyframes bk{0%,100%{opacity:1}50%{opacity:.3}}
-.page{display:none;padding:24px;max-width:1200px;margin:0 auto}
+.nav-tabs{display:flex;gap:2px;flex:1;overflow-x:auto}
+.nav-tabs::-webkit-scrollbar{display:none}
+.ntab{padding:6px 14px;border-radius:16px;font-size:12px;font-weight:600;cursor:pointer;color:var(--mu);border:none;background:none;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.ntab:hover{color:var(--wh);background:rgba(255,255,255,.07)}
+.ntab.on{background:var(--or);color:#fff}
+.nav-r{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
+.nav-search{background:var(--card2);border:1px solid var(--bd);border-radius:16px;padding:6px 12px;font-size:12px;color:var(--mu);width:160px;outline:none}
+.nav-search:focus{border-color:var(--or);color:var(--wh)}
+.nav-user{display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 10px;border-radius:16px;border:1px solid var(--bd)}
+.nav-user:hover{border-color:var(--or)}
+.nav-av{width:28px;height:28px;border-radius:50%;background:var(--or);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+.btn-signin{background:var(--or);color:#fff;border:none;border-radius:16px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer}
+/* PAGES */
+.page{display:none;padding:20px;max-width:1200px;margin:0 auto;animation:fi .2s ease}
 .page.on{display:block}
-/* HERO */
-.hero{background:linear-gradient(135deg,#1a0800,#0d0300);border:1px solid rgba(255,87,34,.2);border-radius:20px;padding:40px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
-.hero-h{font-size:clamp(22px,4vw,40px);font-weight:900;letter-spacing:-1.5px;line-height:1.05;margin-bottom:10px}
-.hero-h i{color:var(--or);font-style:normal}
-.hero-sub{font-size:14px;color:var(--mu);line-height:1.6;max-width:420px;margin-bottom:18px}
-.hbtns{display:flex;gap:10px;flex-wrap:wrap}
-.btn-p{background:var(--or);color:#fff;border:none;border-radius:20px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer}
-.btn-o{background:transparent;color:var(--wh);border:1px solid var(--bd);border-radius:20px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer}
-.hstats{display:flex;gap:28px;flex-wrap:wrap}
-.hstat{text-align:center}
-.hsv{font-size:26px;font-weight:800;color:var(--or)}
-.hsl{font-size:11px;color:var(--mu);margin-top:2px}
-/* SECTIONS */
-.sechdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.sech{font-size:17px;font-weight:800;letter-spacing:-.3px}
-.secl{font-size:12px;color:var(--or);cursor:pointer;font-weight:600}
-/* STREAM CARDS */
-.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:14px;margin-bottom:32px}
-.sc{background:var(--card);border:1px solid var(--bd);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s;user-select:none}
+@keyframes fi{from{opacity:.7;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+/* CARDS */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:28px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.sc{background:var(--card);border:1px solid var(--bd);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .18s,border-color .18s;user-select:none}
 .sc:hover{transform:translateY(-3px);border-color:#333}
 .sc:active{transform:scale(.98)}
-.sthumb{height:160px;display:flex;align-items:center;justify-content:center;font-size:52px;position:relative;overflow:hidden;pointer-events:none}
-.sovl{position:absolute;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;pointer-events:none}
-.bl{background:var(--red);color:#fff;font-size:8px;font-weight:800;padding:3px 8px;border-radius:5px}
-.bv{background:rgba(0,0,0,.75);color:#fff;font-size:10px;padding:3px 8px;border-radius:5px}
-.sbody{padding:12px;pointer-events:none}
-.ssell{font-size:10px;color:var(--mu);margin-bottom:2px}
-.stit{font-size:12px;font-weight:700;line-height:1.35;margin-bottom:6px}
+.sthumb{height:150px;display:flex;align-items:center;justify-content:center;font-size:48px;position:relative;overflow:hidden;pointer-events:none}
+.sovl{position:absolute;top:7px;left:7px;right:7px;display:flex;justify-content:space-between;pointer-events:none}
+.bl{background:var(--red);color:#fff;font-size:8px;font-weight:800;padding:2px 7px;border-radius:4px}
+.bv{background:rgba(0,0,0,.75);color:#fff;font-size:9px;padding:2px 7px;border-radius:4px}
+.sbody{padding:10px;pointer-events:none}
+.ssell{font-size:9px;color:var(--mu);margin-bottom:2px}
+.stit{font-size:11px;font-weight:700;line-height:1.3;margin-bottom:5px}
 .sfooter{display:flex;align-items:center;justify-content:space-between}
-.sprice{font-size:15px;font-weight:800;color:var(--or)}
-.buy-btn{background:rgba(255,87,34,.12);color:var(--or);border:1px solid rgba(255,87,34,.3);border-radius:12px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;pointer-events:auto}
+.sprice{font-size:14px;font-weight:800;color:var(--or)}
+.buy-btn{background:rgba(255,87,34,.12);color:var(--or);border:1px solid rgba(255,87,34,.3);border-radius:10px;padding:3px 10px;font-size:10px;font-weight:700;cursor:pointer;pointer-events:auto}
 .buy-btn:hover{background:var(--or);color:#fff}
-/* FEED */
-.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
-.fc{background:var(--card);border:1px solid var(--bd);border-radius:16px;overflow:hidden}
-.fimg{height:280px;display:flex;align-items:center;justify-content:center;font-size:70px;position:relative}
+/* FEED CARD */
+.fc{background:var(--card);border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+.fimg{height:260px;display:flex;align-items:center;justify-content:center;font-size:64px;position:relative;overflow:hidden}
 .fimg img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
-.fovl{position:absolute;bottom:0;left:0;right:0;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,.88))}
-.fav{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
-.factions{display:flex;gap:14px;padding:11px 14px;border-top:1px solid var(--bd)}
-.fact{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--mu);cursor:pointer;font-weight:600}
+.fovl{position:absolute;bottom:0;left:0;right:0;padding:12px;background:linear-gradient(transparent,rgba(0,0,0,.9))}
+.fav{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.factions{display:flex;gap:12px;padding:10px 12px;border-top:1px solid var(--bd)}
+.fact{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--mu);cursor:pointer;font-weight:600;user-select:none}
 .fact:hover{color:var(--wh)}
-.fact svg{pointer-events:none}
+/* HERO */
+.hero{background:linear-gradient(135deg,#180800,#0d0300);border:1px solid rgba(255,87,34,.2);border-radius:18px;padding:36px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.hero-h{font-size:clamp(22px,4vw,40px);font-weight:900;letter-spacing:-1.5px;line-height:1.05;margin-bottom:8px}
+.hero-h i{color:var(--or);font-style:normal}
+.hbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.btn-p{background:var(--or);color:#fff;border:none;border-radius:16px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer}
+.btn-o{background:transparent;color:var(--wh);border:1px solid var(--bd);border-radius:16px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer}
+.hstats{display:flex;gap:24px;flex-wrap:wrap}
+.hstat{text-align:center}
+.hsv{font-size:24px;font-weight:800;color:var(--or)}
+.hsl{font-size:10px;color:var(--mu);margin-top:2px}
+/* SECTION HEADERS */
+.sechdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sech{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.secl{font-size:11px;color:var(--or);cursor:pointer;font-weight:600}
+/* LDOT */
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--red);display:inline-block;animation:bk 1.2s infinite;margin-right:3px;vertical-align:middle}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.3}}
 /* EXPLORE */
-.cats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.cat{padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--mu);transition:all .15s}
+.cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.cat{padding:5px 13px;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--mu);transition:all .15s}
 .cat.on{background:var(--or);color:#fff;border-color:var(--or)}
 /* FLASH */
-.flashbar{background:linear-gradient(135deg,#1a0000,#280000);border:1px solid rgba(255,23,68,.25);border-radius:16px;padding:18px 20px;display:flex;align-items:center;gap:16px;margin-bottom:20px;cursor:pointer}
+.flashbar{background:linear-gradient(135deg,#180000,#250000);border:1px solid rgba(255,23,68,.25);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;margin-bottom:18px;cursor:pointer}
 .flashbar:hover{border-color:rgba(255,23,68,.5)}
-.ftimer{font-family:monospace;font-size:22px;font-weight:800;color:var(--red)}
-.fpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:24px}
-.fpc{background:linear-gradient(135deg,#1a0000,#0d0000);border:1px solid rgba(255,23,68,.2);border-radius:14px;padding:16px;cursor:pointer}
+.ftimer{font-family:monospace;font-size:20px;font-weight:800;color:var(--red)}
+.fpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-bottom:20px}
+.fpc{background:linear-gradient(135deg,#180000,#0d0000);border:1px solid rgba(255,23,68,.2);border-radius:12px;padding:14px;cursor:pointer;transition:border-color .15s}
+.fpc:hover{border-color:rgba(255,23,68,.5)}
 /* ORDERS */
-.otabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:20px}
-.otab{padding:10px 18px;font-size:13px;font-weight:700;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.otabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:18px}
+.otab{padding:9px 16px;font-size:12px;font-weight:700;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
 .otab.on{color:var(--or);border-bottom-color:var(--or)}
-.ocard{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:12px}
-.oref{font-size:11px;font-weight:800;font-family:monospace;color:var(--or)}
-.pbar{display:flex;align-items:center;margin-bottom:12px}
-.pdot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.ocard{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:10px}
+.oref{font-size:10px;font-weight:800;font-family:monospace;color:var(--or)}
+.pbar{display:flex;align-items:center;margin-bottom:10px}
+.pdot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
 .pline{flex:1;height:2px}
+/* SELLER DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:20px}
+.dash-card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px}
+.dash-v{font-size:22px;font-weight:800;color:var(--or)}
+.dash-l{font-size:10px;color:var(--mu);margin-top:3px}
+/* PRODUCT FORM */
+.form-group{margin-bottom:14px}
+.form-label{font-size:11px;font-weight:700;color:var(--mu);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.form-inp{width:100%;background:var(--card2);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;color:var(--wh);font-size:13px;outline:none}
+.form-inp:focus{border-color:var(--or)}
 /* MODAL */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.87);z-index:500;display:none;align-items:center;justify-content:center}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:600;display:none;align-items:center;justify-content:center}
 .modal.on{display:flex}
-.mbox{background:#0d0d0d;border:1px solid var(--bd);border-radius:20px;width:min(900px,96vw);max-height:92vh;overflow:hidden;display:flex;flex-direction:column}
-.mvideo{background:#000;height:400px;display:flex;align-items:center;justify-content:center;font-size:100px;position:relative;flex-shrink:0}
-.mtopbar{position:absolute;top:0;left:0;right:0;padding:16px;display:flex;align-items:center;gap:10px;background:linear-gradient(to bottom,rgba(0,0,0,.75),transparent)}
-.mbot{display:flex;flex:1;overflow:hidden;min-height:0}
-.mleft{flex:1;padding:18px;border-right:1px solid var(--bd);overflow-y:auto}
-.mright{width:300px;display:flex;flex-direction:column;flex-shrink:0}
-.chatfeed{flex:1;padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;max-height:200px}
+.mbox{background:#0f0f0f;border:1px solid var(--bd);border-radius:18px;width:min(440px,96vw);max-height:92vh;overflow-y:auto;padding:24px}
+.mbox::-webkit-scrollbar{width:3px}
+.mbox::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
+.mclose{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.1);border:none;color:var(--wh);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px}
+/* STREAM VIEWER MODAL */
+.svbox{background:#0d0d0d;border:1px solid var(--bd);border-radius:18px;width:min(920px,97vw);max-height:94vh;overflow:hidden;display:flex;flex-direction:column}
+.svvideo{background:#000;height:380px;display:flex;align-items:center;justify-content:center;font-size:90px;position:relative;flex-shrink:0}
+.svtopbar{position:absolute;top:0;left:0;right:0;padding:14px;display:flex;align-items:center;gap:8px;background:linear-gradient(to bottom,rgba(0,0,0,.8),transparent)}
+.svbot{display:flex;flex:1;overflow:hidden;min-height:0}
+.svleft{flex:1;padding:16px;border-right:1px solid var(--bd);overflow-y:auto}
+.svright{width:280px;display:flex;flex-direction:column;flex-shrink:0}
+.chatfeed{flex:1;padding:10px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;max-height:190px}
 .chatfeed::-webkit-scrollbar{width:3px}
 .chatfeed::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
-.chatmsg{font-size:12px;line-height:1.4}
-.chatrow{padding:10px;border-top:1px solid var(--bd);display:flex;gap:8px}
-.chatinp{flex:1;background:var(--card2);border:1px solid var(--bd);border-radius:16px;padding:8px 12px;color:var(--wh);font-size:13px;outline:none}
+.chatmsg{font-size:11px;line-height:1.4}
+.chatrow{padding:8px;border-top:1px solid var(--bd);display:flex;gap:6px}
+.chatinp{flex:1;background:var(--card2);border:1px solid var(--bd);border-radius:14px;padding:7px 11px;color:var(--wh);font-size:12px;outline:none}
 .chatinp:focus{border-color:var(--or)}
-.chatsend{background:var(--or);border:none;color:#fff;border-radius:16px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer}
+.chatsend{background:var(--or);border:none;color:#fff;border-radius:14px;padding:7px 14px;font-size:11px;font-weight:700;cursor:pointer}
+/* PROFILE PAGE */
+.profile-hdr{background:linear-gradient(135deg,#180800,#0d0300);border:1px solid rgba(255,87,34,.2);border-radius:16px;padding:24px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
+.profile-av{width:64px;height:64px;border-radius:50%;background:var(--or);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-shrink:0}
+.menu-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--card);border:1px solid var(--bd);border-radius:11px;margin-bottom:6px;cursor:pointer;transition:border-color .15s}
+.menu-item:hover{border-color:var(--or)}
+.menu-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+/* CHECKOUT */
+.checkout-steps{display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid var(--bd)}
+.cstep{flex:1;text-align:center;padding:10px;font-size:11px;font-weight:700;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent}
+.cstep.on{color:var(--or);border-bottom-color:var(--or)}
+/* MESSAGES */
+.msg-row{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .15s}
+.msg-row:hover{background:var(--card)}
+.msg-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0}
+/* SELLER PRODUCT CARD */
+.pc{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
+/* WALLET */
+.wallet-card{background:linear-gradient(135deg,#180800,#0d0300);border:1px solid rgba(255,87,34,.3);border-radius:16px;padding:24px;margin-bottom:20px}
 /* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:#1e1e1e;border:1px solid #333;border-radius:12px;padding:12px 20px;font-size:13px;font-weight:600;z-index:999;display:none;max-width:320px}
+.toast{position:fixed;bottom:20px;right:20px;background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;z-index:999;display:none;max-width:320px;box-shadow:0 4px 20px rgba(0,0,0,.5)}
 .toast.on{display:block}
-/* SKELETON */
-.skel{background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);background-size:200% 100%;animation:sk 1.5s infinite;border-radius:14px;height:220px;margin-bottom:12px}
+/* BADGE */
+.badge{display:inline-flex;padding:2px 8px;border-radius:12px;font-size:9px;font-weight:800}
+.badge-gr{background:rgba(34,197,94,.15);color:var(--gr)}
+.badge-or{background:rgba(255,87,34,.15);color:var(--or)}
+.badge-pu{background:rgba(168,85,247,.15);color:var(--pu)}
+.badge-ye{background:rgba(255,152,0,.15);color:var(--ye)}
+.badge-re{background:rgba(255,23,68,.15);color:var(--red)}
+/* SKEL */
+.skel{background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:12px}
 @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.empty{text-align:center;padding:60px 20px;color:var(--mu)}
-@media(max-width:600px){
-  nav{padding:0 12px;gap:8px}
-  .search-inp{display:none}
-  .page{padding:14px}
-  .hero{padding:20px}
-  .mbot{flex-direction:column}
-  .mright{width:100%;border-top:1px solid var(--bd)}
-  .chatfeed{max-height:130px}
-}
+.empty{text-align:center;padding:48px 20px;color:var(--mu)}
+.divider{height:1px;background:var(--bd);margin:16px 0}
+@media(max-width:640px){nav{padding:0 10px;gap:6px}.nav-search{display:none}.page{padding:12px}.hero{padding:18px}.svbot{flex-direction:column}.svright{width:100%;border-top:1px solid var(--bd)}.chatfeed{max-height:120px}}
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="logo"><b>Sell</b>Live</div>
-  <div class="tabs">
-    <button class="tab on" data-page="home"><span class="ldot"></span>Live</button>
-    <button class="tab" data-page="feed">Feed</button>
-    <button class="tab" data-page="explore">Explore</button>
-    <button class="tab" data-page="flash">⚡ Flash Sales</button>
-    <button class="tab" data-page="orders">Orders</button>
+  <div class="logo" id="nav-logo"><b>Sell</b>Live</div>
+  <div class="nav-tabs">
+    <button class="ntab on" data-page="home"><span class="ldot"></span>Live</button>
+    <button class="ntab" data-page="feed">Feed</button>
+    <button class="ntab" data-page="explore">Explore</button>
+    <button class="ntab" data-page="flash">⚡ Flash Sales</button>
+    <button class="ntab" data-page="orders">My Orders</button>
+    <button class="ntab" data-page="messages">Messages</button>
+    <button class="ntab" data-page="seller">Sell</button>
   </div>
   <div class="nav-r">
-    <input class="search-inp" id="searchinp" placeholder="🔍  Search products, sellers..."/>
-    <button class="sign-btn" id="signbtn">Sign In</button>
+    <input class="nav-search" id="search-inp" placeholder="🔍 Search..."/>
+    <div id="nav-auth-area"></div>
   </div>
 </nav>
 
+<!-- HOME -->
 <div class="page on" id="page-home">
   <div class="hero">
     <div>
-      <div style="display:inline-flex;align-items:center;background:rgba(255,23,68,.12);border:1px solid rgba(255,23,68,.3);color:var(--red);padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:14px"><span class="ldot"></span><span id="livelabel">3 SELLERS LIVE NOW</span></div>
-      <div class="hero-h">Shop Live.<br/><i>Buy Direct.</i><br/>Only in Nigeria.</div>
-      <p class="hero-sub">Watch sellers stream live, ask questions in real time, and buy instantly. Fashion, tech, beauty — going live now.</p>
+      <div style="display:inline-flex;align-items:center;background:rgba(255,23,68,.12);border:1px solid rgba(255,23,68,.3);color:var(--red);padding:4px 12px;border-radius:16px;font-size:10px;font-weight:700;margin-bottom:12px"><span class="ldot"></span><span id="livelabel">3 SELLERS LIVE NOW</span></div>
+      <div class="hero-h">Shop Live.<br/><i>Buy Direct.</i><br/>Nigeria.</div>
+      <div style="font-size:13px;color:var(--mu);line-height:1.6;max-width:400px;margin-top:8px">Watch sellers stream live, ask questions in real time, and buy instantly. Fashion, tech, beauty — live now.</div>
       <div class="hbtns">
-        <button class="btn-p" id="watchbtn">Watch Live Now</button>
-        <button class="btn-o" id="browsebtn">Browse Products</button>
+        <button class="btn-p" id="watchbtn">Watch Live</button>
+        <button class="btn-o" id="sellbtn">Start Selling →</button>
       </div>
     </div>
     <div class="hstats">
       <div class="hstat"><div class="hsv" id="hs1">3</div><div class="hsl">Live Streams</div></div>
       <div class="hstat"><div class="hsv" id="hs2">4,073</div><div class="hsl">Watching Now</div></div>
-      <div class="hstat"><div class="hsv">₦84M+</div><div class="hsl">GMV to Date</div></div>
+      <div class="hstat"><div class="hsv">₦84M+</div><div class="hsl">GMV</div></div>
     </div>
   </div>
   <div class="sechdr"><div class="sech">🔴 Live Streams</div><div class="secl" id="seeall1">See all →</div></div>
-  <div class="sgrid" id="home-streams"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+  <div class="sgrid" id="home-streams"><div class="skel" style="height:200px"></div><div class="skel" style="height:200px"></div><div class="skel" style="height:200px"></div></div>
   <div class="sechdr"><div class="sech">📱 Shop Feed</div><div class="secl" id="seeall2">See all →</div></div>
-  <div class="fgrid" id="home-feed"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+  <div class="fgrid" id="home-feed"><div class="skel" style="height:220px"></div><div class="skel" style="height:220px"></div><div class="skel" style="height:220px"></div></div>
 </div>
 
+<!-- FEED -->
 <div class="page" id="page-feed">
-  <div class="sechdr" style="margin-bottom:20px"><div class="sech">📱 Shop Feed</div></div>
-  <div class="fgrid" id="feed-grid"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+  <div class="sechdr" style="margin-bottom:18px"><div class="sech">📱 Shop Feed</div></div>
+  <div class="fgrid" id="feed-grid"><div class="skel" style="height:220px"></div><div class="skel" style="height:220px"></div><div class="skel" style="height:220px"></div></div>
 </div>
 
+<!-- EXPLORE -->
 <div class="page" id="page-explore">
-  <div class="sechdr" style="margin-bottom:14px"><div class="sech">Explore</div></div>
+  <div class="sechdr" style="margin-bottom:12px"><div class="sech">Explore</div></div>
   <div class="cats" id="cats-row"></div>
-  <div class="sgrid" id="explore-grid"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+  <div class="sgrid" id="explore-grid"><div class="skel" style="height:200px"></div><div class="skel" style="height:200px"></div><div class="skel" style="height:200px"></div></div>
 </div>
 
+<!-- FLASH SALES -->
 <div class="page" id="page-flash">
-  <div class="sechdr" style="margin-bottom:20px"><div class="sech">⚡ Flash Sales</div></div>
-  <div id="flash-content"><div class="skel"></div></div>
+  <div class="sechdr" style="margin-bottom:18px"><div class="sech">⚡ Flash Sales</div></div>
+  <div id="flash-content"><div class="skel" style="height:80px;margin-bottom:12px"></div><div class="skel" style="height:200px"></div></div>
 </div>
 
+<!-- ORDERS -->
 <div class="page" id="page-orders">
   <div class="sechdr" style="margin-bottom:14px"><div class="sech">📦 My Orders</div></div>
-  <div class="otabs">
-    <div class="otab on" id="otab-a">Active (2)</div>
-    <div class="otab" id="otab-c">Completed (1)</div>
+  <div id="orders-auth-wall" style="display:none" class="empty">
+    <div style="font-size:40px;margin-bottom:12px">🔒</div>
+    <div style="font-size:15px;font-weight:700;color:var(--wh);margin-bottom:6px">Sign in to see your orders</div>
+    <div style="font-size:13px;margin-bottom:18px">Track your deliveries, raise disputes, leave reviews</div>
+    <button class="btn-p" id="orders-signin-btn">Sign In</button>
   </div>
-  <div id="orders-a">
-    <div class="ocard">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-        <div class="oref">SL-A1B2-001</div>
-        <span style="background:rgba(168,85,247,.15);color:#a855f7;font-size:10px;font-weight:800;padding:3px 10px;border-radius:6px">On the Way 📦</span>
-      </div>
-      <div style="font-size:14px;font-weight:700;margin:6px 0 4px">Ankara Print Dress (Size 14)</div>
-      <div style="font-size:20px;font-weight:800;color:var(--or);margin-bottom:12px">₦8,500</div>
-      <div class="pbar">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--or);color:#fff">✓</div><div style="font-size:9px;font-weight:700;color:var(--or)">Paid</div></div>
-        <div class="pline" style="background:var(--or)"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--or);color:#fff">✓</div><div style="font-size:9px;font-weight:700;color:var(--or)">Packed</div></div>
-        <div class="pline" style="background:var(--or)"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:#a855f7;color:#fff">✓</div><div style="font-size:9px;font-weight:700;color:#a855f7">Shipped</div></div>
-        <div class="pline" style="background:var(--bd)"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--bd)"></div><div style="font-size:9px;font-weight:700;color:var(--mu)">Done</div></div>
-      </div>
-      <div style="font-size:12px;color:var(--mu)">Adunola Collections · GIG Logistics · Est. delivery tomorrow</div>
+  <div id="orders-content">
+    <div class="otabs">
+      <div class="otab on" id="otab-a">Active</div>
+      <div class="otab" id="otab-c">Completed</div>
     </div>
-    <div class="ocard">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-        <div class="oref">SL-C3D4-002</div>
-        <span style="background:rgba(255,152,0,.15);color:var(--ye);font-size:10px;font-weight:800;padding:3px 10px;border-radius:6px">Being Packed</span>
+    <div id="orders-a"></div>
+    <div id="orders-c" style="display:none"></div>
+  </div>
+</div>
+
+<!-- MESSAGES -->
+<div class="page" id="page-messages">
+  <div class="sechdr" style="margin-bottom:14px"><div class="sech">💬 Messages</div></div>
+  <div id="msgs-auth-wall" class="empty">
+    <div style="font-size:40px;margin-bottom:12px">💬</div>
+    <div style="font-size:15px;font-weight:700;color:var(--wh);margin-bottom:6px">Sign in to access messages</div>
+    <div style="font-size:13px;margin-bottom:18px">Chat with sellers before and after buying</div>
+    <button class="btn-p" id="msgs-signin-btn">Sign In</button>
+  </div>
+  <div id="msgs-content" style="display:none">
+    <div id="msgs-list"></div>
+    <div id="chat-window" style="display:none;background:var(--card);border:1px solid var(--bd);border-radius:14px;overflow:hidden">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px">
+        <button id="chat-back" style="background:none;border:none;color:var(--wh);cursor:pointer;font-size:18px">←</button>
+        <div id="chat-with-name" style="font-size:14px;font-weight:700"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--gr);margin-left:4px"></div>
+        <span style="font-size:11px;color:var(--gr)">Online</span>
       </div>
-      <div style="font-size:14px;font-weight:700;margin:6px 0 4px">iPhone 14 Pro Max 256GB</div>
-      <div style="font-size:20px;font-weight:800;color:var(--or);margin-bottom:12px">₦180,000</div>
-      <div class="pbar">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--or);color:#fff">✓</div><div style="font-size:9px;font-weight:700;color:var(--or)">Paid</div></div>
-        <div class="pline" style="background:var(--or)"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--ye);color:#fff">✓</div><div style="font-size:9px;font-weight:700;color:var(--ye)">Packed</div></div>
-        <div class="pline" style="background:var(--bd)"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--bd)"></div><div style="font-size:9px;font-weight:700;color:var(--mu)">Ship</div></div>
-        <div class="pline" style="background:var(--bd)"></div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><div class="pdot" style="background:var(--bd)"></div><div style="font-size:9px;font-weight:700;color:var(--mu)">Done</div></div>
+      <div id="chat-msgs" style="height:280px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px"></div>
+      <div style="padding:10px;border-top:1px solid var(--bd);display:flex;gap:8px">
+        <input id="chat-inp" style="flex:1;background:var(--card2);border:1px solid var(--bd);border-radius:16px;padding:8px 12px;color:var(--wh);font-size:13px;outline:none" placeholder="Type a message..."/>
+        <button id="chat-send" style="background:var(--or);border:none;color:#fff;border-radius:16px;padding:8px 16px;font-weight:700;cursor:pointer">Send</button>
       </div>
-      <div style="font-size:12px;color:var(--mu)">TechHub Nigeria · Awaiting shipment</div>
     </div>
   </div>
-  <div id="orders-c" style="display:none">
-    <div class="ocard">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-        <div class="oref">SL-E5F6-003</div>
-        <span style="background:rgba(34,197,94,.15);color:var(--gr);font-size:10px;font-weight:800;padding:3px 10px;border-radius:6px">Delivered ✅</span>
+</div>
+
+<!-- SELLER DASHBOARD -->
+<div class="page" id="page-seller">
+  <div id="seller-auth-wall" class="empty">
+    <div style="font-size:40px;margin-bottom:12px">🏪</div>
+    <div style="font-size:15px;font-weight:700;color:var(--wh);margin-bottom:6px">Sign in to start selling</div>
+    <div style="font-size:13px;margin-bottom:18px">List products, go live, get paid — all from your browser</div>
+    <button class="btn-p" id="seller-signin-btn">Sign In / Register as Seller</button>
+  </div>
+  <div id="seller-content" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div>
+        <div style="font-size:20px;font-weight:800">Seller Dashboard</div>
+        <div style="font-size:12px;color:var(--mu)" id="seller-biz-name"></div>
       </div>
-      <div style="font-size:14px;font-weight:700;margin:6px 0 4px">Glow Serum Set</div>
-      <div style="font-size:20px;font-weight:800;color:var(--or);margin-bottom:12px">₦4,500</div>
-      <button id="reviewbtn" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--card2);color:var(--or);font-size:13px;font-weight:700;cursor:pointer">Leave a Review ⭐</button>
+      <button class="btn-p" id="add-product-btn">+ Add Product</button>
     </div>
+    <div class="dash-grid" id="seller-stats">
+      <div class="dash-card"><div class="dash-v" id="ds-revenue">₦0</div><div class="dash-l">Total Revenue</div></div>
+      <div class="dash-card"><div class="dash-v" id="ds-orders">0</div><div class="dash-l">Orders</div></div>
+      <div class="dash-card"><div class="dash-v" id="ds-products">0</div><div class="dash-l">Products Listed</div></div>
+      <div class="dash-card"><div class="dash-v" id="ds-followers">0</div><div class="dash-l">Followers</div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="sechdr"><div class="sech">My Products</div></div>
+    <div id="my-products"></div>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div class="page" id="page-profile">
+  <div id="profile-auth-wall" class="empty">
+    <div style="font-size:40px;margin-bottom:12px">👤</div>
+    <div style="font-size:15px;font-weight:700;color:var(--wh);margin-bottom:6px">Sign in to view your profile</div>
+    <button class="btn-p" id="profile-signin-btn">Sign In</button>
+  </div>
+  <div id="profile-content" style="display:none">
+    <div class="profile-hdr">
+      <div class="profile-av" id="prof-av">N</div>
+      <div>
+        <div style="font-size:18px;font-weight:800" id="prof-name">-</div>
+        <div style="font-size:12px;color:var(--mu);margin-top:3px" id="prof-phone">-</div>
+        <div id="prof-seller-badge" style="display:none;margin-top:6px"><span class="badge badge-or">🏪 Seller Account</span></div>
+      </div>
+    </div>
+    <!-- WALLET SECTION -->
+    <div class="wallet-card" id="wallet-section">
+      <div style="font-size:11px;color:var(--mu);font-weight:700;margin-bottom:4px">WALLET BALANCE</div>
+      <div style="font-size:32px;font-weight:900;color:var(--or)" id="wallet-balance">₦0.00</div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn-p" id="withdraw-btn" style="font-size:12px;padding:7px 16px">Withdraw</button>
+        <button class="btn-o" style="font-size:12px;padding:7px 16px" id="ref-btn">🎁 Refer & Earn ₦500</button>
+      </div>
+    </div>
+    <div class="menu-item" id="menu-orders"><div class="menu-icon" style="background:rgba(255,87,34,.12)">📦</div><div style="flex:1;font-size:13px;font-weight:600">My Orders</div><div style="color:var(--mu)">›</div></div>
+    <div class="menu-item" id="menu-loyalty"><div class="menu-icon" style="background:rgba(255,152,0,.12)">🏆</div><div style="flex:1;font-size:13px;font-weight:600">Loyalty Points</div><div id="loyalty-pts" style="font-size:12px;font-weight:700;color:var(--or)">0 pts</div></div>
+    <div class="menu-item" id="menu-flash"><div class="menu-icon" style="background:rgba(255,23,68,.12)">⚡</div><div style="flex:1;font-size:13px;font-weight:600">Flash Sales</div><div style="color:var(--mu)">›</div></div>
+    <div class="menu-item" id="menu-msgs"><div class="menu-icon" style="background:rgba(59,130,246,.12)">💬</div><div style="flex:1;font-size:13px;font-weight:600">Messages</div><div style="color:var(--mu)">›</div></div>
+    <div class="menu-item" id="menu-seller-dash" style="display:none"><div class="menu-icon" style="background:rgba(34,197,94,.12)">📊</div><div style="flex:1;font-size:13px;font-weight:600">Seller Dashboard</div><div style="color:var(--mu)">›</div></div>
+    <div class="divider"></div>
+    <div class="menu-item" id="logout-btn" style="margin-bottom:24px"><div class="menu-icon" style="background:rgba(239,68,68,.12)">🚪</div><div style="flex:1;font-size:13px;font-weight:600;color:#ef4444">Log Out</div></div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal" id="auth-modal">
+  <div class="mbox" style="position:relative">
+    <button class="mclose" id="auth-close">✕</button>
+    <div id="auth-step-phone">
+      <div style="font-size:22px;margin-bottom:4px">👋</div>
+      <div style="font-size:18px;font-weight:800;margin-bottom:4px">Welcome to SellLive</div>
+      <div style="font-size:13px;color:var(--mu);margin-bottom:20px">Enter your phone number to continue</div>
+      <div class="form-group">
+        <div class="form-label">Phone Number</div>
+        <input class="form-inp" id="phone-inp" placeholder="+234 803 000 0000" type="tel"/>
+      </div>
+      <div class="form-group">
+        <div class="form-label">I want to</div>
+        <div style="display:flex;gap:8px">
+          <div class="cat on" id="role-buyer" data-role="buyer">🛍️ Buy</div>
+          <div class="cat" id="role-seller" data-role="seller">🏪 Sell</div>
+        </div>
+      </div>
+      <button class="btn-p" id="send-otp-btn" style="width:100%;padding:12px;font-size:14px">Send OTP Code</button>
+    </div>
+    <div id="auth-step-otp" style="display:none">
+      <div style="font-size:22px;margin-bottom:4px">📱</div>
+      <div style="font-size:18px;font-weight:800;margin-bottom:4px">Enter OTP</div>
+      <div style="font-size:13px;color:var(--mu);margin-bottom:6px">We sent a 6-digit code to</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:20px" id="otp-phone-display"></div>
+      <div class="form-group">
+        <div class="form-label">OTP Code</div>
+        <input class="form-inp" id="otp-inp" placeholder="000000" maxlength="6" style="font-size:24px;letter-spacing:6px;text-align:center"/>
+      </div>
+      <div id="otp-dev-hint" style="display:none;background:rgba(255,87,34,.08);border:1px solid rgba(255,87,34,.2);border-radius:8px;padding:10px;font-size:12px;color:var(--or);margin-bottom:14px;font-family:monospace;text-align:center"></div>
+      <div id="auth-step-name" style="display:none">
+        <div class="form-group">
+          <div class="form-label">Your Full Name</div>
+          <input class="form-inp" id="name-inp" placeholder="e.g. Ngozi Okonkwo"/>
+        </div>
+      </div>
+      <button class="btn-p" id="verify-otp-btn" style="width:100%;padding:12px;font-size:14px">Verify &amp; Sign In</button>
+      <div style="text-align:center;margin-top:12px"><span style="font-size:12px;color:var(--mu)">Wrong number? </span><span style="font-size:12px;color:var(--or);cursor:pointer" id="back-to-phone">Go back</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PRODUCT MODAL -->
+<div class="modal" id="product-modal">
+  <div class="mbox" style="position:relative">
+    <button class="mclose" id="product-close">✕</button>
+    <div style="font-size:18px;font-weight:800;margin-bottom:18px" id="product-modal-title">Add Product</div>
+    <div class="form-group"><div class="form-label">Product Name</div><input class="form-inp" id="prod-name" placeholder="e.g. Ankara Print Dress"/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group"><div class="form-label">Price (₦)</div><input class="form-inp" id="prod-price" placeholder="8500" type="number"/></div>
+      <div class="form-group"><div class="form-label">Stock Qty</div><input class="form-inp" id="prod-stock" placeholder="10" type="number"/></div>
+    </div>
+    <div class="form-group"><div class="form-label">Description</div><textarea class="form-inp" id="prod-desc" rows="2" placeholder="Describe your product..."></textarea></div>
+    <button class="btn-p" id="save-product-btn" style="width:100%;padding:12px;font-size:14px">Save Product</button>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal" id="checkout-modal">
+  <div class="mbox" style="position:relative">
+    <button class="mclose" id="checkout-close">✕</button>
+    <div style="font-size:18px;font-weight:800;margin-bottom:18px">Complete Order</div>
+    <div id="checkout-product-info" style="background:var(--card2);border-radius:10px;padding:12px;margin-bottom:16px;display:flex;align-items:center;gap:10px"></div>
+    <div class="form-group"><div class="form-label">Delivery Address</div><input class="form-inp" id="checkout-addr" placeholder="e.g. 14 Bode Thomas Street, Surulere, Lagos"/></div>
+    <div class="form-group"><div class="form-label">Phone</div><input class="form-inp" id="checkout-phone" placeholder="+234 803 000 0000"/></div>
+    <div style="background:rgba(255,87,34,.08);border:1px solid rgba(255,87,34,.2);border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:var(--mu)">
+      💳 Payment via Flutterwave · Card, Bank Transfer, USSD
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>Subtotal</span><span id="co-sub">₦0</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>Delivery</span><span style="color:var(--gr)">Free</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:800;margin-bottom:18px;padding-top:10px;border-top:1px solid var(--bd)"><span>Total</span><span id="co-total" style="color:var(--or)">₦0</span></div>
+    <button class="btn-p" id="place-order-btn" style="width:100%;padding:12px;font-size:14px">Place Order & Pay</button>
   </div>
 </div>
 
 <!-- STREAM VIEWER MODAL -->
-<div class="modal" id="modal">
-  <div class="mbox">
-    <div class="mvideo" id="mvideo">
-      <span id="mvem" style="position:relative;z-index:1;pointer-events:none">👗</span>
-      <div class="mtopbar">
-        <span style="background:var(--red);color:#fff;font-size:9px;font-weight:800;padding:3px 8px;border-radius:5px">LIVE</span>
-        <div style="flex:1;margin-left:8px">
-          <div style="font-size:14px;font-weight:800" id="mvname">Adunola</div>
-          <div style="font-size:11px;color:rgba(255,255,255,.7)" id="mvv">👁 2,412 watching</div>
-        </div>
-        <button id="closebtn" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;flex-shrink:0">✕</button>
+<div class="modal" id="sv-modal">
+  <div class="svbox">
+    <div class="svvideo" id="sv-video">
+      <span id="sv-em" style="position:relative;z-index:1;pointer-events:none">👗</span>
+      <div class="svtopbar">
+        <span style="background:var(--red);color:#fff;font-size:8px;font-weight:800;padding:2px 7px;border-radius:4px">LIVE</span>
+        <div style="flex:1;margin-left:8px"><div style="font-size:13px;font-weight:800" id="sv-name">Adunola</div><div style="font-size:10px;color:rgba(255,255,255,.7)" id="sv-viewers">2,412 watching</div></div>
+        <button id="sv-close" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;flex-shrink:0">✕</button>
       </div>
     </div>
-    <div class="mbot">
-      <div class="mleft" id="mprods"></div>
-      <div class="mright">
-        <div style="padding:10px 12px;border-bottom:1px solid var(--bd);font-size:12px;font-weight:700;color:var(--mu)">LIVE CHAT</div>
-        <div class="chatfeed" id="chatfeed"></div>
+    <div class="svbot">
+      <div class="svleft" id="sv-prods"></div>
+      <div class="svright">
+        <div style="padding:8px 10px;border-bottom:1px solid var(--bd);font-size:10px;font-weight:700;color:var(--mu)">LIVE CHAT</div>
+        <div class="chatfeed" id="sv-chatfeed"></div>
         <div class="chatrow">
-          <input class="chatinp" id="chatinp" placeholder="Type BUY to order or say hi..."/>
-          <button class="chatsend" id="chatsend">Send</button>
+          <input class="chatinp" id="sv-chatinp" placeholder="Type BUY to order..."/>
+          <button class="chatsend" id="sv-chatsend">Send</button>
         </div>
       </div>
     </div>
@@ -267,8 +437,39 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,10,10,.95);backdrop-fil
 <div class="toast" id="toast"></div>
 
 <script>
-// ── DATA STORE (no JSON in onclick) ──
-const SL = { streams: [], posts: [], chatIntvl: null, chatIdx: 0 };
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+const APP = {
+  user: null, token: null,
+  streams: [], posts: [], products: [],
+  sellerProfile: null,
+  chatIntvl: null, chatIdx: 0,
+  checkoutProduct: null, editingProductId: null
+};
+
+// Persist auth
+function saveAuth(user, token) {
+  APP.user = user; APP.token = token;
+  localStorage.setItem('sl_user', JSON.stringify(user));
+  localStorage.setItem('sl_token', token);
+}
+function loadAuth() {
+  try {
+    const u = localStorage.getItem('sl_user');
+    const t = localStorage.getItem('sl_token');
+    if (u && t) { APP.user = JSON.parse(u); APP.token = t; }
+  } catch(e) {}
+}
+function logout() {
+  APP.user = null; APP.token = null;
+  localStorage.removeItem('sl_user'); localStorage.removeItem('sl_token');
+  updateAuthUI(); showPage('home');
+}
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
 const CHAT_MSGS = [
   {u:'Ngozi',c:'#FF9800',t:'Beautiful! How much is delivery?'},
   {u:'Seller',c:'#4CAF50',t:'Free delivery on orders over ₦10k 🔥'},
@@ -276,249 +477,240 @@ const CHAT_MSGS = [
   {u:'SellLive',c:'#FF5722',t:'→ Order created for Emeka ✅'},
   {u:'Chioma',c:'#FF9800',t:'Do you ship to Abuja?'},
   {u:'Seller',c:'#4CAF50',t:'Yes! 2-3 days via GIG Logistics'},
-  {u:'Kele',c:'#9C27B0',t:'Last piece! I want it'},
-  {u:'SellLive',c:'#FF5722',t:'→ Order created for Kele ✅'},
 ];
 const COLORS = ['#FF5722','#4CAF50','#e91e63','#2196F3','#9C27B0','#FF9800'];
+function em(t=''){t=t.toLowerCase();if(t.includes('ankara')||t.includes('dress')||t.includes('lace')||t.includes('fashion'))return'👗';if(t.includes('iphone')||t.includes('samsung')||t.includes('phone'))return'📱';if(t.includes('serum')||t.includes('beauty')||t.includes('glow')||t.includes('skin'))return'💄';if(t.includes('tech')||t.includes('laptop'))return'💻';if(t.includes('food'))return'🍲';return'🛍️';}
+function bg(t=''){t=t.toLowerCase();if(t.includes('ankara')||t.includes('dress')||t.includes('fashion'))return'linear-gradient(135deg,#1a0800,#3a1200)';if(t.includes('iphone')||t.includes('tech')||t.includes('samsung'))return'linear-gradient(135deg,#001a08,#003015)';if(t.includes('serum')||t.includes('beauty')||t.includes('glow'))return'linear-gradient(135deg,#100015,#200025)';return'linear-gradient(135deg,#111,#1a1a1a)';}
+function price(p){return p?'₦'+(p/100).toLocaleString('en-NG',{maximumFractionDigits:0}):'';}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3000);}
+function api(path,opts={}){return fetch(path,{headers:{'Content-Type':'application/json',...(APP.token?{'Authorization':'Bearer '+APP.token}:{})},...opts}).then(r=>r.json());}
 
-// ── HELPERS ──
-function emoji(t=''){
-  t=t.toLowerCase();
-  if(t.includes('ankara')||t.includes('dress')||t.includes('lace')||t.includes('fashion')) return '👗';
-  if(t.includes('iphone')||t.includes('samsung')||t.includes('phone')) return '📱';
-  if(t.includes('serum')||t.includes('beauty')||t.includes('glow')||t.includes('skin')) return '💄';
-  if(t.includes('tech')||t.includes('laptop')) return '💻';
-  if(t.includes('food')) return '🍲';
-  return '🛍️';
+// ═══════════════════════════════════════
+// NAV & PAGES
+// ═══════════════════════════════════════
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
+  const pg=document.getElementById('page-'+id);
+  if(pg) pg.classList.add('on');
+  const tab=document.querySelector('[data-page="'+id+'"]');
+  if(tab) tab.classList.add('on');
+  // Trigger auth walls
+  if(id==='orders') renderOrders();
+  if(id==='messages') renderMessages();
+  if(id==='seller') renderSellerDash();
+  if(id==='profile') renderProfile();
 }
-function bg(t=''){
-  t=t.toLowerCase();
-  if(t.includes('ankara')||t.includes('dress')||t.includes('fashion')) return 'linear-gradient(135deg,#1a0800,#3a1200)';
-  if(t.includes('iphone')||t.includes('tech')||t.includes('samsung')) return 'linear-gradient(135deg,#001a08,#003015)';
-  if(t.includes('serum')||t.includes('beauty')||t.includes('glow')) return 'linear-gradient(135deg,#100015,#200025)';
-  return 'linear-gradient(135deg,#111,#1a1a1a)';
-}
-function price(p){ return p ? '₦'+(p/100).toLocaleString('en-NG',{maximumFractionDigits:0}) : ''; }
-function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('on');
-  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),2800);
+document.querySelectorAll('.ntab').forEach(btn=>{
+  btn.addEventListener('click',function(){showPage(this.dataset.page);});
+});
+document.getElementById('nav-logo').addEventListener('click',()=>showPage('home'));
+document.getElementById('watchbtn').addEventListener('click',()=>showPage('home'));
+document.getElementById('sellbtn').addEventListener('click',()=>{
+  if(!APP.user) { openAuth(); return; }
+  showPage('seller');
+});
+document.getElementById('seeall1').addEventListener('click',()=>showPage('explore'));
+document.getElementById('seeall2').addEventListener('click',()=>showPage('feed'));
+
+// ═══════════════════════════════════════
+// AUTH UI
+// ═══════════════════════════════════════
+function updateAuthUI(){
+  const area=document.getElementById('nav-auth-area');
+  if(APP.user){
+    const init=(APP.user.name||'U')[0].toUpperCase();
+    area.innerHTML=`<div class="nav-user" id="nav-user-btn"><div class="nav-av">${init}</div><span style="font-size:12px;font-weight:600;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${APP.user.name||'Account'}</span></div>`;
+    document.getElementById('nav-user-btn').addEventListener('click',()=>showPage('profile'));
+  } else {
+    area.innerHTML=`<button class="btn-signin" id="signin-btn">Sign In</button>`;
+    document.getElementById('signin-btn').addEventListener('click',openAuth);
+  }
 }
 
-// ── NAV ──
-document.querySelectorAll('.tab').forEach(btn=>{
-  btn.addEventListener('click', function(){
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
-    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+// ═══════════════════════════════════════
+// AUTH MODAL
+// ═══════════════════════════════════════
+let authRole='buyer';
+function openAuth(){
+  document.getElementById('auth-modal').classList.add('on');
+  document.getElementById('auth-step-phone').style.display='block';
+  document.getElementById('auth-step-otp').style.display='none';
+}
+document.getElementById('auth-close').addEventListener('click',()=>document.getElementById('auth-modal').classList.remove('on'));
+document.getElementById('auth-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)document.getElementById('auth-modal').classList.remove('on');});
+
+// Role selector
+['role-buyer','role-seller'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',function(){
+    document.querySelectorAll('[data-role]').forEach(el=>el.classList.remove('on'));
     this.classList.add('on');
-    document.getElementById('page-'+this.dataset.page).classList.add('on');
+    authRole=this.dataset.role;
   });
 });
-document.getElementById('watchbtn').addEventListener('click',()=>{ document.querySelector('[data-page="home"]').click(); });
-document.getElementById('browsebtn').addEventListener('click',()=>{ document.querySelector('[data-page="explore"]').click(); });
-document.getElementById('seeall1').addEventListener('click',()=>{ document.querySelector('[data-page="explore"]').click(); });
-document.getElementById('seeall2').addEventListener('click',()=>{ document.querySelector('[data-page="feed"]').click(); });
-document.getElementById('signbtn').addEventListener('click',()=>toast('📱 Download the SellLive app to sign in!'));
-document.getElementById('reviewbtn').addEventListener('click',()=>toast('⭐ Review submitted! Thank you!'));
 
-// ORDER TABS
-document.getElementById('otab-a').addEventListener('click', function(){
-  this.classList.add('on'); document.getElementById('otab-c').classList.remove('on');
-  document.getElementById('orders-a').style.display='block';
-  document.getElementById('orders-c').style.display='none';
-});
-document.getElementById('otab-c').addEventListener('click', function(){
-  this.classList.add('on'); document.getElementById('otab-a').classList.remove('on');
-  document.getElementById('orders-a').style.display='none';
-  document.getElementById('orders-c').style.display='block';
+document.getElementById('send-otp-btn').addEventListener('click',async()=>{
+  const phone=document.getElementById('phone-inp').value.trim();
+  if(!phone){toast('Enter your phone number');return;}
+  const btn=document.getElementById('send-otp-btn');
+  btn.textContent='Sending...'; btn.disabled=true;
+  try{
+    const res=await api('/api/auth/send-otp',{method:'POST',body:JSON.stringify({phone})});
+    if(res.success){
+      document.getElementById('auth-step-phone').style.display='none';
+      document.getElementById('auth-step-otp').style.display='block';
+      document.getElementById('otp-phone-display').textContent=phone;
+      // Show dev OTP if returned
+      if(res.code){
+        document.getElementById('otp-dev-hint').style.display='block';
+        document.getElementById('otp-dev-hint').textContent='DEV MODE — Your OTP: '+res.code;
+        document.getElementById('otp-inp').value=res.code;
+      }
+    } else {
+      toast('Error: '+(res.error||'Could not send OTP'));
+    }
+  } catch(e){toast('Network error');}
+  btn.textContent='Send OTP Code'; btn.disabled=false;
 });
 
-// ── RENDER STREAM CARD ──
-function streamCard(s, idx){
-  const em=emoji(s.title||''); const b=bg(s.title||'');
+document.getElementById('back-to-phone').addEventListener('click',()=>{
+  document.getElementById('auth-step-phone').style.display='block';
+  document.getElementById('auth-step-otp').style.display='none';
+});
+
+document.getElementById('verify-otp-btn').addEventListener('click',async()=>{
+  const phone=document.getElementById('phone-inp').value.trim();
+  const code=document.getElementById('otp-inp').value.trim();
+  const name=document.getElementById('name-inp').value.trim();
+  const btn=document.getElementById('verify-otp-btn');
+  btn.textContent='Verifying...'; btn.disabled=true;
+  try{
+    const body={phone,code,role:authRole};
+    if(name) body.name=name;
+    const res=await api('/api/auth/verify-otp',{method:'POST',body:JSON.stringify(body)});
+    if(res.success){
+      if(res.is_new_user&&!name){
+        // Need name
+        document.getElementById('auth-step-name').style.display='block';
+        document.getElementById('verify-otp-btn').textContent='Create Account';
+        toast('Welcome! Enter your name to finish.');
+        btn.disabled=false; return;
+      }
+      saveAuth(res.user, res.token);
+      document.getElementById('auth-modal').classList.remove('on');
+      updateAuthUI();
+      toast('Welcome back, '+(res.user.name||'friend')+'! 🎉');
+      if(res.user.role==='seller') loadSellerProfile();
+    } else {
+      toast('Error: '+(res.error||'Invalid OTP'));
+    }
+  } catch(e){toast('Network error');}
+  btn.textContent='Verify & Sign In'; btn.disabled=false;
+});
+
+// ═══════════════════════════════════════
+// RENDER STREAMS
+// ═══════════════════════════════════════
+function streamCard(s,idx){
   const nm=s.seller_profile?.business_name||s.seller?.name||'Seller';
-  const p=s.products?.[0]?.price ? price(s.products[0].price) : 'See prices';
-  const v=(s.seller_profile?.is_verified)?'✓':'';
-  const div=document.createElement('div');
-  div.className='sc'; div.dataset.idx=idx;
-  div.innerHTML=`
-    <div class="sthumb" style="background:${b}">${em}
-      <div class="sovl"><span class="bl">LIVE</span><span class="bv">👁 ${(s.viewer_count||0).toLocaleString()}</span></div>
-    </div>
-    <div class="sbody">
-      <div class="ssell">${nm} ${v}</div>
-      <div class="stit">${s.title||'Live Stream'}</div>
-      <div class="sfooter"><div class="sprice">${p}</div><div class="buy-btn">BUY</div></div>
-    </div>`;
-  div.addEventListener('click', ()=>openStream(idx));
-  div.querySelector('.buy-btn').addEventListener('click', e=>{ e.stopPropagation(); openStream(idx); });
+  const p=s.products?.[0]?.price?price(s.products[0].price):'See prices';
+  const vr=s.seller_profile?.is_verified?'✓':'';
+  const div=document.createElement('div'); div.className='sc'; div.dataset.idx=idx;
+  div.innerHTML=`<div class="sthumb" style="background:${bg(s.title||'')}">${em(s.title||'')}<div class="sovl"><span class="bl">LIVE</span><span class="bv">👁 ${(s.viewer_count||0).toLocaleString()}</span></div></div><div class="sbody"><div class="ssell">${nm} ${vr}</div><div class="stit">${s.title||'Live Stream'}</div><div class="sfooter"><div class="sprice">${p}</div><div class="buy-btn">WATCH & BUY</div></div></div>`;
+  div.addEventListener('click',()=>openStream(idx));
+  div.querySelector('.buy-btn').addEventListener('click',e=>{e.stopPropagation();openStream(idx);});
   return div;
 }
 
-// ── RENDER FEED CARD ──
+function renderStreams(el,list){
+  el.innerHTML='';
+  if(!list.length){el.innerHTML='<div class="empty"><div style="font-size:40px">📡</div><p style="margin-top:10px;font-size:14px;color:var(--wh)">No live streams right now</p></div>';return;}
+  list.forEach((s,i)=>el.appendChild(streamCard(s,i)));
+}
+
+// ═══════════════════════════════════════
+// RENDER FEED
+// ═══════════════════════════════════════
 function feedCard(p){
-  const em=emoji(p.caption||''); const b=bg(p.caption||'');
   const nm=p.seller_profile?.business_name||p.seller?.name||'Seller';
   const init=nm[0]?.toUpperCase()||'S';
   const col=COLORS[Math.floor(Math.random()*COLORS.length)];
   const prod=p.products?.[0]; const pr=prod?.price?price(prod.price):'';
   const lk=(p.like_count||0)>=1000?((p.like_count||0)/1000).toFixed(1)+'k':(p.like_count||0);
   const div=document.createElement('div'); div.className='fc';
-  div.innerHTML=`
-    <div class="fimg" style="background:${b}">
-      ${p.media_url?`<img src="${p.media_url}" loading="lazy" onerror="this.style.display='none'"/>`:'' }
-      <span style="position:relative;z-index:1;pointer-events:none">${em}</span>
-      <div class="fovl">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
-          <div class="fav" style="background:${col}">${init}</div>
-          <span style="font-size:13px;font-weight:700">${nm}${p.seller_profile?.is_verified?' ✓':''}</span>
-          <button class="followbtn" style="margin-left:auto;padding:4px 12px;border:1.5px solid #fff;border-radius:12px;font-size:10px;font-weight:700;cursor:pointer;background:transparent;color:#fff">Follow</button>
-        </div>
-        ${prod?`<div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:10px">
-          <div style="flex:1"><div style="font-size:12px;font-weight:700">${prod.name||''}</div><div style="font-size:14px;font-weight:800;color:var(--or)">${pr}</div></div>
-          <button class="fc-buybtn" style="background:var(--or);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:800;cursor:pointer">BUY</button>
-        </div>`:''}
+  div.innerHTML=`<div class="fimg" style="background:${bg(p.caption||'')}">
+    ${p.media_url?`<img src="${p.media_url}" loading="lazy" onerror="this.style.display='none'"/>`:''}
+    <span style="position:relative;z-index:1;pointer-events:none">${em(p.caption||'')}</span>
+    <div class="fovl">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+        <div class="fav" style="background:${col}">${init}</div>
+        <span style="font-size:12px;font-weight:700">${nm}${p.seller_profile?.is_verified?' ✓':''}</span>
+        <button class="follow-btn" style="margin-left:auto;padding:3px 10px;border:1.5px solid #fff;border-radius:10px;font-size:9px;font-weight:700;cursor:pointer;background:transparent;color:#fff">Follow</button>
       </div>
+      ${prod?`<div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:8px 10px;display:flex;align-items:center;gap:8px">
+        <div style="flex:1"><div style="font-size:11px;font-weight:700">${prod.name||''}</div><div style="font-size:13px;font-weight:800;color:var(--or)">${pr}</div></div>
+        <button class="fc-buy" style="background:var(--or);color:#fff;border:none;border-radius:7px;padding:5px 12px;font-size:11px;font-weight:800;cursor:pointer">BUY</button>
+      </div>`:''}
     </div>
-    <div style="padding:10px 14px;font-size:13px;color:rgba(255,255,255,.8);line-height:1.4">${(p.caption||'').slice(0,90)}</div>
-    <div class="factions">
-      <div class="fact like-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> <span>${lk}</span></div>
-      <div class="fact cmt-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> <span>${p.comment_count||0}</span></div>
-      <div class="fact share-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share</div>
-    </div>`;
-  div.querySelector('.followbtn').addEventListener('click', ()=>toast('✅ Following '+nm+'!'));
-  const b2=div.querySelector('.fc-buybtn');
-  if(b2) b2.addEventListener('click', ()=>toast('🛒 Order created! Pay with Flutterwave →'));
-  div.querySelector('.like-btn').addEventListener('click', function(){
-    const svg=this.querySelector('svg'), sp=this.querySelector('span');
-    svg.setAttribute('fill','#FF1744'); svg.setAttribute('stroke','#FF1744');
+  </div>
+  <div style="padding:9px 12px;font-size:12px;color:rgba(255,255,255,.8);line-height:1.4">${(p.caption||'').slice(0,90)}</div>
+  <div class="factions">
+    <div class="fact like-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> <span>${lk}</span></div>
+    <div class="fact cmt-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> <span>${p.comment_count||0}</span></div>
+    <div class="fact share-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share</div>
+  </div>`;
+  div.querySelector('.follow-btn').addEventListener('click',()=>toast('✅ Following '+nm+'!'));
+  const bb=div.querySelector('.fc-buy');
+  if(bb) bb.addEventListener('click',()=>openCheckout({name:prod?.name||'Product',price:prod?.price||0,em:em(prod?.name||'')}));
+  div.querySelector('.like-btn').addEventListener('click',function(){
+    const svg=this.querySelector('svg'),sp=this.querySelector('span');
+    svg.setAttribute('fill','#FF1744');svg.setAttribute('stroke','#FF1744');
     const n=parseInt(sp.textContent.replace('k',''))*(sp.textContent.includes('k')?1000:1)+1;
-    sp.textContent=n>=1000?(n/1000).toFixed(1)+'k':n;
-    toast('❤️ Liked!');
+    sp.textContent=n>=1000?(n/1000).toFixed(1)+'k':n; toast('❤️ Liked!');
   });
-  div.querySelector('.cmt-btn').addEventListener('click', ()=>toast('💬 '+(p.comment_count||0)+' comments'));
-  div.querySelector('.share-btn').addEventListener('click', ()=>toast('📤 Sharing to WhatsApp...'));
+  div.querySelector('.cmt-btn').addEventListener('click',()=>toast('💬 '+(p.comment_count||0)+' comments'));
+  div.querySelector('.share-btn').addEventListener('click',()=>toast('📤 Shared to WhatsApp!'));
   return div;
 }
 
-// ── RENDER PAGES ──
-function renderStreams(container, list){
-  container.innerHTML='';
-  if(!list.length){ container.innerHTML='<div class="empty"><div style="font-size:48px">📡</div><p style="font-size:15px;font-weight:600;color:var(--wh);margin-top:12px">No live streams right now</p></div>'; return; }
-  list.forEach((s,i)=>container.appendChild(streamCard(s,i)));
-}
-function renderFeed(container, list){
-  container.innerHTML='';
-  if(!list.length){ container.innerHTML='<div class="empty"><div style="font-size:48px">📭</div><p style="font-size:15px;font-weight:600;color:var(--wh);margin-top:12px">No posts yet</p></div>'; return; }
-  list.forEach(p=>container.appendChild(feedCard(p)));
+function renderFeed(el,list){
+  el.innerHTML='';
+  if(!list.length){el.innerHTML='<div class="empty">No posts yet</div>';return;}
+  list.forEach(p=>el.appendChild(feedCard(p)));
 }
 
-// ── STREAM VIEWER ──
-function openStream(idx){
-  const s=SL.streams[idx]; if(!s) return;
-  const nm=s.seller_profile?.business_name||s.seller?.name||'Seller';
-  document.getElementById('mvem').textContent=emoji(s.title||'');
-  document.getElementById('mvideo').style.background=bg(s.title||'');
-  document.getElementById('mvname').textContent=nm;
-  document.getElementById('mvv').textContent='👁 '+(s.viewer_count||0).toLocaleString()+' watching';
-  const prods=s.products||[];
-  const mp=document.getElementById('mprods');
-  mp.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--mu);margin-bottom:10px">PINNED PRODUCTS</div>';
-  if(!prods.length){ mp.innerHTML+='<div style="color:var(--mu);font-size:13px">No products pinned yet</div>'; }
-  prods.forEach(p=>{
-    const d=document.createElement('div');
-    d.style.cssText='background:var(--card2);border:1px solid var(--bd);border-radius:10px;padding:12px;display:flex;align-items:center;gap:12px;margin-bottom:8px';
-    d.innerHTML=`<span style="font-size:28px">${emoji(p.name||'')}</span><div style="flex:1"><div style="font-size:13px;font-weight:700">${p.name||''}</div><div style="font-size:16px;font-weight:800;color:var(--or)">${price(p.price)}</div></div>`;
-    const bb=document.createElement('button');
-    bb.style.cssText='background:var(--or);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:800;cursor:pointer';
-    bb.textContent='BUY';
-    bb.addEventListener('click',()=>toast('🛒 Order created! Pay with Flutterwave →'));
-    d.appendChild(bb); mp.appendChild(d);
-  });
-  document.getElementById('chatfeed').innerHTML='';
-  SL.chatIdx=0;
-  clearInterval(SL.chatIntvl);
-  addChat(); SL.chatIntvl=setInterval(addChat,2000);
-  document.getElementById('modal').classList.add('on');
-  document.body.style.overflow='hidden';
-}
-
-function addChat(){
-  const m=CHAT_MSGS[SL.chatIdx%CHAT_MSGS.length];
-  const f=document.getElementById('chatfeed');
-  const d=document.createElement('div'); d.className='chatmsg';
-  d.innerHTML=`<b style="color:${m.c}">${m.u}:</b> ${m.t}`;
-  f.appendChild(d); if(f.children.length>8) f.removeChild(f.firstChild);
-  f.scrollTop=f.scrollHeight; SL.chatIdx++;
-}
-
-function closeModal(){
-  document.getElementById('modal').classList.remove('on');
-  document.body.style.overflow=''; clearInterval(SL.chatIntvl);
-}
-
-document.getElementById('closebtn').addEventListener('click', closeModal);
-document.getElementById('modal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
-
-function sendChat(){
-  const inp=document.getElementById('chatinp'), txt=inp.value.trim(); if(!txt) return;
-  const f=document.getElementById('chatfeed');
-  const d=document.createElement('div'); d.className='chatmsg';
-  d.innerHTML=`<b style="color:#2196F3">You:</b> ${txt}`;
-  f.appendChild(d); f.scrollTop=f.scrollHeight;
-  if(txt.toLowerCase().startsWith('buy')){
-    setTimeout(()=>{
-      const d2=document.createElement('div'); d2.className='chatmsg';
-      d2.innerHTML='<b style="color:#FF5722">SellLive:</b> → Order created! Pay link sent ✅';
-      f.appendChild(d2); f.scrollTop=f.scrollHeight;
-    },700);
-  }
-  inp.value='';
-}
-document.getElementById('chatsend').addEventListener('click', sendChat);
-document.getElementById('chatinp').addEventListener('keypress', e=>{ if(e.key==='Enter') sendChat(); });
-
-// ── EXPLORE CATEGORIES ──
+// ═══════════════════════════════════════
+// EXPLORE
+// ═══════════════════════════════════════
 function renderCats(){
   const cats=['All','👗 Fashion','📱 Electronics','💄 Beauty','🍲 Food','💍 Jewelry','🧵 Fabric'];
   const row=document.getElementById('cats-row'); row.innerHTML='';
   cats.forEach((c,i)=>{
     const d=document.createElement('div'); d.className='cat'+(i===0?' on':''); d.textContent=c;
-    d.addEventListener('click', function(){
-      row.querySelectorAll('.cat').forEach(x=>x.classList.remove('on'));
-      this.classList.add('on');
-    });
+    d.addEventListener('click',function(){ row.querySelectorAll('.cat').forEach(x=>x.classList.remove('on')); this.classList.add('on'); });
     row.appendChild(d);
   });
 }
 
-// ── FLASH SALES ──
+// ═══════════════════════════════════════
+// FLASH SALES
+// ═══════════════════════════════════════
 function renderFlash(sales){
   const el=document.getElementById('flash-content'); el.innerHTML='';
-  if(!sales.length){
-    el.innerHTML='<div class="empty"><div style="font-size:48px">⚡</div><p style="font-size:15px;font-weight:600;color:var(--wh);margin-top:12px">No flash sales active right now</p><p style="font-size:13px;margin-top:6px">Follow sellers to get notified</p></div>';
-    return;
-  }
+  if(!sales.length){ el.innerHTML='<div class="empty"><div style="font-size:36px">⚡</div><p style="margin-top:10px;font-size:14px;color:var(--wh)">No flash sales active right now</p></div>'; return; }
   for(const sale of sales){
     const bar=document.createElement('div'); bar.className='flashbar';
-    bar.innerHTML=`<div style="font-size:28px">⚡</div><div style="flex:1"><div style="font-size:16px;font-weight:800;color:var(--red)">${sale.title}</div><div style="font-size:12px;color:var(--mu);margin-top:3px">By ${sale.seller_profile?.business_name||'Seller'} · ${sale.discount_percent}% off</div></div><div class="ftimer" id="ft-${sale.id}">--:--:--</div>`;
+    bar.innerHTML=`<div style="font-size:26px">⚡</div><div style="flex:1"><div style="font-size:15px;font-weight:800;color:var(--red)">${sale.title}</div><div style="font-size:11px;color:var(--mu);margin-top:2px">By ${sale.seller_profile?.business_name||'Seller'} · ${sale.discount_percent}% off</div></div><div class="ftimer" id="ft-${sale.id}">--:--:--</div>`;
     el.appendChild(bar);
     const ends=new Date(sale.ends_at).getTime();
-    setInterval(()=>{
-      const left=Math.max(0,Math.floor((ends-Date.now())/1000));
-      const h=Math.floor(left/3600),m=Math.floor((left%3600)/60),s=left%60;
-      const t=document.getElementById('ft-'+sale.id);
-      if(t) t.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-    },1000);
+    setInterval(()=>{const left=Math.max(0,Math.floor((ends-Date.now())/1000));const h=Math.floor(left/3600),m=Math.floor((left%3600)/60),s=left%60;const t=document.getElementById('ft-'+sale.id);if(t)t.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');},1000);
     if(sale.products?.length){
       const pg=document.createElement('div'); pg.className='fpgrid';
       for(const p of sale.products){
         const pc=document.createElement('div'); pc.className='fpc';
-        pc.innerHTML=`<div style="font-size:36px;margin-bottom:10px">${emoji(p.name||'')}</div><div style="font-size:14px;font-weight:700;margin-bottom:8px">${p.name||''}</div><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:12px;color:var(--mu);text-decoration:line-through">${price(p.original_price)}</span><span style="font-size:20px;font-weight:800;color:var(--red)">${price(p.sale_price)}</span><span style="background:rgba(255,23,68,.15);color:var(--red);font-size:10px;font-weight:800;padding:2px 8px;border-radius:5px">${sale.discount_percent}% OFF</span></div><div style="font-size:11px;color:var(--mu);margin-bottom:10px">Stock: ${p.stock} left · Sold: ${p.sold||0}</div>`;
-        const bb=document.createElement('button');
-        bb.style.cssText='width:100%;padding:12px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer';
-        bb.textContent=`Buy Now — ${price(p.sale_price)}`;
-        bb.addEventListener('click',()=>toast('🛒 Flash deal added! Pay now to secure.'));
+        pc.innerHTML=`<div style="font-size:32px;margin-bottom:8px">${em(p.name||'')}</div><div style="font-size:13px;font-weight:700;margin-bottom:6px">${p.name||''}</div><div style="display:flex;align-items:center;gap:6px;margin-bottom:10px"><span style="font-size:11px;color:var(--mu);text-decoration:line-through">${price(p.original_price)}</span><span style="font-size:18px;font-weight:800;color:var(--red)">${price(p.sale_price)}</span><span style="background:rgba(255,23,68,.15);color:var(--red);font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px">${sale.discount_percent}% OFF</span></div><div style="font-size:10px;color:var(--mu);margin-bottom:8px">Stock: ${p.stock} · Sold: ${p.sold||0}</div>`;
+        const bb=document.createElement('button'); bb.style.cssText='width:100%;padding:10px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:800;cursor:pointer'; bb.textContent='Buy Now — '+price(p.sale_price);
+        bb.addEventListener('click',()=>openCheckout({name:p.name||'Product',price:p.sale_price||0,em:em(p.name||'')}));
         pc.appendChild(bb); pg.appendChild(pc);
       }
       el.appendChild(pg);
@@ -526,7 +718,330 @@ function renderFlash(sales){
   }
 }
 
-// ── FETCH DATA ──
+// ═══════════════════════════════════════
+// CHECKOUT
+// ═══════════════════════════════════════
+function openCheckout(prod){
+  if(!APP.user){ openAuth(); toast('Sign in first to place an order'); return; }
+  APP.checkoutProduct=prod;
+  document.getElementById('checkout-product-info').innerHTML=`<span style="font-size:32px">${prod.em}</span><div style="flex:1"><div style="font-size:13px;font-weight:700">${prod.name}</div><div style="font-size:16px;font-weight:800;color:var(--or)">${price(prod.price)}</div></div>`;
+  document.getElementById('co-sub').textContent=price(prod.price);
+  document.getElementById('co-total').textContent=price(prod.price);
+  document.getElementById('checkout-phone').value=APP.user.phone||'';
+  document.getElementById('checkout-modal').classList.add('on');
+}
+document.getElementById('checkout-close').addEventListener('click',()=>document.getElementById('checkout-modal').classList.remove('on'));
+document.getElementById('checkout-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)document.getElementById('checkout-modal').classList.remove('on');});
+document.getElementById('place-order-btn').addEventListener('click',async()=>{
+  const addr=document.getElementById('checkout-addr').value.trim();
+  if(!addr){toast('Enter your delivery address');return;}
+  const btn=document.getElementById('place-order-btn'); btn.textContent='Placing order...'; btn.disabled=true;
+  setTimeout(()=>{
+    document.getElementById('checkout-modal').classList.remove('on');
+    toast('🎉 Order placed! Redirecting to Flutterwave payment...');
+    btn.textContent='Place Order & Pay'; btn.disabled=false;
+    // Simulate creating order
+    addDemoOrder(APP.checkoutProduct);
+  },1000);
+});
+
+function addDemoOrder(prod){
+  const ref='SL-'+Math.random().toString(36).substr(2,4).toUpperCase()+'-'+Math.floor(Math.random()*900+100);
+  const ocard=`<div class="ocard"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div class="oref">${ref}</div><span class="badge badge-ye">Processing</span></div><div style="font-size:13px;font-weight:700;margin:5px 0 3px">${prod.name}</div><div style="font-size:18px;font-weight:800;color:var(--or);margin-bottom:10px">${price(prod.price)}</div><div style="font-size:11px;color:var(--mu)">Payment pending · Waiting for confirmation</div></div>`;
+  const el=document.getElementById('orders-a');
+  el.insertAdjacentHTML('afterbegin',ocard);
+}
+
+// ═══════════════════════════════════════
+// ORDERS
+// ═══════════════════════════════════════
+function renderOrders(){
+  const wall=document.getElementById('orders-auth-wall');
+  const content=document.getElementById('orders-content');
+  if(!APP.user){ wall.style.display='block'; content.style.display='none'; return; }
+  wall.style.display='none'; content.style.display='block';
+  // Load demo orders if empty
+  const oa=document.getElementById('orders-a');
+  if(!oa.innerHTML){
+    oa.innerHTML=`
+    <div class="ocard"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div class="oref">SL-A1B2-001</div><span class="badge badge-pu">On the Way 📦</span></div><div style="font-size:13px;font-weight:700;margin:5px 0 3px">Ankara Print Dress (Size 14)</div><div style="font-size:18px;font-weight:800;color:var(--or);margin-bottom:10px">₦8,500</div>
+    <div class="pbar"><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div class="pdot" style="background:var(--or);color:#fff">✓</div><div style="font-size:8px;color:var(--or)">Paid</div></div><div class="pline" style="background:var(--or)"></div><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div class="pdot" style="background:var(--or);color:#fff">✓</div><div style="font-size:8px;color:var(--or)">Packed</div></div><div class="pline" style="background:var(--or)"></div><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div class="pdot" style="background:var(--pu);color:#fff">✓</div><div style="font-size:8px;color:var(--pu)">Shipped</div></div><div class="pline" style="background:var(--bd)"></div><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div class="pdot" style="background:var(--bd)"></div><div style="font-size:8px;color:var(--mu)">Done</div></div></div>
+    <div style="font-size:11px;color:var(--mu)">Adunola Collections · GIG Logistics · Est. tomorrow</div></div>`;
+    document.getElementById('orders-c').innerHTML=`<div class="ocard"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div class="oref">SL-E5F6-003</div><span class="badge badge-gr">Delivered ✅</span></div><div style="font-size:13px;font-weight:700;margin:5px 0 3px">Glow Serum Set</div><div style="font-size:18px;font-weight:800;color:var(--or);margin-bottom:10px">₦4,500</div><button id="review-btn" style="width:100%;padding:9px;border-radius:9px;border:1px solid var(--bd);background:var(--card2);color:var(--or);font-size:12px;font-weight:700;cursor:pointer">Leave a Review ⭐</button></div>`;
+    document.getElementById('review-btn')?.addEventListener('click',()=>toast('⭐ Review submitted! Thank you!'));
+  }
+}
+document.getElementById('orders-signin-btn').addEventListener('click',openAuth);
+document.getElementById('otab-a').addEventListener('click',function(){this.classList.add('on');document.getElementById('otab-c').classList.remove('on');document.getElementById('orders-a').style.display='block';document.getElementById('orders-c').style.display='none';});
+document.getElementById('otab-c').addEventListener('click',function(){this.classList.add('on');document.getElementById('otab-a').classList.remove('on');document.getElementById('orders-a').style.display='none';document.getElementById('orders-c').style.display='block';});
+
+// ═══════════════════════════════════════
+// MESSAGES
+// ═══════════════════════════════════════
+function renderMessages(){
+  const wall=document.getElementById('msgs-auth-wall');
+  const content=document.getElementById('msgs-content');
+  if(!APP.user){ wall.style.display='flex'; content.style.display='none'; return; }
+  wall.style.display='none'; content.style.display='block';
+  const list=document.getElementById('msgs-list');
+  if(list.innerHTML) return;
+  const convos=[
+    {name:'Adunola Collections',col:'#FF5722',last:'Your dress ships tomorrow 📦',time:'2h'},
+    {name:'TechHub Nigeria',col:'#4CAF50',last:'iPhone comes with 6-month warranty ✅',time:'Yesterday'},
+    {name:'BeautyByBisi',col:'#e91e63',last:'Yes we ship to Abuja!',time:'2 days'},
+  ];
+  convos.forEach(c=>{
+    const row=document.createElement('div'); row.className='msg-row';
+    row.innerHTML=`<div class="msg-av" style="background:${c.col}">${c.name[0]}</div><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:13px;font-weight:700">${c.name}</span><span style="font-size:10px;color:var(--mu)">${c.time}</span></div><div style="font-size:11px;color:var(--mu)">${c.last}</div></div><div style="width:8px;height:8px;border-radius:50%;background:var(--or);flex-shrink:0"></div>`;
+    row.addEventListener('click',()=>openChat(c));
+    list.appendChild(row);
+  });
+}
+document.getElementById('msgs-signin-btn').addEventListener('click',openAuth);
+
+function openChat(convo){
+  document.getElementById('msgs-list').style.display='none';
+  document.getElementById('chat-window').style.display='block';
+  document.getElementById('chat-with-name').textContent=convo.name;
+  const msgs=document.getElementById('chat-msgs'); msgs.innerHTML='';
+  const initMsgs=[
+    {from:'them',text:'Hello! How can I help you?'},
+    {from:'me',text:'Hi, is the product still available?'},
+    {from:'them',text:convo.last},
+  ];
+  initMsgs.forEach(m=>{
+    const d=document.createElement('div');
+    d.style.cssText='display:flex;justify-content:'+(m.from==='me'?'flex-end':'flex-start');
+    d.innerHTML=`<div style="background:${m.from==='me'?'var(--or)':'var(--card2)'};border-radius:${m.from==='me'?'14px 14px 4px 14px':'14px 14px 14px 4px'};padding:9px 12px;max-width:75%;font-size:13px">${m.text}</div>`;
+    msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
+  });
+}
+document.getElementById('chat-back').addEventListener('click',()=>{
+  document.getElementById('msgs-list').style.display='block';
+  document.getElementById('chat-window').style.display='none';
+});
+document.getElementById('chat-send').addEventListener('click',()=>{
+  const inp=document.getElementById('chat-inp'), txt=inp.value.trim(); if(!txt) return;
+  const msgs=document.getElementById('chat-msgs');
+  const d=document.createElement('div'); d.style.cssText='display:flex;justify-content:flex-end';
+  d.innerHTML=`<div style="background:var(--or);border-radius:14px 14px 4px 14px;padding:9px 12px;max-width:75%;font-size:13px">${txt}</div>`;
+  msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; inp.value='';
+  toast('Message sent! ✅');
+});
+document.getElementById('chat-inp').addEventListener('keypress',e=>{if(e.key==='Enter')document.getElementById('chat-send').click();});
+
+// ═══════════════════════════════════════
+// SELLER DASHBOARD
+// ═══════════════════════════════════════
+async function loadSellerProfile(){
+  if(!APP.user||APP.user.role!=='seller') return;
+  try{
+    const res=await api('/api/auth/seller/'+APP.user.id);
+    if(res.profile) APP.sellerProfile=res.profile;
+  }catch(e){}
+}
+
+function renderSellerDash(){
+  const wall=document.getElementById('seller-auth-wall');
+  const content=document.getElementById('seller-content');
+  if(!APP.user){ wall.style.display='flex'; content.style.display='none'; return; }
+  if(APP.user.role!=='seller'){
+    wall.style.display='flex';
+    wall.innerHTML=`<div style="text-align:center;padding:48px 20px"><div style="font-size:40px;margin-bottom:12px">🏪</div><div style="font-size:15px;font-weight:700;margin-bottom:6px">You have a buyer account</div><div style="font-size:13px;color:var(--mu);margin-bottom:18px">Sign out and register again as a seller to access the dashboard</div><button class="btn-p" id="switch-to-seller">Become a Seller</button></div>`;
+    document.getElementById('switch-to-seller')?.addEventListener('click',()=>{ logout(); openAuth(); document.getElementById('role-seller').click(); });
+    content.style.display='none'; return;
+  }
+  wall.style.display='none'; content.style.display='block';
+  const sp=APP.sellerProfile;
+  document.getElementById('seller-biz-name').textContent=sp?.business_name||APP.user.name||'Your Store';
+  document.getElementById('ds-followers').textContent=(sp?.followers_count||0).toLocaleString();
+  loadMyProducts();
+}
+
+async function loadMyProducts(){
+  try{
+    const res=await api('/api/products/my');
+    APP.products=res.products||[];
+    renderMyProducts();
+    document.getElementById('ds-products').textContent=APP.products.length;
+  }catch(e){ document.getElementById('my-products').innerHTML='<div class="empty">Could not load products</div>'; }
+}
+
+function renderMyProducts(){
+  const el=document.getElementById('my-products'); el.innerHTML='';
+  if(!APP.products.length){ el.innerHTML='<div class="empty" style="padding:24px"><p style="font-size:14px;font-weight:600;color:var(--wh)">No products yet</p><p style="font-size:12px;margin-top:6px">Add your first product to start selling</p></div>'; return; }
+  APP.products.forEach((p,i)=>{
+    const div=document.createElement('div'); div.className='pc';
+    div.innerHTML=`<div style="width:48px;height:48px;border-radius:10px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${em(p.name||'')}</div><div style="flex:1"><div style="font-size:13px;font-weight:700">${p.name||''}</div><div style="font-size:12px;color:var(--or);font-weight:700">${price(p.price)} · Stock: ${p.stock}</div>${!p.is_active?'<span class="badge badge-ye" style="margin-top:4px">Inactive</span>':''}</div>`;
+    const btns=document.createElement('div'); btns.style.cssText='display:flex;gap:6px;flex-shrink:0';
+    const editBtn=document.createElement('button'); editBtn.style.cssText='padding:5px 12px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--wh);font-size:11px;cursor:pointer'; editBtn.textContent='Edit';
+    editBtn.addEventListener('click',()=>openEditProduct(p));
+    const delBtn=document.createElement('button'); delBtn.style.cssText='padding:5px 12px;border-radius:8px;border:1px solid rgba(239,68,68,.3);background:transparent;color:#ef4444;font-size:11px;cursor:pointer'; delBtn.textContent='Remove';
+    delBtn.addEventListener('click',async()=>{ await api('/api/products/'+p.id,{method:'DELETE'}); loadMyProducts(); toast('Product removed'); });
+    btns.appendChild(editBtn); btns.appendChild(delBtn); div.appendChild(btns);
+    el.appendChild(div);
+  });
+}
+
+// ADD / EDIT PRODUCT
+document.getElementById('add-product-btn').addEventListener('click',()=>{
+  APP.editingProductId=null;
+  document.getElementById('product-modal-title').textContent='Add Product';
+  document.getElementById('prod-name').value='';
+  document.getElementById('prod-price').value='';
+  document.getElementById('prod-stock').value='';
+  document.getElementById('prod-desc').value='';
+  document.getElementById('product-modal').classList.add('on');
+});
+document.getElementById('product-close').addEventListener('click',()=>document.getElementById('product-modal').classList.remove('on'));
+document.getElementById('product-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)document.getElementById('product-modal').classList.remove('on');});
+
+function openEditProduct(p){
+  APP.editingProductId=p.id;
+  document.getElementById('product-modal-title').textContent='Edit Product';
+  document.getElementById('prod-name').value=p.name||'';
+  document.getElementById('prod-price').value=p.price?Math.round(p.price/100):'';
+  document.getElementById('prod-stock').value=p.stock||'';
+  document.getElementById('prod-desc').value=p.description||'';
+  document.getElementById('product-modal').classList.add('on');
+}
+
+document.getElementById('save-product-btn').addEventListener('click',async()=>{
+  const name=document.getElementById('prod-name').value.trim();
+  const priceVal=parseInt(document.getElementById('prod-price').value);
+  const stock=parseInt(document.getElementById('prod-stock').value)||999;
+  const description=document.getElementById('prod-desc').value.trim();
+  if(!name||!priceVal){toast('Name and price are required');return;}
+  const body={name,price:priceVal*100,stock,description};
+  const btn=document.getElementById('save-product-btn'); btn.textContent='Saving...'; btn.disabled=true;
+  try{
+    if(APP.editingProductId){
+      await api('/api/products/'+APP.editingProductId,{method:'PATCH',body:JSON.stringify(body)});
+    } else {
+      await api('/api/products',{method:'POST',body:JSON.stringify(body)});
+    }
+    document.getElementById('product-modal').classList.remove('on');
+    toast(APP.editingProductId?'Product updated!':'Product added! 🎉');
+    loadMyProducts();
+  }catch(e){toast('Error saving product');}
+  btn.textContent='Save Product'; btn.disabled=false;
+});
+
+// ═══════════════════════════════════════
+// PROFILE
+// ═══════════════════════════════════════
+async function renderProfile(){
+  const wall=document.getElementById('profile-auth-wall');
+  const content=document.getElementById('profile-content');
+  if(!APP.user){ wall.style.display='flex'; content.style.display='none'; return; }
+  wall.style.display='none'; content.style.display='block';
+  const u=APP.user;
+  document.getElementById('prof-av').textContent=(u.name||'U')[0].toUpperCase();
+  document.getElementById('prof-name').textContent=u.name||'User';
+  document.getElementById('prof-phone').textContent=u.phone||'';
+  if(u.role==='seller'){
+    document.getElementById('prof-seller-badge').style.display='block';
+    document.getElementById('menu-seller-dash').style.display='flex';
+  }
+  // Load wallet
+  try{
+    const w=await api('/api/wallet');
+    document.getElementById('wallet-balance').textContent='₦'+(w.balance||0).toLocaleString();
+  }catch(e){}
+  // Load loyalty
+  try{
+    const ly=await api('/api/loyalty');
+    document.getElementById('loyalty-pts').textContent=(ly.points||0)+' pts';
+  }catch(e){}
+}
+document.getElementById('profile-signin-btn').addEventListener('click',openAuth);
+document.getElementById('menu-orders').addEventListener('click',()=>showPage('orders'));
+document.getElementById('menu-loyalty').addEventListener('click',()=>toast('🏆 Earn 1 point per ₦100 spent. Redeem 100pts = ₦500 off!'));
+document.getElementById('menu-flash').addEventListener('click',()=>showPage('flash'));
+document.getElementById('menu-msgs').addEventListener('click',()=>showPage('messages'));
+document.getElementById('menu-seller-dash').addEventListener('click',()=>showPage('seller'));
+document.getElementById('withdraw-btn').addEventListener('click',()=>toast('💳 Withdrawal to bank account — coming soon!'));
+document.getElementById('ref-btn').addEventListener('click',()=>{
+  const code='SL'+(APP.user?.name||'USER').replace(/[^A-Z]/gi,'').substr(0,4).toUpperCase()+'01';
+  navigator.clipboard?.writeText(code);
+  toast('🎁 Referral code copied: '+code+'  Share to earn ₦500!');
+});
+document.getElementById('logout-btn').addEventListener('click',()=>{ logout(); toast('Logged out. See you soon!'); });
+
+// ═══════════════════════════════════════
+// STREAM VIEWER
+// ═══════════════════════════════════════
+function openStream(idx){
+  const s=APP.streams[idx]; if(!s) return;
+  const nm=s.seller_profile?.business_name||s.seller?.name||'Seller';
+  document.getElementById('sv-em').textContent=em(s.title||'');
+  document.getElementById('sv-video').style.background=bg(s.title||'');
+  document.getElementById('sv-name').textContent=nm;
+  document.getElementById('sv-viewers').textContent='👁 '+(s.viewer_count||0).toLocaleString()+' watching';
+  const prods=s.products||[];
+  const sp=document.getElementById('sv-prods');
+  sp.innerHTML='<div style="font-size:10px;font-weight:700;color:var(--mu);margin-bottom:10px">PINNED PRODUCTS</div>';
+  if(!prods.length){sp.innerHTML+='<div style="font-size:12px;color:var(--mu)">No products pinned</div>';}
+  prods.forEach(p=>{
+    const d=document.createElement('div');
+    d.style.cssText='background:var(--card2);border:1px solid var(--bd);border-radius:9px;padding:10px;display:flex;align-items:center;gap:10px;margin-bottom:7px';
+    d.innerHTML=`<span style="font-size:26px">${em(p.name||'')}</span><div style="flex:1"><div style="font-size:12px;font-weight:700">${p.name||''}</div><div style="font-size:15px;font-weight:800;color:var(--or)">${price(p.price)}</div></div>`;
+    const bb=document.createElement('button'); bb.style.cssText='background:var(--or);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:800;cursor:pointer'; bb.textContent='BUY';
+    bb.addEventListener('click',()=>openCheckout({name:p.name||'Product',price:p.price||0,em:em(p.name||'')}));
+    d.appendChild(bb); sp.appendChild(d);
+  });
+  document.getElementById('sv-chatfeed').innerHTML='';
+  APP.chatIdx=0; clearInterval(APP.chatIntvl);
+  addSvChat(); APP.chatIntvl=setInterval(addSvChat,2000);
+  document.getElementById('sv-modal').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+
+function addSvChat(){
+  const m=CHAT_MSGS[APP.chatIdx%CHAT_MSGS.length];
+  const f=document.getElementById('sv-chatfeed');
+  const d=document.createElement('div'); d.className='chatmsg';
+  d.innerHTML=`<b style="color:${m.c}">${m.u}:</b> ${m.t}`;
+  f.appendChild(d); if(f.children.length>8) f.removeChild(f.firstChild);
+  f.scrollTop=f.scrollHeight; APP.chatIdx++;
+}
+function closeSV(){document.getElementById('sv-modal').classList.remove('on');document.body.style.overflow='';clearInterval(APP.chatIntvl);}
+document.getElementById('sv-close').addEventListener('click',closeSV);
+document.getElementById('sv-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeSV();});
+document.getElementById('sv-chatsend').addEventListener('click',()=>{
+  const inp=document.getElementById('sv-chatinp'),txt=inp.value.trim(); if(!txt) return;
+  const f=document.getElementById('sv-chatfeed');
+  const d=document.createElement('div'); d.className='chatmsg';
+  d.innerHTML=`<b style="color:#2196F3">You:</b> ${txt}`;
+  f.appendChild(d); f.scrollTop=f.scrollHeight;
+  if(txt.toLowerCase().startsWith('buy')&&!APP.user){ setTimeout(()=>{const d2=document.createElement('div');d2.className='chatmsg';d2.innerHTML='<b style="color:#FF5722">SellLive:</b> Sign in to place your order →';f.appendChild(d2);f.scrollTop=f.scrollHeight;},600); }
+  else if(txt.toLowerCase().startsWith('buy')){ openCheckout(APP.checkoutProduct||{name:'Product',price:0,em:'🛍️'}); }
+  inp.value='';
+});
+document.getElementById('sv-chatinp').addEventListener('keypress',e=>{if(e.key==='Enter')document.getElementById('sv-chatsend').click();});
+
+// ═══════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════
+let searchT;
+document.getElementById('search-inp').addEventListener('input',function(){
+  clearTimeout(searchT); const q=this.value.trim(); if(!q) return;
+  searchT=setTimeout(async()=>{
+    try{
+      const res=await api('/api/auth/search?q='+encodeURIComponent(q));
+      const streams=res.streams||[]; const sellers=res.sellers||[];
+      if(!streams.length&&!sellers.length){toast('No results for "'+q+'"');return;}
+      showPage('explore');
+      const el=document.getElementById('explore-grid'); el.innerHTML='';
+      streams.forEach((s,i)=>{ APP.streams[APP.streams.length]=s; el.appendChild(streamCard(APP.streams.length-1,APP.streams.length-1)); });
+      toast('Found '+streams.length+' streams, '+sellers.length+' sellers');
+    }catch(e){}
+  },400);
+});
+
+// ═══════════════════════════════════════
+// LOAD DATA
+// ═══════════════════════════════════════
 async function load(){
   try{
     const [tr,fd,fl]=await Promise.all([
@@ -534,24 +1049,25 @@ async function load(){
       fetch('/api/feed').then(r=>r.json()),
       fetch('/api/features/flash-sales').then(r=>r.json()),
     ]);
-    SL.streams=tr.streams||[];
-    SL.posts=fd.posts||[];
-    const viewers=SL.streams.reduce((a,s)=>a+(s.viewer_count||0),0);
-    document.getElementById('hs1').textContent=SL.streams.length;
-    document.getElementById('hs2').textContent=viewers.toLocaleString();
-    document.getElementById('livelabel').textContent=SL.streams.length+' SELLERS LIVE NOW';
-    renderStreams(document.getElementById('home-streams'),SL.streams);
-    renderStreams(document.getElementById('explore-grid'),SL.streams);
-    renderFeed(document.getElementById('home-feed'),SL.posts.slice(0,3));
-    renderFeed(document.getElementById('feed-grid'),SL.posts);
+    APP.streams=tr.streams||[]; APP.posts=fd.posts||[];
+    const v=APP.streams.reduce((a,s)=>a+(s.viewer_count||0),0);
+    document.getElementById('hs1').textContent=APP.streams.length;
+    document.getElementById('hs2').textContent=v.toLocaleString();
+    document.getElementById('livelabel').textContent=APP.streams.length+' SELLERS LIVE NOW';
+    renderStreams(document.getElementById('home-streams'),APP.streams);
+    renderStreams(document.getElementById('explore-grid'),APP.streams);
+    renderFeed(document.getElementById('home-feed'),APP.posts.slice(0,3));
+    renderFeed(document.getElementById('feed-grid'),APP.posts);
     renderCats();
     renderFlash(fl.flash_sales||[]);
-  }catch(e){
-    console.error(e);
-    toast('⚠️ Could not load live data — check connection');
-  }
+  }catch(e){toast('Could not load live data');}
 }
+
+// INIT
+loadAuth();
+updateAuthUI();
 load();
+if(APP.user?.role==='seller') loadSellerProfile();
 </script>
 </body>
 </html>
