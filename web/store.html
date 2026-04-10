@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Store — SellLive</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0a;--card:#141414;--card2:#1a1a1a;--bd:#252525;--or:#FF5722;--red:#FF1744;--mu:#666;--wh:#fff;--gr:#22c55e;--ye:#FF9800}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--wh);min-height:100vh}
+nav{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd);padding:0 20px;display:flex;align-items:center;gap:12px;height:56px}
+.logo{font-size:19px;font-weight:900;cursor:pointer;text-decoration:none;color:var(--wh)}.logo b{color:var(--or)}
+/* STORE HEADER */
+.store-banner{height:200px;background:linear-gradient(135deg,#180800,#3a1200);position:relative;overflow:hidden}
+.store-banner-inner{max-width:1100px;margin:0 auto;padding:0 20px;height:100%;display:flex;align-items:flex-end;padding-bottom:20px}
+.store-av-lg{width:80px;height:80px;border-radius:20px;background:var(--or);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;border:3px solid var(--bg);position:relative;top:40px;flex-shrink:0}
+.store-info{margin-left:16px;padding-bottom:0;position:relative;top:40px}
+.store-name-lg{font-size:22px;font-weight:900}
+.verified-big{display:inline-flex;align-items:center;gap:4px;background:rgba(34,197,94,.15);color:var(--gr);font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;margin-left:8px}
+.store-meta-row{display:flex;gap:16px;margin-top:6px;flex-wrap:wrap}
+.store-meta{font-size:11px;color:rgba(255,255,255,.7)}
+.store-meta b{color:var(--or);font-size:13px}
+/* STORE ACTIONS */
+.store-action-bar{max-width:1100px;margin:0 auto;padding:52px 20px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.follow-store-btn{background:var(--or);color:#fff;border:none;border-radius:12px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer}
+.wa-store-btn{background:#25D366;color:#fff;border:none;border-radius:12px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer}
+.live-badge-btn{background:rgba(255,23,68,.15);border:1px solid rgba(255,23,68,.3);color:var(--red);border-radius:12px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer}
+/* TABS */
+.store-tabs{max-width:1100px;margin:0 auto;padding:0 20px;display:flex;gap:0;border-bottom:1px solid var(--bd)}
+.store-tab{padding:12px 18px;font-size:13px;font-weight:700;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.store-tab.on{color:var(--or);border-bottom-color:var(--or)}
+/* PRODUCTS */
+.container{max-width:1100px;margin:0 auto;padding:20px}
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.prod-card{background:var(--card);border:1px solid var(--bd);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .15s}
+.prod-card:hover{transform:translateY(-3px)}
+.prod-img{height:170px;display:flex;align-items:center;justify-content:center;font-size:52px;background:var(--card2);position:relative}
+.prod-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.prod-body{padding:10px}
+.prod-name{font-size:12px;font-weight:700;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prod-price{font-size:15px;font-weight:800;color:var(--or)}
+.prod-rating{font-size:10px;color:var(--mu);margin-top:3px}
+/* ABOUT TAB */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.about-grid{grid-template-columns:1fr}.prod-grid{grid-template-columns:1fr 1fr}}
+.about-card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px}
+.skel{background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:12px}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.toast{position:fixed;bottom:20px;right:20px;background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;z-index:9999;display:none;max-width:300px}
+.toast.on{display:block}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo"><b>Sell</b>Live</a>
+  <a href="javascript:history.back()" style="font-size:13px;color:#666;text-decoration:none">← Back</a>
+  <div style="margin-left:auto;font-size:13px;color:var(--mu)" id="nav-user"></div>
+</nav>
+
+<!-- STORE BANNER -->
+<div class="store-banner" id="store-banner">
+  <div class="store-banner-inner">
+    <div class="store-av-lg" id="store-av">A</div>
+    <div class="store-info">
+      <div class="store-name-lg" id="store-name">Loading...<span class="verified-big" id="ver-badge" style="display:none">✓ Verified Seller</span></div>
+      <div class="store-meta-row">
+        <div class="store-meta"><b id="s-sales">0</b> Sales</div>
+        <div class="store-meta"><b id="s-prods">0</b> Products</div>
+        <div class="store-meta"><b id="s-followers">0</b> Followers</div>
+        <div class="store-meta">⭐ <b id="s-rating">0.0</b> Rating</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="store-action-bar">
+  <button class="follow-store-btn" id="follow-btn" onclick="toggleFollow()">+ Follow Store</button>
+  <button class="wa-store-btn" id="wa-btn" onclick="whatsappStore()">📱 WhatsApp</button>
+  <button class="live-badge-btn" onclick="watchLive()">🔴 Watch Live</button>
+  <div style="margin-left:auto;font-size:12px;color:var(--mu)" id="store-joined">Joined SellLive</div>
+</div>
+
+<div class="store-tabs">
+  <div class="store-tab on" onclick="showTab('products',this)">Products</div>
+  <div class="store-tab" onclick="showTab('about',this)">About Store</div>
+  <div class="store-tab" onclick="showTab('reviews',this)">Reviews</div>
+</div>
+
+<div class="container">
+  <!-- PRODUCTS TAB -->
+  <div id="tab-products">
+    <div class="prod-grid" id="prod-grid">
+      <div class="skel" style="height:220px"></div>
+      <div class="skel" style="height:220px"></div>
+      <div class="skel" style="height:220px"></div>
+      <div class="skel" style="height:220px"></div>
+    </div>
+  </div>
+
+  <!-- ABOUT TAB -->
+  <div id="tab-about" style="display:none">
+    <div class="about-grid">
+      <div class="about-card">
+        <div style="font-size:13px;font-weight:800;margin-bottom:10px">📋 Store Description</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.6" id="about-desc">-</div>
+      </div>
+      <div class="about-card">
+        <div style="font-size:13px;font-weight:800;margin-bottom:10px">📦 Shipping Policy</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.75);line-height:1.6">
+          🚚 Free delivery on orders over ₦10,000<br/>
+          📍 Delivers nationwide via GIG Logistics<br/>
+          ⚡ Lagos orders shipped same day before 3PM<br/>
+          📦 Outside Lagos: 2-5 business days<br/>
+          🔄 Free returns within 7 days
+        </div>
+      </div>
+      <div class="about-card">
+        <div style="font-size:13px;font-weight:800;margin-bottom:10px">↩️ Return Policy</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.75);line-height:1.6">
+          ✅ 7-day return window<br/>
+          ✅ Full refund for damaged items<br/>
+          ✅ Exchange for wrong size<br/>
+          ❌ No returns on customized orders<br/>
+          📱 Contact seller on WhatsApp first
+        </div>
+      </div>
+      <div class="about-card">
+        <div style="font-size:13px;font-weight:800;margin-bottom:10px">🔐 Seller Verification</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.75);line-height:1.6">
+          ✅ Identity verified<br/>
+          ✅ Business registered in Nigeria<br/>
+          ✅ Bank account verified<br/>
+          ✅ 100+ successful orders<br/>
+          🏆 Top Seller Badge
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEWS TAB -->
+  <div id="tab-reviews" style="display:none">
+    <div id="store-reviews-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const sellerId = params.get('seller') || '11111111-1111-1111-1111-111111111111';
+let followed = false;
+let storeData = null;
+
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3000);}
+function fmt(p){return p?'₦'+(p/100).toLocaleString('en-NG',{maximumFractionDigits:0}):'';}
+function emo(t=''){t=t.toLowerCase();if(t.includes('ankara')||t.includes('dress')||t.includes('lace'))return'👗';if(t.includes('iphone')||t.includes('phone'))return'📱';if(t.includes('serum')||t.includes('beauty'))return'💄';if(t.includes('tech'))return'💻';return'🛍️';}
+
+async function loadStore(){
+  try{
+    const r = await fetch('/api/auth/seller/'+sellerId).then(x=>x.json());
+    const sp = r.profile||{};
+    storeData = sp;
+    const nm = sp.business_name||'Store';
+    document.title = nm+' — SellLive';
+    document.getElementById('store-av').textContent = nm[0]?.toUpperCase()||'S';
+    document.getElementById('store-name').childNodes[0].textContent = nm;
+    if(sp.is_verified) document.getElementById('ver-badge').style.display='inline-flex';
+    document.getElementById('s-sales').textContent=(sp.total_sales||0).toLocaleString();
+    document.getElementById('s-followers').textContent=(sp.followers_count||0).toLocaleString();
+    document.getElementById('s-rating').textContent=(sp.rating||4.8).toFixed(1);
+    document.getElementById('about-desc').textContent=sp.description||'Premium Nigerian seller on SellLive';
+    loadProducts(sellerId);
+    loadStoreReviews();
+  }catch(e){
+    // Demo fallback
+    loadDemoStore();
+  }
+}
+
+function loadDemoStore(){
+  document.title='Adunola Collections — SellLive';
+  document.getElementById('store-av').textContent='A';
+  document.getElementById('store-name').childNodes[0].textContent='Adunola Collections';
+  document.getElementById('ver-badge').style.display='inline-flex';
+  document.getElementById('s-sales').textContent='5,200';
+  document.getElementById('s-prods').textContent='47';
+  document.getElementById('s-followers').textContent='1,241';
+  document.getElementById('s-rating').textContent='4.8';
+  document.getElementById('store-joined').textContent='Joined March 2024';
+  document.getElementById('about-desc').textContent='Nigeria\'s premier live commerce fashion house. We specialize in authentic Ankara, lace, and aso-oke fabrics. All products handcrafted by skilled Nigerian artisans.';
+  loadProducts(sellerId);
+  loadStoreReviews();
+}
+
+async function loadProducts(sid){
+  const grid = document.getElementById('prod-grid');
+  try{
+    const r = await fetch('/api/products/my',{headers:{Authorization:'Bearer '+(localStorage.getItem('sl_t')||'')}}).then(x=>x.json());
+    const prods = r.products||[];
+    if(!prods.length){ buildDemoProducts(); return; }
+    grid.innerHTML='';
+    document.getElementById('s-prods').textContent=prods.length;
+    prods.forEach(p=>{
+      const d=document.createElement('div');d.className='prod-card';
+      d.innerHTML=`<div class="prod-img">${p.image_url?`<img src="${p.image_url}" onerror="this.style.display='none'"/>`:''}<span style="position:relative;z-index:1">${emo(p.name||'')}</span></div><div class="prod-body"><div class="prod-name">${p.name||''}</div><div class="prod-price">${fmt(p.price)}</div><div class="prod-rating">⭐ ${(p.avg_rating||4.5).toFixed(1)} · ${p.review_count||0} reviews</div></div>`;
+      d.addEventListener('click',()=>window.location.href='/product.html?id='+p.id+'&seller='+sid);
+      grid.appendChild(d);
+    });
+  }catch(e){ buildDemoProducts(); }
+}
+
+function buildDemoProducts(){
+  const grid = document.getElementById('prod-grid');
+  const items=[
+    {name:'Ankara Print Dress',price:850000,em:'👗',r:4.7,rc:128},
+    {name:'Lace Fabric 5 yards',price:1200000,em:'🧵',r:4.9,rc:64},
+    {name:'Aso-Oke Head Wrap',price:350000,em:'🎀',r:4.6,rc:42},
+    {name:'Adire Kaftan',price:650000,em:'👘',r:4.8,rc:35},
+    {name:'Gele Starter Set',price:450000,em:'👑',r:4.5,rc:28},
+    {name:'Iro and Buba Set',price:950000,em:'👗',r:4.9,rc:87},
+  ];
+  grid.innerHTML='';
+  document.getElementById('s-prods').textContent=items.length;
+  items.forEach(p=>{
+    const d=document.createElement('div');d.className='prod-card';
+    d.innerHTML=`<div class="prod-img" style="font-size:52px">${p.em}</div><div class="prod-body"><div class="prod-name">${p.name}</div><div class="prod-price">${fmt(p.price)}</div><div class="prod-rating">⭐ ${p.r} · ${p.rc} reviews</div></div>`;
+    d.addEventListener('click',()=>window.location.href='/product.html?name='+encodeURIComponent(p.name));
+    grid.appendChild(d);
+  });
+}
+
+function loadStoreReviews(){
+  const list = document.getElementById('store-reviews-list');
+  const reviews=[
+    {n:'Ngozi A.',r:5,t:'Best seller on SellLive! Fast delivery, authentic products. My Ankara dress arrived in perfect condition.',d:'2026-04-09'},
+    {n:'Emeka T.',r:5,t:'Ordered twice and both times perfect. The quality exceeds the price. Adunola is the real deal!',d:'2026-04-07'},
+    {n:'Chioma B.',r:4,t:'Great products. Packaging was lovely. The only thing is communication could be a bit faster on WhatsApp.',d:'2026-04-05'},
+  ];
+  list.innerHTML=reviews.map(r=>`<div style="background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:10px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:32px;height:32px;border-radius:50%;background:var(--or);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800">${r.n[0]}</div><div><div style="font-size:13px;font-weight:700">${r.n}</div><div style="color:#FFD700;font-size:12px">${'⭐'.repeat(r.r)}</div></div><div style="margin-left:auto;font-size:10px;color:var(--mu)">${r.d}</div></div><div style="font-size:13px;color:rgba(255,255,255,.85);line-height:1.5">${r.t}</div><div style="font-size:9px;font-weight:700;color:var(--gr);margin-top:6px">✅ Verified Purchase</div></div>`).join('');
+}
+
+function showTab(which, el){
+  document.querySelectorAll('.store-tab').forEach(b=>b.classList.remove('on'));el.classList.add('on');
+  ['products','about','reviews'].forEach(t=>document.getElementById('tab-'+t).style.display='none');
+  document.getElementById('tab-'+which).style.display='block';
+}
+
+function toggleFollow(){
+  followed=!followed;
+  const btn=document.getElementById('follow-btn');
+  btn.textContent=followed?'✓ Following':'+ Follow Store';
+  btn.style.background=followed?'#333':'var(--or)';
+  toast(followed?'✅ Following this store!':'Unfollowed');
+}
+
+function whatsappStore(){
+  window.open('https://wa.me/2348012345678?text=Hi! I found your store on SellLive','_blank');
+}
+
+function watchLive(){
+  window.open('/live.html?mode=viewer&seller='+sellerId,'_blank');
+}
+
+loadStore();
+</script>
+</body>
+</html>

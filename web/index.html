@@ -504,7 +504,8 @@ function renderFeed(el,list){
     </div>`;
     div.querySelector('.follow-btn').addEventListener('click',()=>toast('✅ Following '+nm+'!'));
     const addBtn=div.querySelector('.fc-add');
-    if(addBtn) addBtn.addEventListener('click',()=>addToCart(prod.id,prod.name||'Product',prod.price||0));
+    if(addBtn) addBtn.addEventListener('click',e=>{ e.stopPropagation(); addToCart(prod.id,prod.name||'Product',prod.price||0); });
+    div.querySelector('.fimg').addEventListener('click',()=>window.open('/product.html?id='+(prod.id||'demo'),'_blank'));
     div.querySelector('.like-f').addEventListener('click',function(){const svg=this.querySelector('svg'),sp=this.querySelector('span');svg.setAttribute('fill','#FF1744');svg.setAttribute('stroke','#FF1744');const n=parseInt(sp.textContent.replace('k',''))*(sp.textContent.includes('k')?1000:1)+1;sp.textContent=n>=1000?(n/1000).toFixed(1)+'k':n;toast('❤️ Liked!');});
     div.querySelector('.share-f').addEventListener('click',()=>toast('📤 Shared!'));
     el.appendChild(div);
@@ -552,7 +553,7 @@ function renderFlash(sales){
         const pc=document.createElement('div'); pc.className='fpc';
         pc.innerHTML=`<div style="font-size:32px;margin-bottom:8px">${emo(p.name||'')}</div><div style="font-size:13px;font-weight:700;margin-bottom:6px">${p.name||''}</div><div style="display:flex;align-items:center;gap:6px;margin-bottom:10px"><span style="font-size:11px;color:var(--mu);text-decoration:line-through">${fmt(p.original_price)}</span><span style="font-size:18px;font-weight:800;color:var(--red)">${fmt(p.sale_price)}</span><span style="background:rgba(255,23,68,.15);color:var(--red);font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px">${sale.discount_percent}% OFF</span></div><div style="font-size:10px;color:var(--mu);margin-bottom:8px">Stock: ${p.stock} · Sold: ${p.sold||0}</div>`;
         const bb=document.createElement('button'); bb.style.cssText='width:100%;padding:10px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:800;cursor:pointer';bb.textContent='Add to Cart — '+fmt(p.sale_price);
-        bb.addEventListener('click',()=>addToCart(p.product_id||p.id,p.name||'Product',p.sale_price||0));
+        bb.addEventListener('click',()=>addToCart(p.product_id||p.id,p.name||'Product',p.sale_price||0)); pc.addEventListener('click',e=>{if(e.target!==bb)window.open('/product.html?id='+(p.product_id||p.id||'demo'),'_blank');});
         pc.appendChild(bb); pg.appendChild(pc);
       }
       el.appendChild(pg);

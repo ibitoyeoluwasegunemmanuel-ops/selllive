@@ -37,7 +37,7 @@ const sendSMS = async (phone, message) => {
         const resp = await axios.post('https://api.sendchamp.com/api/v1/sms/send', {
           to: [to],
           message,
-          sender_name: 'SellLive',
+          sender_name: 'SC-OTP',
           route,
         }, {
           headers: {
