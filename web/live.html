@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>SellLive — Go Live</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--or:#FF5722;--red:#FF1744;--bg:#000;--card:rgba(255,255,255,.08);--bd:rgba(255,255,255,.12)}
+body{background:var(--bg);color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;height:100dvh;overflow:hidden;user-select:none}
+
+/* ── SETUP SCREEN ── */
+#setup-screen{position:fixed;inset:0;background:linear-gradient(160deg,#0d0300,#000);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:100}
+.setup-logo{font-size:22px;font-weight:900;margin-bottom:32px}<br>
+.setup-logo b{color:var(--or)}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%;max-width:360px;margin-bottom:28px}
+.mode-card{background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.1);border-radius:16px;padding:18px 10px;text-align:center;cursor:pointer;transition:all .2s}
+.mode-card:hover,.mode-card.on{background:rgba(255,87,34,.12);border-color:var(--or)}
+.mode-card .icon{font-size:32px;margin-bottom:8px}
+.mode-card .label{font-size:12px;font-weight:700}
+.setup-title{font-size:20px;font-weight:800;margin-bottom:8px;text-align:center}
+.setup-sub{font-size:13px;color:#888;margin-bottom:24px;text-align:center}
+.go-live-btn{background:var(--red);color:#fff;border:none;border-radius:20px;padding:16px 40px;font-size:16px;font-weight:800;cursor:pointer;width:100%;max-width:360px}
+.go-live-btn:active{transform:scale(.97)}
+#setup-preview{width:100%;max-width:360px;height:200px;background:#111;border-radius:16px;margin-bottom:20px;overflow:hidden;position:relative}
+#setup-preview video{width:100%;height:100%;object-fit:cover}
+.preview-label{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.6);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700}
+
+/* ── LIVE SCREEN ── */
+#live-screen{position:fixed;inset:0;display:none;flex-direction:column}
+#live-screen.on{display:flex}
+
+/* Video/image layer */
+#live-bg{position:absolute;inset:0;background:#000;z-index:0}
+#live-video{width:100%;height:100%;object-fit:cover}
+#live-product-img{width:100%;height:100%;object-fit:contain;display:none;background:#0a0a0a}
+
+/* Gradient overlays */
+.grad-top{position:absolute;top:0;left:0;right:0;height:160px;background:linear-gradient(to bottom,rgba(0,0,0,.7),transparent);z-index:1;pointer-events:none}
+.grad-bot{position:absolute;bottom:0;left:0;right:0;height:300px;background:linear-gradient(to top,rgba(0,0,0,.85),transparent);z-index:1;pointer-events:none}
+
+/* Top bar */
+#live-topbar{position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;align-items:center;gap:10px;z-index:10}
+.live-badge{background:var(--red);color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:10px;letter-spacing:.5px}
+.viewers-badge{background:rgba(0,0,0,.5);color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:10px;display:flex;align-items:center;gap:4px}
+.topbar-right{margin-left:auto;display:flex;gap:8px}
+.icon-btn{width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.icon-btn:active{transform:scale(.92)}
+.seller-info{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.4);border-radius:20px;padding:5px 12px 5px 5px;backdrop-filter:blur(8px)}
+.seller-av{width:28px;height:28px;border-radius:50%;background:var(--or);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.seller-name-sm{font-size:12px;font-weight:700}
+.follow-sm{background:var(--or);color:#fff;border:none;border-radius:10px;padding:3px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-left:4px}
+
+/* Right side actions */
+#live-actions{position:absolute;right:12px;bottom:260px;display:flex;flex-direction:column;gap:12px;z-index:10;align-items:center}
+.action-btn{width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;backdrop-filter:blur(8px);gap:2px}
+.action-btn span{font-size:10px;font-weight:700}
+.action-btn:active{transform:scale(.9)}
+.like-count{font-size:10px;font-weight:700;color:#fff}
+
+/* Product overlay */
+#product-overlay{position:absolute;bottom:120px;left:12px;right:60px;z-index:10;display:none}
+#product-overlay.on{display:block}
+.prod-pill{background:rgba(10,10,10,.85);border:1px solid rgba(255,87,34,.4);border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(12px)}
+.prod-thumb{width:48px;height:48px;border-radius:10px;background:var(--or);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden}
+.prod-thumb img{width:100%;height:100%;object-fit:cover}
+.prod-info{flex:1;min-width:0}
+.prod-name{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-price{font-size:16px;font-weight:900;color:var(--or)}
+.buy-now-btn{background:var(--or);color:#fff;border:none;border-radius:12px;padding:8px 16px;font-size:13px;font-weight:800;cursor:pointer;flex-shrink:0;white-space:nowrap}
+.buy-now-btn:active{transform:scale(.95)}
+
+/* Chat overlay */
+#chat-overlay{position:absolute;bottom:120px;left:12px;right:60px;z-index:9;display:flex;flex-direction:column;gap:0}
+.chat-msgs{display:flex;flex-direction:column;gap:6px;max-height:160px;overflow:hidden;justify-content:flex-end}
+.chat-msg{display:inline-block;background:rgba(0,0,0,.5);border-radius:12px;padding:6px 10px;font-size:12px;line-height:1.4;backdrop-filter:blur(4px);max-width:85%}
+.chat-msg b{color:var(--or)}
+.chat-msg.buy-msg{background:rgba(255,87,34,.2);border:1px solid rgba(255,87,34,.4)}
+#chat-input-row{margin-top:8px;display:flex;gap:8px}
+#chat-inp{flex:1;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:8px 14px;color:#fff;font-size:13px;outline:none;backdrop-filter:blur(8px)}
+#chat-inp::placeholder{color:#888}
+#chat-send{background:var(--or);border:none;color:#fff;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer}
+
+/* SELLER controls panel */
+#seller-panel{position:absolute;bottom:0;left:0;right:0;z-index:20;background:linear-gradient(to top,rgba(0,0,0,.95),rgba(0,0,0,.7));padding:14px 16px 32px;display:none}
+#seller-panel.on{display:block}
+.seller-panel-tabs{display:flex;gap:8px;margin-bottom:14px}
+.sp-tab{flex:1;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:transparent;color:#aaa;font-size:11px;font-weight:700;cursor:pointer;text-align:center}
+.sp-tab.on{background:var(--or);color:#fff;border-color:var(--or)}
+.ctrl-row{display:flex;gap:8px;justify-content:center;margin-bottom:12px}
+.ctrl-btn{width:54px;height:54px;border-radius:16px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:20px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all .15s}
+.ctrl-btn span{font-size:9px;font-weight:700;color:#aaa}
+.ctrl-btn:hover{background:rgba(255,255,255,.15)}
+.ctrl-btn.active{background:var(--or);border-color:var(--or)}
+.ctrl-btn.active span{color:rgba(255,255,255,.8)}
+.ctrl-btn.danger{border-color:rgba(255,23,68,.4);color:var(--red)}
+.ctrl-btn.danger:hover{background:rgba(255,23,68,.15)}
+.prod-switch-grid{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.prod-switch-grid::-webkit-scrollbar{display:none}
+.ps-card{min-width:90px;border-radius:12px;border:2px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);padding:10px 8px;text-align:center;cursor:pointer;transition:all .15s;flex-shrink:0}
+.ps-card.on{border-color:var(--or);background:rgba(255,87,34,.12)}
+.ps-card .ps-em{font-size:24px;margin-bottom:4px}
+.ps-card .ps-name{font-size:10px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px}
+.ps-card .ps-price{font-size:11px;color:var(--or);font-weight:700}
+
+/* Audio mode viz */
+#audio-viz{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+#audio-viz.on{display:flex}
+.audio-ring{width:120px;height:120px;border-radius:50%;background:rgba(255,87,34,.15);border:3px solid var(--or);display:flex;align-items:center;justify-content:center;font-size:48px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,87,34,.4)}50%{transform:scale(1.05);box-shadow:0 0 0 20px rgba(255,87,34,0)}}
+.audio-name{font-size:16px;font-weight:800;margin-top:4px}
+.audio-sub{font-size:12px;color:#888}
+
+/* Checkout sheet */
+#checkout-sheet{position:fixed;bottom:-100%;left:0;right:0;background:#111;border-radius:24px 24px 0 0;padding:24px 20px 40px;z-index:200;transition:bottom .3s ease}
+#checkout-sheet.on{bottom:0}
+.sheet-handle{width:40px;height:4px;background:#333;border-radius:2px;margin:0 auto 20px}
+.sheet-title{font-size:16px;font-weight:800;margin-bottom:16px;text-align:center}
+.sheet-prod{background:#1a1a1a;border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.sheet-prod-em{font-size:36px}
+.co-field{margin-bottom:12px}
+.co-label{font-size:10px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.co-inp{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:10px 12px;color:#fff;font-size:13px;outline:none}
+.co-inp:focus{border-color:var(--or)}
+.pay-btn{width:100%;padding:14px;background:var(--or);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;margin-top:4px}
+.pay-btn:active{transform:scale(.98)}
+.success-anim{text-align:center;padding:24px 0;display:none}
+.success-anim.on{display:block}
+
+/* Viewer count animation */
+@keyframes countPop{0%{transform:scale(1.4)}100%{transform:scale(1)}}
+.count-pop{animation:countPop .3s ease-out}
+
+/* Scrollbar hide */
+::-webkit-scrollbar{display:none}
+
+@media(min-width:600px){
+  #live-actions{bottom:280px}
+  .chat-msgs{max-height:200px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ SETUP SCREEN ══════════ -->
+<div id="setup-screen">
+  <div class="setup-logo"><b>Sell</b>Live</div>
+  <div class="setup-title">Choose Your Live Mode</div>
+  <div class="setup-sub">How do you want to go live today?</div>
+
+  <div id="setup-preview">
+    <video id="preview-vid" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;display:none"></video>
+    <div class="preview-label" id="preview-label">🖼️ Product Mode</div>
+    <div id="mode-placeholder" style="display:flex;align-items:center;justify-content:center;height:100%;font-size:48px;flex-direction:column;gap:8px">
+      <span>🛍️</span>
+      <span style="font-size:12px;color:#666">Select a mode below</span>
+    </div>
+  </div>
+
+  <div class="mode-grid">
+    <div class="mode-card" data-mode="video" onclick="selectMode('video',this)">
+      <div class="icon">🎥</div>
+      <div class="label">Video Live</div>
+    </div>
+    <div class="mode-card" data-mode="audio" onclick="selectMode('audio',this)">
+      <div class="icon">🎤</div>
+      <div class="label">Audio Only</div>
+    </div>
+    <div class="mode-card on" data-mode="product" onclick="selectMode('product',this)">
+      <div class="icon">🖼️</div>
+      <div class="label">Product Showcase</div>
+    </div>
+  </div>
+
+  <button class="go-live-btn" onclick="startLive()">🔴 Go Live Now</button>
+  <div style="margin-top:12px;font-size:11px;color:#555;text-align:center">As a viewer? <span style="color:var(--or);cursor:pointer" onclick="enterViewerMode()">Watch a stream →</span></div>
+</div>
+
+<!-- ══════════ LIVE SCREEN ══════════ -->
+<div id="live-screen">
+  <!-- Background layer -->
+  <div id="live-bg">
+    <video id="live-video" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;display:none"></video>
+    <img id="live-product-img" src="" alt="" style="width:100%;height:100%;object-fit:contain;display:none;background:#0a0a0a"/>
+    <!-- Audio viz -->
+    <div id="audio-viz">
+      <div class="audio-ring">🎤</div>
+      <div class="audio-name" id="audio-seller-name">SellLive</div>
+      <div class="audio-sub">🔴 Live Audio Stream</div>
+    </div>
+  </div>
+  <div class="grad-top"></div>
+  <div class="grad-bot"></div>
+
+  <!-- Top bar -->
+  <div id="live-topbar">
+    <div class="live-badge"><span style="display:inline-block;width:6px;height:6px;background:#fff;border-radius:50%;animation:bk 1.2s infinite;margin-right:4px;vertical-align:middle"></span>LIVE</div>
+    <div class="viewers-badge">👁 <span id="viewer-count">0</span></div>
+    <div class="seller-info" id="seller-info-bar">
+      <div class="seller-av" id="seller-av-char">S</div>
+      <div class="seller-name-sm" id="seller-name-bar">Seller</div>
+      <button class="follow-sm" id="follow-btn" onclick="followSeller()">Follow</button>
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn" onclick="shareLive()" title="Share">🔗</button>
+      <button class="icon-btn" onclick="closeLive()" title="Close">✕</button>
+    </div>
+  </div>
+
+  <!-- Right actions -->
+  <div id="live-actions">
+    <button class="action-btn" id="like-btn" onclick="doLike()">❤️<span class="like-count" id="like-count">0</span></button>
+    <button class="action-btn" onclick="openCart()">🛒<span>Cart</span></button>
+    <button class="action-btn" onclick="shareProduct()">📤<span>Share</span></button>
+  </div>
+
+  <!-- Product overlay (bottom-left) -->
+  <div id="product-overlay">
+    <div class="prod-pill" id="prod-pill">
+      <div class="prod-thumb" id="prod-thumb-el">🛍️</div>
+      <div class="prod-info">
+        <div class="prod-name" id="prod-name-el">Product Name</div>
+        <div class="prod-price" id="prod-price-el">₦0</div>
+      </div>
+      <button class="buy-now-btn" id="buy-now-btn" onclick="openCheckout()">BUY NOW</button>
+    </div>
+  </div>
+
+  <!-- Chat overlay -->
+  <div id="chat-overlay">
+    <div class="chat-msgs" id="chat-msgs"></div>
+    <div id="chat-input-row">
+      <input id="chat-inp" placeholder="Say hi or type BUY to order..." onkeypress="if(event.key==='Enter')sendChat()"/>
+      <button id="chat-send" onclick="sendChat()">Send</button>
+    </div>
+  </div>
+
+  <!-- SELLER controls panel -->
+  <div id="seller-panel">
+    <div class="seller-panel-tabs">
+      <button class="sp-tab on" onclick="spTab('controls',this)">Controls</button>
+      <button class="sp-tab" onclick="spTab('products',this)">Switch Product</button>
+    </div>
+    <!-- Controls tab -->
+    <div id="sp-controls">
+      <div class="ctrl-row">
+        <button class="ctrl-btn active" id="btn-mic" onclick="toggleMic()">🎤<span id="mic-lbl">Mute</span></button>
+        <button class="ctrl-btn" id="btn-cam" onclick="toggleCam()">🎥<span id="cam-lbl">Camera</span></button>
+        <button class="ctrl-btn" id="btn-mode" onclick="cycleMode()">🖼️<span id="mode-lbl">Mode</span></button>
+        <button class="ctrl-btn danger" onclick="endLive()">⏹<span>End Live</span></button>
+      </div>
+    </div>
+    <!-- Products tab -->
+    <div id="sp-products" style="display:none">
+      <div class="prod-switch-grid" id="prod-switch-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CHECKOUT SHEET ══════════ -->
+<div id="checkout-sheet">
+  <div class="sheet-handle"></div>
+  <div id="checkout-body">
+    <div class="sheet-title">Complete Your Order</div>
+    <div class="sheet-prod" id="sheet-prod-info"></div>
+    <div class="co-field"><div class="co-label">Delivery Address</div><input class="co-inp" id="co-addr" placeholder="e.g. 14 Bode Thomas St, Surulere, Lagos"/></div>
+    <div class="co-field"><div class="co-label">Phone Number</div><input class="co-inp" id="co-phone" placeholder="+234 803 000 0000"/></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;padding:0 2px"><span style="color:#888">Total</span><span id="co-total-lbl" style="font-weight:800;color:var(--or)">₦0</span></div>
+    <button class="pay-btn" onclick="payNow()">Pay with Flutterwave →</button>
+  </div>
+  <div class="success-anim" id="success-anim">
+    <div style="font-size:64px">🎉</div>
+    <div style="font-size:20px;font-weight:800;margin-top:12px">Order Placed!</div>
+    <div style="font-size:13px;color:#888;margin-top:6px">You'll receive a payment link shortly</div>
+    <button onclick="closeCheckout()" style="margin-top:20px;padding:10px 28px;background:var(--or);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">Continue Watching</button>
+  </div>
+</div>
+
+<style>@keyframes bk{0%,100%{opacity:1}50%{opacity:.3}}</style>
+<script>
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+const LS = {
+  mode: 'product',      // video | audio | product
+  isLive: false,
+  isSeller: true,       // set based on URL param
+  isViewer: false,
+  micOn: true, camOn: false,
+  stream: null,         // MediaStream
+  currentProd: null,    // { id, name, price, image_url, emo }
+  myProducts: [],
+  likes: 0,
+  viewers: 0,
+  chatTimer: null,
+  token: null, user: null,
+  followedSeller: false,
+};
+
+const EMO = t=>{t=(t||'').toLowerCase();if(t.includes('ankara')||t.includes('dress')||t.includes('lace')||t.includes('fashion'))return'👗';if(t.includes('iphone')||t.includes('samsung')||t.includes('phone'))return'📱';if(t.includes('serum')||t.includes('beauty')||t.includes('glow'))return'💄';if(t.includes('tech')||t.includes('laptop'))return'💻';if(t.includes('food'))return'🍲';return'🛍️';};
+const FMT = p=>p?'₦'+(p/100).toLocaleString('en-NG',{maximumFractionDigits:0}):'';
+
+// Load auth from localStorage (shared with main site)
+function loadAuth(){
+  try{ const u=localStorage.getItem('sl_u'),t=localStorage.getItem('sl_t'); if(u&&t){LS.user=JSON.parse(u);LS.token=t;} }catch(e){}
+}
+
+// Parse URL params
+const params = new URLSearchParams(location.search);
+const urlMode = params.get('mode'); // viewer, seller
+const streamId = params.get('stream'); // stream ID to watch
+const sellerId = params.get('seller');
+
+loadAuth();
+
+// ══════════════════════════════════════
+// SETUP
+// ══════════════════════════════════════
+let previewStream = null;
+
+async function selectMode(mode, el){
+  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  LS.mode = mode;
+
+  // Stop previous preview stream
+  if(previewStream){ previewStream.getTracks().forEach(t=>t.stop()); previewStream=null; }
+  document.getElementById('preview-vid').style.display='none';
+  document.getElementById('mode-placeholder').style.display='flex';
+
+  if(mode==='video'){
+    document.getElementById('preview-label').textContent='🎥 Video Mode';
+    try{
+      previewStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true});
+      const vid = document.getElementById('preview-vid');
+      vid.srcObject = previewStream; vid.style.display='block';
+      document.getElementById('mode-placeholder').style.display='none';
+    }catch(e){ document.getElementById('mode-placeholder').innerHTML='<span style="font-size:32px">🎥</span><span style="font-size:12px;color:#f88">Camera not available</span>'; }
+  } else if(mode==='audio'){
+    document.getElementById('preview-label').textContent='🎤 Audio Mode';
+    document.getElementById('mode-placeholder').innerHTML='<span style="font-size:48px">🎤</span><span style="font-size:12px;color:#888">Voice only — no camera</span>';
+    try{ previewStream = await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){}
+  } else {
+    document.getElementById('preview-label').textContent='🖼️ Product Showcase';
+    document.getElementById('mode-placeholder').innerHTML='<span style="font-size:48px">🛍️</span><span style="font-size:12px;color:#888">Show products while speaking</span>';
+    try{ previewStream = await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){}
+  }
+}
+
+async function startLive(){
+  document.getElementById('setup-screen').style.display='none';
+  document.getElementById('live-screen').classList.add('on');
+  LS.isLive=true; LS.isSeller=true;
+  document.getElementById('seller-panel').classList.add('on');
+
+  // Setup based on mode
+  if(LS.mode==='video'){
+    let stream = previewStream;
+    if(!stream){ try{ stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true}); }catch(e){} }
+    if(stream){
+      LS.stream=stream;
+      const vid=document.getElementById('live-video');
+      vid.srcObject=stream; vid.style.display='block';
+      vid.muted=false;
+    }
+  } else if(LS.mode==='audio'){
+    document.getElementById('audio-viz').classList.add('on');
+    document.getElementById('audio-seller-name').textContent=LS.user?.name||'SellLive';
+    if(previewStream) LS.stream=previewStream;
+  } else {
+    // Product mode
+    document.getElementById('audio-viz').classList.add('on');
+    document.getElementById('audio-seller-name').textContent=LS.user?.name||'SellLive';
+    if(previewStream) LS.stream=previewStream;
+    await loadMyProducts();
+    if(LS.myProducts.length){ pinProduct(LS.myProducts[0]); }
+  }
+
+  // Setup seller info
+  const nm=LS.user?.name||'Seller';
+  document.getElementById('seller-av-char').textContent=nm[0].toUpperCase();
+  document.getElementById('seller-name-bar').textContent=nm;
+  document.getElementById('follow-btn').style.display='none'; // seller doesn't follow themselves
+
+  // Start simulating viewers + chat
+  startViewerSim();
+  startChatSim();
+  updateModeLabel();
+}
+
+function enterViewerMode(){
+  LS.isViewer=true; LS.isSeller=false;
+  document.getElementById('setup-screen').style.display='none';
+  document.getElementById('live-screen').classList.add('on');
+  document.getElementById('seller-panel').style.display='none';
+  // Load demo stream
+  showDemoStream();
+  startViewerSim();
+  startChatSim();
+}
+
+function showDemoStream(){
+  // Show product mode by default for demo
+  document.getElementById('audio-viz').classList.add('on');
+  document.getElementById('audio-seller-name').textContent='Adunola Collections';
+  document.getElementById('seller-av-char').textContent='A';
+  document.getElementById('seller-name-bar').textContent='Adunola Collections';
+  // Pin demo product
+  pinProduct({id:'demo',name:'Ankara Print Dress',price:850000,emo:'👗',image_url:null});
+}
+
+// ══════════════════════════════════════
+// PRODUCTS
+// ══════════════════════════════════════
+async function loadMyProducts(){
+  if(!LS.token) return;
+  try{
+    const r=await fetch('/api/products/my',{headers:{Authorization:'Bearer '+LS.token}}).then(x=>x.json());
+    LS.myProducts=r.products||[];
+    renderProdSwitcher();
+  }catch(e){}
+}
+
+function renderProdSwitcher(){
+  const grid=document.getElementById('prod-switch-grid'); grid.innerHTML='';
+  if(!LS.myProducts.length){ grid.innerHTML='<div style="color:#666;font-size:12px;padding:8px">No products yet. Add products from your store first.</div>'; return; }
+  LS.myProducts.forEach(p=>{
+    const card=document.createElement('div'); card.className='ps-card';
+    if(LS.currentProd?.id===p.id) card.classList.add('on');
+    card.innerHTML=`<div class="ps-em">${EMO(p.name)}</div><div class="ps-name">${p.name||''}</div><div class="ps-price">${FMT(p.price)}</div>`;
+    card.addEventListener('click',()=>pinProduct({id:p.id,name:p.name,price:p.price,emo:EMO(p.name),image_url:p.image_url}));
+    grid.appendChild(card);
+  });
+}
+
+function pinProduct(prod){
+  LS.currentProd=prod;
+
+  // Update product overlay
+  document.getElementById('product-overlay').classList.add('on');
+  document.getElementById('prod-name-el').textContent=prod.name||'Product';
+  document.getElementById('prod-price-el').textContent=FMT(prod.price);
+
+  // Thumb
+  const thumb=document.getElementById('prod-thumb-el');
+  if(prod.image_url){ thumb.innerHTML=`<img src="${prod.image_url}" onerror="this.parentNode.textContent='${prod.emo||'🛍️'}'"/>`; }
+  else thumb.textContent=prod.emo||'🛍️';
+
+  // If product showcase mode, show product image in background
+  if(LS.mode==='product'||LS.mode==='audio'){
+    if(prod.image_url){
+      document.getElementById('live-product-img').src=prod.image_url;
+      document.getElementById('live-product-img').style.display='block';
+      document.getElementById('audio-viz').classList.remove('on');
+    } else {
+      document.getElementById('live-product-img').style.display='none';
+      document.getElementById('audio-viz').classList.add('on');
+    }
+  }
+
+  // Update switcher active state
+  document.querySelectorAll('.ps-card').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('.ps-card').forEach((c,i)=>{ if(LS.myProducts[i]?.id===prod.id) c.classList.add('on'); });
+
+  // Broadcast to viewers (via API)
+  if(LS.isSeller) broadcastProductPin(prod);
+
+  // Add to chat
+  addChatMsg('SellLive',`📌 Now showing: ${prod.name} — ${FMT(prod.price)}`, true);
+}
+
+async function broadcastProductPin(prod){
+  if(!LS.token) return;
+  try{
+    await fetch('/api/streams/pin-product',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+LS.token},body:JSON.stringify({product_id:prod.id})});
+  }catch(e){}
+}
+
+// ══════════════════════════════════════
+// CONTROLS
+// ══════════════════════════════════════
+function toggleMic(){
+  LS.micOn=!LS.micOn;
+  if(LS.stream) LS.stream.getAudioTracks().forEach(t=>t.enabled=LS.micOn);
+  const btn=document.getElementById('btn-mic');
+  btn.classList.toggle('active',LS.micOn);
+  btn.querySelector('span').textContent=LS.micOn?'Mute':'Unmute';
+  btn.textContent=(LS.micOn?'🎤':'🔇'); btn.appendChild(document.createElement('span'));
+  btn.querySelector('span').textContent=LS.micOn?'Mute':'Unmute';
+}
+
+function toggleCam(){
+  if(LS.mode!=='video'){toast('Switch to Video mode first');return;}
+  LS.camOn=!LS.camOn;
+  if(LS.stream) LS.stream.getVideoTracks().forEach(t=>t.enabled=LS.camOn);
+  const btn=document.getElementById('btn-cam');
+  btn.classList.toggle('active',LS.camOn);
+  btn.querySelector('span').textContent=LS.camOn?'Cam Off':'Cam On';
+}
+
+function cycleMode(){
+  const modes=['video','audio','product'];
+  const idx=modes.indexOf(LS.mode);
+  LS.mode=modes[(idx+1)%modes.length];
+  updateModeLabel();
+  applyMode();
+}
+
+function updateModeLabel(){
+  const labels={video:'📸 Mode',audio:'🔊 Mode',product:'🛍️ Mode'};
+  document.getElementById('mode-lbl').textContent=labels[LS.mode]||'Mode';
+}
+
+function applyMode(){
+  const vid=document.getElementById('live-video');
+  const viz=document.getElementById('audio-viz');
+  const pImg=document.getElementById('live-product-img');
+  if(LS.mode==='video'){
+    vid.style.display='block'; viz.classList.remove('on'); pImg.style.display='none';
+    if(!LS.stream||!LS.stream.getVideoTracks().length){
+      navigator.mediaDevices.getUserMedia({video:true,audio:LS.micOn}).then(s=>{LS.stream=s;vid.srcObject=s;}).catch(()=>{});
+    }
+  } else if(LS.mode==='audio'){
+    vid.style.display='none'; viz.classList.add('on'); pImg.style.display='none';
+  } else {
+    vid.style.display='none';
+    if(LS.currentProd?.image_url){ pImg.src=LS.currentProd.image_url; pImg.style.display='block'; viz.classList.remove('on'); }
+    else { pImg.style.display='none'; viz.classList.add('on'); }
+  }
+}
+
+function spTab(which, el){
+  document.querySelectorAll('.sp-tab').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('sp-controls').style.display=which==='controls'?'block':'none';
+  document.getElementById('sp-products').style.display=which==='products'?'block':'none';
+  if(which==='products') renderProdSwitcher();
+}
+
+function endLive(){
+  if(!confirm('End your live stream?')) return;
+  if(LS.stream) LS.stream.getTracks().forEach(t=>t.stop());
+  clearInterval(LS.chatTimer);
+  location.href='/';
+}
+
+function closeLive(){
+  if(LS.isSeller){ endLive(); return; }
+  if(LS.stream) LS.stream.getTracks().forEach(t=>t.stop());
+  clearInterval(LS.chatTimer);
+  location.href='/';
+}
+
+// ══════════════════════════════════════
+// CHAT
+// ══════════════════════════════════════
+const DEMO_MSGS=[
+  {u:'Ngozi_Abj',t:'Wow this is beautiful! 😍'},
+  {u:'Chika_Lag',t:'What sizes available?'},
+  {u:'EmzyKing',t:'BUY please! Size 14'},
+  {u:'GracePrince',t:'How much is delivery to Port Harcourt?'},
+  {u:'Adesola22',t:'🔥🔥🔥'},
+  {u:'MamaChisom',t:'Can pay transfer'},
+  {u:'KemiA',t:'BUY — 2 pieces'},
+  {u:'TundeB',t:'Drop the link!'},
+  {u:'FatimaK',t:'Do you ship to Kano?'},
+  {u:'AmyNnaemeka',t:'❤️❤️❤️ beautiful'},
+];
+
+function startChatSim(){
+  let idx=0;
+  LS.chatTimer=setInterval(()=>{
+    const m=DEMO_MSGS[idx%DEMO_MSGS.length];
+    addChatMsg(m.u,m.t,false);
+    idx++;
+    // If someone types BUY, show buy notification
+    if(m.t.toLowerCase().startsWith('buy')){
+      setTimeout(()=>addChatMsg('SellLive',`🛒 ${m.u} is buying ${LS.currentProd?.name||'a product'}!`,true),600);
+    }
+  },2800);
+}
+
+function addChatMsg(user, text, isSystem=false){
+  const feed=document.getElementById('chat-msgs');
+  const d=document.createElement('div'); d.className='chat-msg'+(isSystem?' buy-msg':'');
+  d.innerHTML=isSystem?`<b>SellLive:</b> ${text}`:`<b>${user}:</b> ${text}`;
+  feed.appendChild(d);
+  while(feed.children.length>8) feed.removeChild(feed.firstChild);
+  feed.scrollTop=feed.scrollHeight;
+}
+
+function sendChat(){
+  const inp=document.getElementById('chat-inp'); const txt=inp.value.trim(); if(!txt) return;
+  addChatMsg(LS.user?.name||'You',txt,false);
+  if(txt.toLowerCase().startsWith('buy')||txt.toLowerCase().includes('buy')){
+    setTimeout(()=>{ addChatMsg('SellLive',`Order popup opened for ${LS.user?.name||'you'}! 🛒`,true); openCheckout(); },400);
+  }
+  inp.value='';
+}
+
+// ══════════════════════════════════════
+// VIEWERS SIMULATION
+// ══════════════════════════════════════
+function startViewerSim(){
+  LS.viewers = Math.floor(Math.random()*500)+200;
+  updateViewers();
+  setInterval(()=>{
+    LS.viewers += Math.floor(Math.random()*7)-2;
+    if(LS.viewers<10) LS.viewers=10;
+    updateViewers();
+  },3000);
+}
+function updateViewers(){
+  const el=document.getElementById('viewer-count');
+  el.textContent=LS.viewers.toLocaleString();
+  el.classList.add('count-pop');
+  setTimeout(()=>el.classList.remove('count-pop'),300);
+}
+
+// ══════════════════════════════════════
+// LIKES
+// ══════════════════════════════════════
+function doLike(){
+  LS.likes++;
+  document.getElementById('like-count').textContent=LS.likes>999?(LS.likes/1000).toFixed(1)+'k':LS.likes;
+  // Float a heart
+  const h=document.createElement('div');
+  h.style.cssText=`position:fixed;font-size:24px;right:${50+Math.random()*20}px;bottom:280px;z-index:50;pointer-events:none;animation:floatHeart 1.5s ease-out forwards`;
+  h.textContent='❤️';
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),1500);
+}
+const styleEl=document.createElement('style');
+styleEl.textContent='@keyframes floatHeart{to{transform:translateY(-180px) scale(0);opacity:0}}';
+document.head.appendChild(styleEl);
+
+// ══════════════════════════════════════
+// CHECKOUT
+// ══════════════════════════════════════
+function openCheckout(){
+  if(!LS.user){toast('Sign in at selllive.vercel.app to purchase');return;}
+  const prod=LS.currentProd;
+  if(!prod){toast('No product selected');return;}
+  document.getElementById('sheet-prod-info').innerHTML=`<div class="sheet-prod-em">${prod.emo||'🛍️'}</div><div style="flex:1"><div style="font-size:14px;font-weight:800">${prod.name||'Product'}</div><div style="font-size:18px;font-weight:900;color:var(--or);margin-top:4px">${FMT(prod.price)}</div></div>`;
+  document.getElementById('co-total-lbl').textContent=FMT(prod.price);
+  document.getElementById('co-phone').value=LS.user?.phone||'';
+  document.getElementById('checkout-body').style.display='block';
+  document.getElementById('success-anim').classList.remove('on');
+  document.getElementById('checkout-sheet').classList.add('on');
+}
+function closeCheckout(){ document.getElementById('checkout-sheet').classList.remove('on'); }
+document.getElementById('checkout-sheet').addEventListener('click',e=>{if(e.target===e.currentTarget)closeCheckout();});
+
+async function payNow(){
+  const addr=document.getElementById('co-addr').value.trim();
+  const phone=document.getElementById('co-phone').value.trim();
+  if(!addr){toast('Enter your delivery address');return;}
+  const btn=document.querySelector('.pay-btn'); btn.textContent='Processing...'; btn.disabled=true;
+  try{
+    const prod=LS.currentProd;
+    const body={items:[{product_id:prod.id,quantity:1,price:prod.price||0,seller_id:null}],delivery_address:addr,delivery_phone:phone,total_amount:prod.price||0};
+    const r=await fetch('/api/payments/checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+LS.token},body:JSON.stringify(body)}).then(x=>x.json());
+    if(r.success){
+      document.getElementById('checkout-body').style.display='none';
+      document.getElementById('success-anim').classList.add('on');
+      addChatMsg('SellLive',`🎉 ${LS.user?.name||'A viewer'} just bought ${prod.name}!`,true);
+      if(r.payment_link){ setTimeout(()=>window.open(r.payment_link,'_blank'),1200); }
+    } else { toast('❌ '+(r.error||'Payment failed')); }
+  }catch(e){ toast('Network error'); }
+  btn.textContent='Pay with Flutterwave →'; btn.disabled=false;
+}
+
+// ══════════════════════════════════════
+// MISC
+// ══════════════════════════════════════
+function followSeller(){ LS.followedSeller=!LS.followedSeller; const btn=document.getElementById('follow-btn'); btn.textContent=LS.followedSeller?'Following ✓':'Follow'; btn.style.background=LS.followedSeller?'#333':'var(--or)'; if(LS.followedSeller) addChatMsg('SellLive','❤️ You are now following this seller!',true); }
+function openCart(){ window.open('/','_blank'); }
+function shareLive(){ if(navigator.share){ navigator.share({title:'Watch me Live on SellLive!',url:location.href}); } else { navigator.clipboard?.writeText(location.href); toast('Link copied!'); } }
+function shareProduct(){ const p=LS.currentProd; if(p){ navigator.clipboard?.writeText(`Check out ${p.name} — ${FMT(p.price)} on SellLive!`); toast('Product link copied!'); } }
+
+function toast(msg){
+  let t=document.getElementById('live-toast');
+  if(!t){t=document.createElement('div');t.id='live-toast';t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#222;border:1px solid #333;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;z-index:9999;display:none;max-width:90vw;text-align:center';document.body.appendChild(t);}
+  t.textContent=msg;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2800);
+}
+
+// Auto-start based on URL
+if(urlMode==='viewer'||streamId){ enterViewerMode(); }
+else if(urlMode==='demo'){ selectMode('product',document.querySelector('[data-mode="product"]')).then(()=>enterViewerMode()); }
+</script>
+</body>
+</html>

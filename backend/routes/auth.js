@@ -27,34 +27,38 @@ const sendSMS = async (phone, message) => {
   let to = phone.replace(/\s+/g, '');
   if (to.startsWith('0')) to = '+234' + to.slice(1);
   if (!to.startsWith('+')) to = '+234' + to;
-  // Remove + for some APIs
-  const toRaw = to.replace('+', '');
 
-  // 1. Sendchamp — try both SMS and their Verification OTP endpoint
+  // 1. Sendchamp — try dnd route (most reliable for Nigeria)
   if (process.env.SENDCHAMP_API_KEY) {
-    // Try standard SMS first
-    try {
-      const resp = await axios.post('https://api.sendchamp.com/api/v1/sms/send', {
-        to: [to],
-        message,
-        sender_name: process.env.SENDCHAMP_SENDER_ID || 'SellLive',
-        route: 'international',
-      }, {
-        headers: {
-          Authorization: `Bearer ${process.env.SENDCHAMP_API_KEY}`,
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        timeout: 10000,
-      });
-      if (resp.data?.code === '200' || resp.data?.status === 'success' || resp.status === 200) {
-        console.log(`✅ Sendchamp SMS sent to ${to}`);
-        return true;
+    const key = process.env.SENDCHAMP_API_KEY;
+    // Try route: dnd first, then non_dnd
+    for (const route of ['dnd', 'non_dnd', 'international']) {
+      try {
+        const resp = await axios.post('https://api.sendchamp.com/api/v1/sms/send', {
+          to: [to],
+          message,
+          sender_name: 'SellLive',
+          route,
+        }, {
+          headers: {
+            Authorization: `Bearer ${key}`,
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          timeout: 12000,
+        });
+        const d = resp.data;
+        console.log(`Sendchamp [${route}] response:`, JSON.stringify(d).slice(0, 200));
+        if (d?.code === '200' || d?.status === 'success' || resp.status === 200) {
+          console.log(`✅ Sendchamp SMS sent via ${route} to ${to}`);
+          return true;
+        }
+        if (d?.message?.toLowerCase().includes('balance') || d?.message?.toLowerCase().includes('fund')) break;
+      } catch (err) {
+        const errMsg = err.response?.data?.message || err.message;
+        console.error(`Sendchamp [${route}] error:`, errMsg);
+        if (errMsg?.toLowerCase().includes('balance') || errMsg?.toLowerCase().includes('fund')) break;
       }
-      console.log('Sendchamp response:', JSON.stringify(resp.data).slice(0, 200));
-    } catch (err) {
-      const errMsg = err.response?.data?.message || err.response?.data?.error || err.message;
-      console.error('Sendchamp SMS error:', errMsg);
     }
   }
 

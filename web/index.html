@@ -475,8 +475,8 @@ function renderStreams(el,list){
     const p=s.products?.[0]?.price?fmt(s.products[0].price):'See prices';
     const div=document.createElement('div'); div.className='sc';
     div.innerHTML=`<div class="sthumb" style="background:${gbg(s.title||'')}">${emo(s.title||'')}<div class="sovl"><span class="bl">LIVE</span><span class="bv">👁 ${(s.viewer_count||0).toLocaleString()}</span></div></div><div class="sbody"><div class="ssell">${nm}${s.seller_profile?.is_verified?' ✓':''}</div><div class="stit">${s.title||'Live Stream'}</div><div class="sfooter"><div class="sprice">${p}</div><div class="buy-btn">WATCH</div></div></div>`;
-    div.addEventListener('click',()=>openStream(i));
-    div.querySelector('.buy-btn').addEventListener('click',e=>{e.stopPropagation();openStream(i);});
+    div.addEventListener('click',()=>{ if(S.streams[i]) window.open('/live.html?mode=viewer&stream='+S.streams[i].id,'_blank'); });
+    div.querySelector('.buy-btn').addEventListener('click',e=>{e.stopPropagation();window.open('/live.html?mode=viewer&stream='+(S.streams[i]?.id||'demo'),'_blank');});
     el.appendChild(div);
   });
 }
@@ -619,6 +619,7 @@ function buildSeller(){
     <div><div style="font-size:20px;font-weight:800">🏪 My Store</div><div style="font-size:12px;color:var(--mu)">${sp?.business_name||S.user.name||'Your Store'}</div></div>
     <div style="display:flex;gap:8px">
       <button class="btn-o" onclick="openFlashModal()" style="font-size:12px;padding:7px 14px;border-color:var(--red);color:var(--red)">⚡ Flash Sale</button>
+      <button class="btn-p" onclick="window.open('/live.html','_blank')" style="font-size:12px;padding:7px 14px;background:var(--red)">🔴 Go Live</button>
       <button class="btn-p" onclick="openProdModal(null)" style="font-size:12px;padding:7px 14px">+ Add Product</button>
     </div>
   </div>
