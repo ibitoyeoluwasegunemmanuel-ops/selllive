@@ -35,8 +35,7 @@ const reviewsRoutes = require('./routes/reviews');
 const notifRoutes = require('./routes/notifications_route');
 const productsRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
-const reviewsRoutes = require('./routes/reviews');
-const paymentsRoutes = require('./routes/payments');
+const paymentsRoutes_v2 = require('./routes/payments');  // v2 with checkout
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -147,8 +146,7 @@ app.use('/api/reviews', reviewsRoutes);
 app.use('/api/notif-centre', notifRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/cart', cartRoutes);
-app.use('/api/reviews', reviewsRoutes);
-app.use('/api/payments', paymentsRoutes);
+app.use('/api/payments', paymentsRoutes_v2);
 app.use('/api/whatsapp', waRouter);
 app.use('/api/logistics', logisticsRoutes);
 app.use('/api/loyalty', loyaltyRoutes);
