@@ -22,78 +22,94 @@ const generateToken = (userId) => jwt.sign(
 );
 
 // Send SMS — tries Sendchamp first, Termii fallback, then dev mode
-const sendSMS = async (phone, otp) => {
+const sendOTP = async (phone, otp) => {
   // Normalize Nigerian number
   let to = phone.replace(/\s+/g, '');
   if (to.startsWith('0')) to = '+234' + to.slice(1);
   if (!to.startsWith('+')) to = '+234' + to;
 
-  const message = `Your SellLive OTP is: ${otp}\n\nValid for 10 minutes. Do not share.`;
+  const smsMessage = `Your SellLive OTP is: ${otp}\n\nValid for 10 minutes. Do not share this code.`;
+  const waMessage = `🔐 *SellLive Verification*\n\nYour OTP code is: *${otp}*\n\nValid for 10 minutes. Do not share this code.\n\n_If you did not request this, ignore._`;
 
-  // 1. Sendchamp — plain SMS with our OTP (verification API generates its own code, ignore it)
+  // 1. WhatsApp OTP via Sendchamp (bypasses DND completely — most reliable in Nigeria)
   if (process.env.SENDCHAMP_API_KEY) {
     const key = process.env.SENDCHAMP_API_KEY;
-    // Try non_dnd first (transactional route — penetrates DND registry)
+    try {
+      const resp = await axios.post('https://api.sendchamp.com/api/v1/whatsapp/message/send', {
+        sender: process.env.SENDCHAMP_WHATSAPP_SENDER || '2348000000000',
+        message: waMessage,
+        recipient: to.replace('+', ''),
+        message_type: 'text',
+      }, {
+        headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+        timeout: 12000,
+      });
+      const d = resp.data;
+      console.log('Sendchamp WhatsApp OTP →', JSON.stringify(d).slice(0, 250));
+      if (d?.code === '200' || d?.code === 200 || d?.data?.id || d?.status === 'success') {
+        console.log(`✅ WhatsApp OTP sent to ${to}`);
+        return { sent: true, channel: 'whatsapp' };
+      }
+      console.log('WhatsApp OTP failed, falling back to SMS...');
+    } catch (err) {
+      console.error('WhatsApp OTP error:', err.response?.data?.message || err.message);
+    }
+
+    // 2. SMS fallback — try non_dnd route (transactional, better DND penetration)
     for (const route of ['non_dnd', 'dnd', 'international']) {
       try {
         const resp = await axios.post('https://api.sendchamp.com/api/v1/sms/send', {
           to: [to],
-          message,
+          message: smsMessage,
           sender_name: 'SC-OTP',
           route,
         }, {
-          headers: {
-            Authorization: `Bearer ${key}`,
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
+          headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
           timeout: 12000,
         });
         const d = resp.data;
-        console.log(`Sendchamp [${route}] →`, JSON.stringify(d).slice(0, 250));
-        if (d?.code === '200' || d?.code === 200 || d?.data?.status === 'success' || d?.data?.id) {
-          console.log(`✅ Sendchamp OTP sent via ${route} to ${to}`);
-          return { sent: true };
+        console.log(`Sendchamp SMS [${route}] →`, JSON.stringify(d).slice(0, 250));
+        if (d?.code === '200' || d?.code === 200 || d?.data?.id) {
+          console.log(`✅ SMS OTP sent via ${route} to ${to}`);
+          return { sent: true, channel: 'sms' };
         }
-        // If low balance or plan issue, break out of loop
         const msg = (d?.message || '').toLowerCase();
-        if (msg.includes('balance') || msg.includes('fund') || msg.includes('credit') || msg.includes('plan')) {
-          console.error('Sendchamp balance/plan issue:', d?.message);
+        if (msg.includes('balance') || msg.includes('fund') || msg.includes('credit')) {
+          console.error('Sendchamp low balance:', d?.message);
           break;
         }
       } catch (err) {
-        console.error(`Sendchamp [${route}] error:`, err.response?.data?.message || err.message);
+        console.error(`SMS [${route}] error:`, err.response?.data?.message || err.message);
       }
     }
   }
 
-  // 2. Termii fallback
+  // 3. Termii fallback
   if (process.env.TERMII_API_KEY) {
     try {
-      const resp = await axios.post('https://api.ng.termii.com/api/sms/otp/send', {
+      const resp = await axios.post('https://api.ng.termii.com/api/sms/send', {
         api_key: process.env.TERMII_API_KEY,
-        message_type: 'NUMERIC',
         to,
         from: 'N-Alert',
+        sms: smsMessage,
+        type: 'plain',
         channel: 'dnd',
-        pin_attempts: 3,
-        pin_time_to_live: 10,
-        pin_length: 6,
-        pin_placeholder: '< 1234 >',
-        message_text: `Your SellLive OTP is < 1234 >. Valid 10 minutes.`,
-        pin_type: 'NUMERIC',
       });
       console.log('Termii OTP:', JSON.stringify(resp.data).slice(0, 200));
-      return { sent: true };
+      if (resp.data?.message_id || resp.data?.code === 'ok') {
+        return { sent: true, channel: 'termii' };
+      }
     } catch (err) {
       console.error('Termii error:', err.response?.data || err.message);
     }
   }
 
-  // 3. Dev mode
-  console.log(`📱 DEV MODE — OTP for ${to}: ${otp}`);
-  return { sent: false };
+  // 4. Always show code on screen in dev/fallback mode
+  console.log(`📱 OTP FALLBACK — code for ${to}: ${otp}`);
+  return { sent: false, channel: 'screen' };
 };
+// alias
+const sendSMS = sendOTP;
 
 // ============================================================
 // POST /api/auth/send-otp
@@ -127,15 +143,22 @@ router.post('/send-otp', async (req, res) => {
     return res.status(500).json({ error: 'Failed to create OTP. Try again.' });
   }
 
-  // Send OTP via SMS
-  const result = await sendSMS(phone, code);
-  const smsSent = result?.sent || false;
+  // Send OTP via WhatsApp first, then SMS fallback
+  const result = await sendOTP(phone, code);
+  const delivered = result?.sent || false;
+  const channel = result?.channel || 'screen';
+
+  console.log(`OTP result: delivered=${delivered}, channel=${channel}, code=${code}`);
 
   res.json({
     success: true,
-    message: smsSent ? `OTP sent to ${phone}` : `OTP ready for ${phone}`,
-    // Always return code in dev mode (when SMS not delivered)
-    ...(!smsSent && { code }),
+    delivered,
+    channel,
+    message: delivered
+      ? `OTP sent via ${channel} to ${phone}`
+      : `OTP ready — check the code shown on screen`,
+    // ALWAYS include code so it shows on screen — users can read it if SMS fails
+    code,
   });
 });
 
