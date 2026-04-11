@@ -22,67 +22,97 @@ const generateToken = (userId) => jwt.sign(
 );
 
 // Send SMS — tries Sendchamp first, Termii fallback, then dev mode
-const sendSMS = async (phone, message) => {
+const sendSMS = async (phone, otp) => {
   // Normalize Nigerian number
   let to = phone.replace(/\s+/g, '');
   if (to.startsWith('0')) to = '+234' + to.slice(1);
   if (!to.startsWith('+')) to = '+234' + to;
 
-  // 1. Sendchamp — try dnd route (most reliable for Nigeria)
+  // 1. Sendchamp OTP Verification API (purpose-built for OTP, bypasses DND)
   if (process.env.SENDCHAMP_API_KEY) {
     const key = process.env.SENDCHAMP_API_KEY;
-    // Try route: dnd first, then non_dnd
-    for (const route of ['dnd', 'non_dnd', 'international']) {
+    try {
+      const resp = await axios.post('https://api.sendchamp.com/api/v1/verification/create', {
+        channel: 'sms',
+        sender: 'SC-OTP',
+        token_type: 'numeric',
+        token_length: 6,
+        expiration_time: 10,
+        customer_mobile_number: to,
+        meta_data: { purpose: 'SellLive OTP Login' },
+        token: String(otp), // use our generated OTP
+      }, {
+        headers: {
+          Authorization: `Bearer ${key}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        timeout: 15000,
+      });
+      const d = resp.data;
+      console.log('Sendchamp OTP API response:', JSON.stringify(d).slice(0, 300));
+      // Sendchamp returns code "200" (string) on success
+      if (d?.code === '200' || d?.code === 200 || d?.status === 'success') {
+        console.log(`✅ Sendchamp OTP sent to ${to}`);
+        return { sent: true, ref: d?.data?.reference };
+      }
+      console.error('Sendchamp OTP failed:', d?.message || JSON.stringify(d));
+    } catch (err) {
+      const errMsg = err.response?.data?.message || err.response?.data || err.message;
+      console.error('Sendchamp OTP error:', JSON.stringify(errMsg).slice(0, 200));
+    }
+
+    // Fallback: plain SMS via Sendchamp
+    for (const route of ['dnd', 'non_dnd']) {
       try {
-        const resp = await axios.post('https://api.sendchamp.com/api/v1/sms/send', {
+        const resp2 = await axios.post('https://api.sendchamp.com/api/v1/sms/send', {
           to: [to],
-          message,
+          message: `Your SellLive OTP is: ${otp}. Valid for 10 minutes. Do not share this code.`,
           sender_name: 'SC-OTP',
           route,
         }, {
-          headers: {
-            Authorization: `Bearer ${key}`,
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
+          headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
           timeout: 12000,
         });
-        const d = resp.data;
-        console.log(`Sendchamp [${route}] response:`, JSON.stringify(d).slice(0, 200));
-        if (d?.code === '200' || d?.status === 'success' || resp.status === 200) {
-          console.log(`✅ Sendchamp SMS sent via ${route} to ${to}`);
-          return true;
+        const d2 = resp2.data;
+        console.log(`Sendchamp SMS [${route}]:`, JSON.stringify(d2).slice(0, 200));
+        // Check actual data, NOT resp.status (which is always 200)
+        if (d2?.code === '200' || d2?.code === 200) {
+          console.log(`✅ Sendchamp SMS sent via ${route}`);
+          return { sent: true };
         }
-        if (d?.message?.toLowerCase().includes('balance') || d?.message?.toLowerCase().includes('fund')) break;
-      } catch (err) {
-        const errMsg = err.response?.data?.message || err.message;
-        console.error(`Sendchamp [${route}] error:`, errMsg);
-        if (errMsg?.toLowerCase().includes('balance') || errMsg?.toLowerCase().includes('fund')) break;
+      } catch (err2) {
+        console.error(`Sendchamp SMS [${route}] error:`, err2.response?.data?.message || err2.message);
       }
     }
   }
 
-  // 2. Termii (fallback)
+  // 2. Termii fallback
   if (process.env.TERMII_API_KEY) {
     try {
-      await axios.post('https://api.ng.termii.com/api/sms/send', {
-        to,
-        from: process.env.TERMII_SENDER_ID || 'SellLive',
-        sms: message,
-        type: 'plain',
-        channel: 'generic',
+      const resp = await axios.post('https://api.ng.termii.com/api/sms/otp/send', {
         api_key: process.env.TERMII_API_KEY,
+        message_type: 'NUMERIC',
+        to,
+        from: 'N-Alert',
+        channel: 'dnd',
+        pin_attempts: 3,
+        pin_time_to_live: 10,
+        pin_length: 6,
+        pin_placeholder: '< 1234 >',
+        message_text: `Your SellLive OTP is < 1234 >. Valid 10 minutes.`,
+        pin_type: 'NUMERIC',
       });
-      console.log(`✅ Termii SMS sent to ${to}`);
-      return true;
+      console.log('Termii OTP:', JSON.stringify(resp.data).slice(0, 200));
+      return { sent: true };
     } catch (err) {
       console.error('Termii error:', err.response?.data || err.message);
     }
   }
 
-  // 3. Dev mode — OTP returned in API response body
-  console.log(`📱 DEV MODE OTP for ${to}: ${message}`);
-  return false;
+  // 3. Dev mode
+  console.log(`📱 DEV MODE — OTP for ${to}: ${otp}`);
+  return { sent: false };
 };
 
 // ============================================================
@@ -117,13 +147,14 @@ router.post('/send-otp', async (req, res) => {
     return res.status(500).json({ error: 'Failed to create OTP. Try again.' });
   }
 
-  // Send SMS — returns false if no Termii key configured
-  const smsMessage = `Your SellLive verification code is: ${code}. Valid for 10 minutes. Do not share this code.`;
-  const smsSent = await sendSMS(phone, smsMessage);
+  // Send OTP via SMS
+  const result = await sendSMS(phone, code);
+  const smsSent = result?.sent || false;
 
   res.json({
     success: true,
     message: smsSent ? `OTP sent to ${phone}` : `OTP ready for ${phone}`,
+    // Always return code in dev mode (when SMS not delivered)
     ...(!smsSent && { code }),
   });
 });
