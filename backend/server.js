@@ -65,8 +65,8 @@ app.use(express.urlencoded({ extended: true }));
 app.set('trust proxy', 1);
 
 // Rate limits
-const limiter = rateLimit({ windowMs:15*60*1000, max:100, standardHeaders:true, legacyHeaders:false, validate:{xForwardedForHeader:false} });
-const authLimiter = rateLimit({ windowMs:60*60*1000, max:15, standardHeaders:true, legacyHeaders:false, validate:{xForwardedForHeader:false}, message:{error:'Too many auth attempts. Try again in an hour.'} });
+const limiter = rateLimit({ windowMs:15*60*1000, max:500, standardHeaders:true, legacyHeaders:false, validate:{xForwardedForHeader:false} });
+const authLimiter = rateLimit({ windowMs:60*60*1000, max:100, standardHeaders:true, legacyHeaders:false, validate:{xForwardedForHeader:false}, message:{error:'Too many auth attempts. Try again in an hour.'} });
 app.use('/api/', limiter);
 app.use('/api/auth/', authLimiter);
 
