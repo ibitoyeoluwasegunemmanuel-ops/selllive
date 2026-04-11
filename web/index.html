@@ -394,7 +394,24 @@ async function sendOTP(){
       document.getElementById('auth-phone-step').style.display='none';
       document.getElementById('auth-otp-step').style.display='block';
       document.getElementById('auth-phone-show').textContent=phone;
-      if(r.code){document.getElementById('otp-hint').style.display='block';document.getElementById('otp-hint').textContent=r.code;document.getElementById('auth-otp').value=r.code;}
+      // ALWAYS show OTP on screen — Nigerian DND blocks most SMS
+      if(r.code){
+        const hint=document.getElementById('otp-hint');
+        hint.style.display='block';
+        // Set the large code display
+        const codeDisplay=document.getElementById('otp-code-display');
+        if(codeDisplay) codeDisplay.textContent=r.code;
+        else hint.textContent=r.code;
+        // Auto-fill the input
+        document.getElementById('auth-otp').value=r.code;
+        // Show channel status
+        const chanEl=document.getElementById('otp-channel-msg');
+        if(chanEl){
+          chanEl.textContent = r.channel==='whatsapp' ? '✅ Also sent to your WhatsApp' :
+                               r.channel==='sms' ? '✅ Also sent via SMS' :
+                               '⚠️ SMS blocked — use the code above';
+        }
+      }
     } else toast('❌ '+(r.error||'Could not send OTP'));
   }catch(e){toast('Network error');}
   btn.textContent='Get OTP →'; btn.disabled=false;
