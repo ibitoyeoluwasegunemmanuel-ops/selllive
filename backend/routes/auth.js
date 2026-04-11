@@ -28,61 +28,41 @@ const sendSMS = async (phone, otp) => {
   if (to.startsWith('0')) to = '+234' + to.slice(1);
   if (!to.startsWith('+')) to = '+234' + to;
 
-  // 1. Sendchamp OTP Verification API (purpose-built for OTP, bypasses DND)
+  const message = `Your SellLive OTP is: ${otp}\n\nValid for 10 minutes. Do not share.`;
+
+  // 1. Sendchamp — plain SMS with our OTP (verification API generates its own code, ignore it)
   if (process.env.SENDCHAMP_API_KEY) {
     const key = process.env.SENDCHAMP_API_KEY;
-    try {
-      const resp = await axios.post('https://api.sendchamp.com/api/v1/verification/create', {
-        channel: 'sms',
-        sender: 'SC-OTP',
-        token_type: 'numeric',
-        token_length: 6,
-        expiration_time: 10,
-        customer_mobile_number: to,
-        meta_data: { purpose: 'SellLive OTP Login' },
-        token: String(otp), // use our generated OTP
-      }, {
-        headers: {
-          Authorization: `Bearer ${key}`,
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        timeout: 15000,
-      });
-      const d = resp.data;
-      console.log('Sendchamp OTP API response:', JSON.stringify(d).slice(0, 300));
-      // Sendchamp returns code "200" (string) on success
-      if (d?.code === '200' || d?.code === 200 || d?.status === 'success') {
-        console.log(`✅ Sendchamp OTP sent to ${to}`);
-        return { sent: true, ref: d?.data?.reference };
-      }
-      console.error('Sendchamp OTP failed:', d?.message || JSON.stringify(d));
-    } catch (err) {
-      const errMsg = err.response?.data?.message || err.response?.data || err.message;
-      console.error('Sendchamp OTP error:', JSON.stringify(errMsg).slice(0, 200));
-    }
-
-    // Fallback: plain SMS via Sendchamp
-    for (const route of ['dnd', 'non_dnd']) {
+    // Try non_dnd first (transactional route — penetrates DND registry)
+    for (const route of ['non_dnd', 'dnd', 'international']) {
       try {
-        const resp2 = await axios.post('https://api.sendchamp.com/api/v1/sms/send', {
+        const resp = await axios.post('https://api.sendchamp.com/api/v1/sms/send', {
           to: [to],
-          message: `Your SellLive OTP is: ${otp}. Valid for 10 minutes. Do not share this code.`,
+          message,
           sender_name: 'SC-OTP',
           route,
         }, {
-          headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+          headers: {
+            Authorization: `Bearer ${key}`,
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
           timeout: 12000,
         });
-        const d2 = resp2.data;
-        console.log(`Sendchamp SMS [${route}]:`, JSON.stringify(d2).slice(0, 200));
-        // Check actual data, NOT resp.status (which is always 200)
-        if (d2?.code === '200' || d2?.code === 200) {
-          console.log(`✅ Sendchamp SMS sent via ${route}`);
+        const d = resp.data;
+        console.log(`Sendchamp [${route}] →`, JSON.stringify(d).slice(0, 250));
+        if (d?.code === '200' || d?.code === 200 || d?.data?.status === 'success' || d?.data?.id) {
+          console.log(`✅ Sendchamp OTP sent via ${route} to ${to}`);
           return { sent: true };
         }
-      } catch (err2) {
-        console.error(`Sendchamp SMS [${route}] error:`, err2.response?.data?.message || err2.message);
+        // If low balance or plan issue, break out of loop
+        const msg = (d?.message || '').toLowerCase();
+        if (msg.includes('balance') || msg.includes('fund') || msg.includes('credit') || msg.includes('plan')) {
+          console.error('Sendchamp balance/plan issue:', d?.message);
+          break;
+        }
+      } catch (err) {
+        console.error(`Sendchamp [${route}] error:`, err.response?.data?.message || err.message);
       }
     }
   }
