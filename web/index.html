@@ -165,13 +165,23 @@ nav{position:sticky;top:0;z-index:300;background:rgba(10,10,10,.97);backdrop-fil
     </div>
     <div id="auth-otp-step" style="display:none">
       <div style="font-size:24px;margin-bottom:6px">📱</div>
-      <div style="font-size:18px;font-weight:800;margin-bottom:4px">Enter OTP</div>
-      <div style="font-size:13px;color:var(--mu);margin-bottom:4px">Code sent to</div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:16px" id="auth-phone-show">-</div>
-      <div class="fg"><label class="fl">OTP Code</label><input class="fi" id="auth-otp" placeholder="000000" maxlength="6" style="font-size:26px;letter-spacing:8px;text-align:center" onkeypress="if(event.key==='Enter')verifyOTP()"/></div>
-      <div id="otp-hint" style="display:none;background:rgba(255,87,34,.08);border:1px solid rgba(255,87,34,.2);border-radius:8px;padding:10px;font-size:14px;color:var(--or);margin-bottom:12px;text-align:center;font-weight:800;letter-spacing:3px;font-family:monospace"></div>
-      <button class="btn-p" id="verify-btn" onclick="verifyOTP()" style="width:100%;padding:12px;font-size:14px">Verify & Sign In</button>
-      <div style="text-align:center;margin-top:10px"><span style="font-size:12px;color:var(--mu)">Wrong number? </span><span style="font-size:12px;color:var(--or);cursor:pointer" onclick="showPhoneStep()">Go back</span></div>
+      <div style="font-size:18px;font-weight:800;margin-bottom:4px">Your Sign In Code</div>
+      <div style="font-size:13px;color:var(--mu);margin-bottom:4px">Code for</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:14px" id="auth-phone-show">-</div>
+
+      <!-- BIG CODE DISPLAY — always shown -->
+      <div id="otp-hint" style="background:linear-gradient(135deg,rgba(255,87,34,.15),rgba(255,87,34,.05));border:2px solid var(--or);border-radius:16px;padding:20px;margin-bottom:16px;text-align:center">
+        <div style="font-size:11px;font-weight:700;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Your OTP Code</div>
+        <div id="otp-code-display" style="font-size:44px;font-weight:900;color:var(--or);letter-spacing:12px;font-family:monospace;line-height:1">------</div>
+        <div style="font-size:11px;color:var(--mu);margin-top:10px" id="otp-channel-msg">Loading your code...</div>
+        <div style="font-size:11px;color:var(--gr);margin-top:6px;font-weight:600">↓ Already filled below — just tap Sign In ↓</div>
+      </div>
+
+      <div class="fg"><label class="fl">OTP Code (auto-filled)</label>
+        <input class="fi" id="auth-otp" placeholder="------" maxlength="6" style="font-size:28px;letter-spacing:10px;text-align:center;background:rgba(255,87,34,.06);border-color:var(--or)" onkeypress="if(event.key==='Enter')verifyOTP()"/>
+      </div>
+      <button class="btn-p" id="verify-btn" onclick="verifyOTP()" style="width:100%;padding:14px;font-size:15px;margin-bottom:10px">✅ Sign In Now</button>
+      <div style="text-align:center"><span style="font-size:12px;color:var(--mu)">Wrong number? </span><span style="font-size:12px;color:var(--or);cursor:pointer" onclick="showPhoneStep()">Go back</span></div>
     </div>
   </div>
 </div>
@@ -394,23 +404,16 @@ async function sendOTP(){
       document.getElementById('auth-phone-step').style.display='none';
       document.getElementById('auth-otp-step').style.display='block';
       document.getElementById('auth-phone-show').textContent=phone;
-      // ALWAYS show OTP on screen — Nigerian DND blocks most SMS
-      if(r.code){
-        const hint=document.getElementById('otp-hint');
-        hint.style.display='block';
-        // Set the large code display
-        const codeDisplay=document.getElementById('otp-code-display');
-        if(codeDisplay) codeDisplay.textContent=r.code;
-        else hint.textContent=r.code;
-        // Auto-fill the input
-        document.getElementById('auth-otp').value=r.code;
-        // Show channel status
-        const chanEl=document.getElementById('otp-channel-msg');
-        if(chanEl){
-          chanEl.textContent = r.channel==='whatsapp' ? '✅ Also sent to your WhatsApp' :
-                               r.channel==='sms' ? '✅ Also sent via SMS' :
-                               '⚠️ SMS blocked — use the code above';
-        }
+      // ALWAYS show OTP — it's always in the response
+      const codeDisplay = document.getElementById('otp-code-display');
+      const chanEl = document.getElementById('otp-channel-msg');
+      const codeVal = r.code || '------';
+      if(codeDisplay) codeDisplay.textContent = codeVal;
+      document.getElementById('auth-otp').value = codeVal;
+      if(chanEl){
+        chanEl.textContent = r.channel==='whatsapp' ? '✅ Also delivered to your WhatsApp' :
+                             r.channel==='sms' ? '✅ Also sent via SMS to your phone' :
+                             '⚠️ SMS blocked by DND — use the code shown above';
       }
     } else toast('❌ '+(r.error||'Could not send OTP'));
   }catch(e){toast('Network error');}
