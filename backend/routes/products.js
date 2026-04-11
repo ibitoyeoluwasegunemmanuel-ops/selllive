@@ -79,6 +79,20 @@ router.delete('/:id', authenticate, sellerOnly, async (req, res) => {
   res.json({ success: true, message: 'Product removed.' });
 });
 
+
+// GET /api/products/:id — single product detail (public)
+router.get('/:id', async (req, res) => {
+  const { data, error } = await supabase
+    .from('stream_products')
+    .select('*, seller_profiles!seller_id(business_name, is_verified, followers_count, whatsapp, description, total_sales, rating)')
+    .eq('id', req.params.id)
+    .single();
+  if (error || !data) return res.status(404).json({ error: 'Product not found' });
+  // Get seller user info
+  const { data: seller } = await supabase.from('users').select('name, avatar_url').eq('id', data.seller_id).single();
+  res.json({ product: { ...data, seller } });
+});
+
 // POST /api/products/:id/pin — pin product to active stream
 router.post('/:id/pin', authenticate, sellerOnly, async (req, res) => {
   const { stream_id } = req.body;
